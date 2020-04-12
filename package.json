@@ -1,0 +1,43 @@
+{
+  "name": "nerdo-routing",
+  "description": "A simple routing behavior for JavaScript applications and components.",
+  "author": "Dannel Albert <cuebix@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/nerdo/routing.git"
+  },
+  "version": "0.0.1-alpha.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "parcel build --cache-dir tmp/parcel-cache src/index.js",
+    "watch": "parcel watch --cache-dir tmp/parcel-cache src/index.js",
+    "bundle-analyzer": "source-map-explorer dist/index.js dist/index.js.map --html tmp/bundle-analyzer.html && open-cli tmp/bundle-analyzer.html",
+    "clean": "rm -rf tmp package-lock.json node_modules dist"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.7.0",
+    "@babel/preset-env": "^7.5.5",
+    "babel-loader": "^8.0.6",
+    "jest": "^24.9.0",
+    "open-cli": "^6.0.1",
+    "parcel": "^2.0.0-alpha.3.2",
+    "source-map-explorer": "^2.4.2",
+    "standard": "^14.3.3"
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "plugins": [
+          "@babel/plugin-transform-modules-commonjs"
+        ]
+      }
+    },
+    "presets": [
+      [
+        "@babel/env"
+      ]
+    ]
+  }
+}
