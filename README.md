@@ -1,9 +1,9 @@
 # @nerdo/routing
 A general purpose routing behavior for applications and components.
 
-Examples in this documentation may use code that look like React, but that is strictly for demonstration/familiarity purposes.
+Code samples here look like React code, @nerdo/routing is _not_ limited to being used with React.
 
-@nerdo/routing is not limited to being used with React or any particular UI framework.
+The choice to use samples that look like React code is strictly _for the sake of familiarity_ since React is the industry standard JavaScript UI library at the time of this writing.
 
 ## Goals
 * Test driven.
@@ -14,8 +14,12 @@ Examples in this documentation may use code that look like React, but that is st
 
 ## Routing Scenarios
 
+**URL Routing** is the most common routing use case, but it is not the only kind of routing that can take place with @nerdo/routing.
+
+With the exception of this section, this guide focuses on **URL Routing**. For details on how other scenarios differ, please refer to the full API documentation.
+
 ### URL Routing
-The most common routing use case is URL routing and navigating via the web browser [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
+URL routing and navigation take place in the web browser using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 
 @nerdo/routing exports a pre-configured `urlRouting` object for this scenario.
 
@@ -30,7 +34,7 @@ Sometimes URL routing needs configuration.
 
 For example, you may be writing a re-usable component that needs routing, but it may be part of a larger application that already has URL routing in place. Your custom component's router needs to take over routing once it is loaded.
 
-In this case, call the helper function `configuredUrlRouting()` and pass it an object with the `baseUrl` set...
+In cases like this, call the helper function `configuredUrlRouting()` and pass it an object with the `baseUrl` set...
 
 ```js
 // app/routing.js
@@ -49,7 +53,6 @@ For scenarios like this, @nerdo/routing exports a pre-configured `stateRouting` 
 // app/routing.js
 
 import { stateRouting } from '@nerdo/routing'
-
 export const routing = stateRouting
 ```
 
@@ -64,26 +67,23 @@ To set up custom writing, provide a navigator object that _implements_ the [Hist
 
 import { makeRouting } from '@nerdo/routing'
 import { navigator, selectedRoute } from '/app/dreamScheme'
-
 export const routing = makeRouting({ navigator, selectedRoute })
 ```
 
 ## Defining Routes
 
-When the `routing` function is called, it takes a list of routes and looks for the most specific match. When it finds it, `routing` calls the function associated with the route and returns its value.
+When the `routing` function is called, it takes a list of routes and looks for the most specific URL match. `routing` then calls the function associated with the matched URL and returns its value.
 
 Routes can be defined in abbreviated format (as an object) or in an expanded form (as an array).
 
-In the abbreviated form, each object key is the route's URL path and each value is a function that returns what the path routes to (typically a component).
+In the abbreviated form, each object key is the route's URL path, and each value is a function that returns what the path routes to (typically a component).
 
-For example...
+Here is a simple example routing the `/` path to the `HomePage` component, and `/about` to the `AboutPage` component.
 
 ```js
 // app/routes.js
 
-import { HomePage } from './HomePage'
-import { AboutPage } from './AboutPage'
-
+import { HomePage, AboutPage } from './pages'
 export const routes = {
     '/': () => <HomePage />,
     '/about': () => <AboutPage />
@@ -95,9 +95,7 @@ Here is the same thing in the expanded array form.
 ```js
 // app/routes.js
 
-import { HomePage } from './HomePage'
-import { AboutPage } from './AboutPage'
-
+import { HomePage, AboutPage } from './pages'
 export const routes = [
     {
         path: '/',
@@ -110,15 +108,14 @@ export const routes = [
 ]
 ```
 
-Using the expanded array form, you can match the path using a regular expression or function.
+Using the expanded array form, you can match the path using a regular expression or a function.
 
 The following a simple function matcher to route to the `HomePage` component and a regular expression to route both `/info` and `/about` to the `AboutPage` component and demonstrates a simple function matcher.
 
 ```js
 // app/routes.js
 
-import { HomePage } from './HomePage'
-import { AboutPage } from './AboutPage'
+import { HomePage, AboutPage } from './pages'
 
 export const routes = [
     {
@@ -139,20 +136,23 @@ Here's an example with both:
 ```js
 // app/routes.js
 
-import { AboutPage } from './AboutPage'
+import { DocumentSearchPage } from './pages'
 
-export const routes = {
-    '/documents/:folder?find': ({ folder, find }, { page }) => <DocumentSearch folder={folder} query={find} page={page} />
-}
+export const routes = [
+    {
+        path: '/documents/:folder?find',
+        route: ({ folder, find }, { page }) => <DocumentSearchPage folder={folder} query={find} page={page} />
+    }
+]
 ```
 
-The section `:folder` is a dynamic URL parameter that gets passed to the `route` function, so if the URL is `/documents/reports?query=fish`, the `folder` variable will have the captured value `reports` from the URL. It will also have captured `fish` as the `find` query parameter.
+The section `:folder` is a dynamic URL parameter that gets passed to the `route` function, so if the URL is `/documents/reports?query=summary`, the `folder` variable will have the captured value `reports` from the URL. It will also have captured `summary` as the `find` query parameter.
 
 It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match. Query parameters defined in the path are required.
 
-All query string parameters (including required ones) are passed to the `route` function as its second parameter as an object. In the example, the `page` query string parameter is optional.
+The query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route` function as properties on an object to its _second parameter_.
 
-### Performing Routing
+## Applying Routing
 
 The `routing` function takes a list of routes and will try to find the most specific route that matches. When it finds the best match, it calls the function and returns its value to your code.
 
