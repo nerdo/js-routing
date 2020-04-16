@@ -1,9 +1,9 @@
 # @nerdo/routing
 A general purpose routing behavior for applications and components.
 
-Code samples here look like React code, @nerdo/routing is _not_ limited to being used with React.
+Code samples here look like React code, but @nerdo/routing is _not_ limited to being used with React.
 
-The choice to use samples that look like React code is strictly _for the sake of familiarity_ since React is the industry standard JavaScript UI library at the time of this writing.
+Since React is the industry standard JavaScript UI library at the time of this writing, the choice to use samples that look like it is strictly _for the sake of familiarity_.
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ The choice to use samples that look like React code is strictly _for the sake of
 
 **URL Routing** is the most common routing use case, but it is not the only kind of routing that can take place with @nerdo/routing.
 
-With the exception of this section, this guide focuses on **URL Routing**. For details on how other scenarios differ, please refer to the full API documentation.
+Aside from this section, this guide focuses on **URL Routing**. For details on how other scenarios differ, please refer to [the full API documentation](#full-api-documentation).
 
 ### URL Routing
 URL routing and navigation take place in the web browser using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
@@ -44,7 +44,7 @@ Sometimes URL routing needs configuration.
 
 For example, you may be writing a re-usable component that needs routing, but it may be part of a larger application that already has URL routing in place. Your custom component's router needs to take over routing once it is loaded.
 
-In cases like this, call the helper function `configuredUrlRouting()` and pass it an object with the `baseUrl` set...
+In cases like this, call the helper function `configuredUrlRouting()` and pass it an object with `baseUrl` set.
 
 ```js
 // routing.js
@@ -68,26 +68,28 @@ export default stateRouting
 
 @nerdo/routing navigates via the [History API _interface_](https://developer.mozilla.org/en-US/docs/Web/API/History), but it does not presume that it will run in the a browser. Routing can be configured with whatever scheme one dreams up.
 
-To set up custom writing, provide a navigator object that _implements_ the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History) and a selectedRoute function which takes a navigator state and route definitions and returns the definition that matches the navigator state.
+To set up custom writing, provide a navigator object that _implements_ the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History) and a `getSelectedRoute` function. The `getSelectedRoute` function takes a navigator state and route definitions as arguments and returns the definition that matches the navigator state.
 
 ```js
 // routing.js
 import { makeRouting } from '@nerdo/routing'
-import { navigator, selectedRoute } from '/dreamScheme'
-export default makeRouting({ navigator, selectedRoute })
+import { navigator, getSelectedRoute } from '/dreamScheme'
+export default makeRouting({ navigator, getSelectedRoute })
 ```
 
 ## Defining Routes
 
-When the routing is applied, the `applyRouting` function takes a list of routes and looks for the most specific URL match. `applyRouting` then calls the function associated with the matched URL and returns its value.
+When routing is applied, the `applyRouting` function takes a list of routes and looks for the most specific URL match. `applyRouting` then calls the route function associated with the matched URL and returns its value.
 
 Routes can be defined in abbreviated format (as an object) or in an expanded form (as an array).
 
-In the abbreviated form, each object key is the route's URL path, and each value is a function that returns what the path routes to.
+In the abbreviated form, each object key is the route's URL path, and each value is the route function. The route function returns what the path routes to.
 
-Typically, the route function will return a component, but you can return anything you need: a string, a number, an object, a function, etc. Returning functions is especially useful when dealing with [Nested Routing](#nested-routing).
+Typically, the route function will return a renderable component, but you can return anything you need: a string, a number, an object, a function, etc.
 
-Here is a simple example routing the `/` path to the `HomePage` component, and `/about` to the `AboutPage` component.
+>Returning functions is especially useful when dealing with [Nested Routing](#nested-routing) or [Passing Additional Data to Routes](#passing-additional-data-to-routes).
+
+Here is a simple example routing the `/` path to the `<HomePage />` component, and the `/about` path to the `<AboutPage />` component.
 
 ```js
 // routes.js
@@ -115,9 +117,9 @@ export const routes = [
 ]
 ```
 
-Using the expanded array form, you can match the path using a regular expression or a function.
+The abbreviated form is more concise, but limited. The expanded array form is more powerful. For example, you can match the path using a regular expression or a function.
 
-The following a simple function matcher to route to the `HomePage` component and a regular expression to route both `/info` and `/about` to the `AboutPage` component and demonstrates a simple function matcher.
+The following demonstrates a simple function matcher routing the path `/` to the `<HomePage />` component, and a regular expression routing both `/info` and `/about`paths to the `<AboutPage />` component.
 
 ```js
 // routes.js
@@ -134,7 +136,7 @@ export const routes = [
 ]
 ```
 
-Routes can also define both path and query string parmaters that need to be present in order for the route to match.
+Routes can also define required path and/or query string parmaters.
 
 Here's an example with both:
 
@@ -149,17 +151,19 @@ export const routes = [
 ]
 ```
 
-The section `:folder` is a dynamic URL parameter that gets passed to the `route` function, so if the URL is `/documents/reports?query=summary`, the `folder` variable will have the captured value `reports` from the URL. It will also have captured `summary` as the `find` query parameter.
+The section of the path, `:folder`, is a dynamic URL parameter that gets passed to the `route` function. If the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value `reports` from the URL. It will also have captured `summary` as the `find` query parameter.
 
-It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match. Query parameters defined in the path are required.
+It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match.
 
-The query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route` function as properties on an object to its _second parameter_.
+**Query parameters defined in the path are REQUIRED**.
+
+To use an optional query string parameter, simply use it as a property on the 2nd route argument.
+
+In the example, the query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route` function's second argument as object properties.
 
 ## Applying Routing
 
 The `applyRouting` function takes a list of routes and will try to find the most specific route that matches. When it finds the best match, it calls the function and returns its value to your code.
-
-In most cases, the return value will be a renderable component. However, it can be whatever you want it to be - a function, a string, etc.
 
 If no match was found, `applyRouting` will return `null`, making it trivial to display fallback content.
 
@@ -169,19 +173,19 @@ import { applyRouting } from './routing'
 import { routes } from './routes'
 import { NotFoundPage } from './pages'
 
-const App = () => applyRouting(routes) || NotFoundPage()
+const App = () => applyRouting(routes) || <NotFoundPage />
 ```
 
 ### Nested Routing
 
-You may "nest" routes. This allows you to have parent routes that partially match a URL, and child routes which route using relative paths.
+You may "nest" routes. This allows you to have parent routes that partially match a URL, and child routes which route to paths relative to the parent or "nest" path.
 
-When defining the routes in expanded array form, the `{ nest: true }` property defines the route as a nest. You may also end the route with an asterisk `*` in both expanded array and abbreviated object forms, but the `{ nest: true }` form is preferred.
+When defining the routes in expanded array form, the `{ nest: true }` property defines the route as a nest. You may alternatively end the route with an asterisk (`*`) in both expanded array and abbreviated object forms. However, the `{ nest: true }` form is preferred.
 
 ```js
 // App.js
 import { applyRouting } from './routing'
-import { HomePage, DocumentPage, NotFoundPage } from './pages'
+import { HomePage, ProductPage, NotFoundPage } from './pages'
 
 const routes = [
   {
@@ -189,49 +193,51 @@ const routes = [
     route: () => <HomePage />
   },
   {
-    path: '/document/:documentId', // '/document/:documentId*' is the same as { nest: true }
+    path: '/product/:productSlug', // '/product/:productSlug*' is the same as { nest: true }
     nest: true,
-    route: ({ documentId }) => <DocumentPage documentId={documentId} />
+    route: ({ productSlug }) => <ProductPage productSlug={productSlug} />
   }
 ]
 
 const App = () => applyRouting(routes) || <NotFoundPage />
 ```
 
-The `/document/:documentId` route is a _**nest**_.
+The `/product/:productSlug` route is a _**nest**_.
 
-It will match URLs that begin with that path and have more path components. Defining it as a nest allows paths like `/document/123/download` and `/document/123/edit` to match where it would fail to match otherwise.
+It will match URLs that begin with that path and those that have more path components. Defining it as a nest allows paths like `/product/super-sponge/details` and `/product/super-sponge/buy` to match where it would .
 
-Continuing this example, consider a `<DocumentPage />` component that looked something like this:
+Continuing this example, consider a `<ProductPage />` component that looked something like this:
 
 ```js
-// DocumentPage.js
+// ProductPage.js
 import { applyRouting } from './routing'
-import { DocumentViewer, DocumentDownload, DocumentEditor } from './components'
+import { ProductDetails, ProductPurchase, ProductSummary } from './components'
 
 const childRoutes = [
     {
-        path: '/download',
-        route: () => (documentId) => <DocumentDownload documentId={documentId} />
+        path: '/details',
+        route: () => (productSlug) => <ProductDetails productSlug={productSlug} />
     },
     {
-        path: '/edit',
-        route: () => (documentId) => <DocumentEditor documentId={documentId} />
+        path: '/buy',
+        route: () => (productSlug) => <ProductPurchase productSlug={productSlug} />
     }
 ]
 
-const DocumentPage = ({ documentId }) => {
-    const renderComponent = applyRouting(childRoutes) || () => <DocumentViewer documentId={documentId} />
-    return renderComponent(documentId)
+const ProductPage = ({ productSlug }) => {
+    const renderComponent = applyRouting(childRoutes) || () => <ProductSummary productSlug={productSlug} />
+    return renderComponent(productSlug)
 }
 ```
 
-Two child paths, `/download`, and `/edit` are defined that route to `<DocumentDownload />` and `<DocumentEditor />` respectively.
+Two child paths, `/details`, and `/buy` route to `<ProductDetails />` and `<ProductPurchase />` respectively.
 
-However, they don't route to the components _directly_. They route to a function which takes the `documentId` as a parameter and return the component.
+However, they don't route _directly_ to the components. They route to a function which takes the `productSlug` as an argument and return the component.
 
-Since the return value of `applyRouting` is a function, it isn't returned directly. The function gets assigned to the `renderComponent` variable and we call it, passing `documentId` as its argument.
+Since the return value of `applyRouting` is a function, it isn't returned directly. The function gets assigned to the `renderComponent` variable and we call it, passing `productSlug` as its argument.
 
-Note that the fallback component `<DocumentViewer />` is also wrapped in a function, but it is slightly different from the routes. Unlike the routes that are defined outside the component, `documentId` is defined as an argument to `DocumentPage`, so it doesn't need the `documentId` parameter. It ignores the argument, but will receive the same value as either of the routes would.
+The fallback component `<ProductSummary />` is wrapped in a function, but it is slightly different from those defined in `childRoutes`. The fallback route is defined inside of the `<ProductPage />` component where it has access to its `productSlug` parameter, so it uses `productSlug` within its scope instead of its argument. Using either is identical.
 
-One might be tempted to move the definition of the `childRoutes` within the component definition, but this would mean that it would get re-defined each time `DocumentPage` is called.
+> One might be tempted to move the definition of the `childRoutes` within `<ProductPage />`, but this would mean that `childRoutes` would get re-defined each time `the <ProductPage />` component renders, causing poor performance.
+
+## Passing Additional Data to Routes
