@@ -1,10 +1,10 @@
 {
-  "name": "nerdo-routing",
-  "description": "A simple routing behavior for JavaScript applications and components.",
+  "name": "@nerdo/routing",
+  "description": "A general purpose routing behavior for applications and components.",
   "author": "Dannel Albert <cuebix@gmail.com>",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/nerdo/routing.git"
+    "url": "https://github.com/nerdo/js-routing.git"
   },
   "version": "0.0.1-alpha.0",
   "main": "dist/index.js",
