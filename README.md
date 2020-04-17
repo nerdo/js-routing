@@ -15,13 +15,14 @@ Since React is the industry standard JavaScript UI library at the time of this w
 * [Defining Routes](#defining-routes)
 * [Applying Routing](#applying-routing)
   * [Nested Routing](#nested-routing)
+  * [Passing Additional Data to Routes](#passing-additional-data-to-routes)
 
 ## Goals
 * Test driven.
 * Framework agnostic.
 * Environment agnostic.
 
-@nerdo/routing is heavily inspired by [React Hook Router](https://github.com/Paratron/hookrouter).
+@nerdo/routing is heavily inspired by [React Hook Router](https://github.com/Paratron/hookrouter), but aspires to take the concept of abstracting the behavior of routing beyond React and the web browser.
 
 ## Routing Scenarios
 
@@ -40,11 +41,11 @@ import { urlRouting } from '@nerdo/routing'
 export default urlRouting
 ```
 
-Sometimes URL routing needs configuration.
+Sometimes, URL routing needs configuration.
 
-For example, you may be writing a re-usable component that needs routing, but it may be part of a larger application that already has URL routing in place. Your custom component's router needs to take over routing once it is loaded.
+For example, you may be writing a re-usable component that needs routing, and it may be part of a larger application that already has URL routing in place. Your custom component's router needs to take over routing once it is loaded.
 
-In cases like this, call the helper function `configuredUrlRouting()` and pass it an object with `baseUrl` set.
+In cases like this, call the helper function `configuredUrlRouting(...)` and pass it an object with `baseUrl` set.
 
 ```js
 // routing.js
@@ -56,7 +57,7 @@ export default configuredUrlRouting({ baseUrl: '/foo/bar' })
 
 Another routing  use case might be a desktop application which navigates using states instead of URLs.
 
-For scenarios like this, @nerdo/routing exports a pre-configured `stateRouting` object.
+@nerdo/routing exports a pre-configured `stateRouting` object for scenarios like this.
 
 ```js
 // routing.js
@@ -66,20 +67,22 @@ export default stateRouting
 
 ### Custom Routing
 
-@nerdo/routing navigates via the [History API _interface_](https://developer.mozilla.org/en-US/docs/Web/API/History), but it does not presume that it will run in the a browser. Routing can be configured with whatever scheme one dreams up.
+@nerdo/routing navigates via the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History), but it does not presume that it will run in the a browser. Routing can be configured with whatever scheme one dreams up.
 
-To set up custom writing, provide a navigator object that _implements_ the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History) and a `getSelectedRoute` function. The `getSelectedRoute` function takes a navigator state and route definitions as arguments and returns the definition that matches the navigator state.
+To set up custom writing, call `makeRouting(...)` and pass it an object with the properties:
+* `navigator`: an object that _implements_ the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
+* `getSelectedRoute(...)`: a function that takes a navigator state and route definitions as arguments. It should return the definition that matches the navigator state or null if no match was found.
 
 ```js
 // routing.js
 import { makeRouting } from '@nerdo/routing'
-import { navigator, getSelectedRoute } from '/dreamScheme'
+import { navigator, getSelectedRoute } from './dreamScheme'
 export default makeRouting({ navigator, getSelectedRoute })
 ```
 
 ## Defining Routes
 
-When routing is applied, the `applyRouting` function takes a list of routes and looks for the most specific URL match. `applyRouting` then calls the route function associated with the matched URL and returns its value.
+When routing is applied, the `applyRouting(...)` function takes a list of routes and looks for the most specific URL match. `applyRouting(...)` then calls the route function associated with the matched URL and returns its value.
 
 Routes can be defined in abbreviated format (as an object) or in an expanded form (as an array).
 
@@ -117,7 +120,7 @@ export const routes = [
 ]
 ```
 
-The abbreviated form is more concise, but limited. The expanded array form is more powerful. For example, you can match the path using a regular expression or a function.
+The abbreviated form is more concise, but limited. The expanded array form allows for matching the path using a regular expression or a function.
 
 The following demonstrates a simple function matcher routing the path `/` to the `<HomePage />` component, and a regular expression routing both `/info` and `/about`paths to the `<AboutPage />` component.
 
@@ -151,7 +154,7 @@ export const routes = [
 ]
 ```
 
-The section of the path, `:folder`, is a dynamic URL parameter that gets passed to the `route` function. If the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value `reports` from the URL. It will also have captured `summary` as the `find` query parameter.
+The section of the path, `:folder`, is a dynamic URL parameter that gets passed to the `route(...)` function. If the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value `reports` from the URL. It will also have captured `summary` as the `find` query parameter.
 
 It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match.
 
@@ -159,13 +162,13 @@ It's important to note that if the `find` parameter is not part of the URL (e.g.
 
 To use an optional query string parameter, simply use it as a property on the 2nd route argument.
 
-In the example, the query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route` function's second argument as object properties.
+In the example, the query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route(...)` function's second argument as object properties.
 
 ## Applying Routing
 
-The `applyRouting` function takes a list of routes and will try to find the most specific route that matches. When it finds the best match, it calls the function and returns its value to your code.
+The `applyRouting(...)` function takes a list of routes and will try to find the most specific route that matches. When it finds the best match, it calls the function and returns its value to your code.
 
-If no match was found, `applyRouting` will return `null`, making it trivial to display fallback content.
+If no match was found, `applyRouting(...)` will return `null`, making it trivial to display fallback content.
 
 ```js
 // App.js
@@ -204,7 +207,7 @@ const App = () => applyRouting(routes) || <NotFoundPage />
 
 The `/product/:productSlug` route is a _**nest**_.
 
-It will match URLs that begin with that path and those that have more path components. Defining it as a nest allows paths like `/product/super-sponge/details` and `/product/super-sponge/buy` to match where it would .
+It will match URLs that begin with that path and those that have more path components. Defining it as a nest allows paths like `/product/super-sponge/details` and `/product/super-sponge/buy` to match.
 
 Continuing this example, consider a `<ProductPage />` component that looked something like this:
 
@@ -232,12 +235,45 @@ const ProductPage = ({ productSlug }) => {
 
 Two child paths, `/details`, and `/buy` route to `<ProductDetails />` and `<ProductPurchase />` respectively.
 
-However, they don't route _directly_ to the components. They route to a function which takes the `productSlug` as an argument and return the component.
+However, they don't route _directly_ to the components. They route to functions which takes the `productSlug` as an argument and return the component.
 
-Since the return value of `applyRouting` is a function, it isn't returned directly. The function gets assigned to the `renderComponent` variable and we call it, passing `productSlug` as its argument.
+Since the return value of `applyRouting(...)` is a function, it must be called with the `productSlug` argument to "unwrap" and return the component.
 
-The fallback component `<ProductSummary />` is wrapped in a function, but it is slightly different from those defined in `childRoutes`. The fallback route is defined inside of the `<ProductPage />` component where it has access to its `productSlug` parameter, so it uses `productSlug` within its scope instead of its argument. Using either is identical.
+The fallback component, `<ProductSummary />`, is wrapped in a function, but it is slightly different from those defined in ithe `childRoutes` object. The fallback route is defined inside of the `<ProductPage />` component where it has access to its `productSlug` parameter, so it uses `productSlug` within its scope instead of using its argument.
 
-> One might be tempted to move the definition of the `childRoutes` within `<ProductPage />`, but this would mean that `childRoutes` would get re-defined each time `the <ProductPage />` component renders, causing poor performance.
+> One might be tempted to move the definition of the `childRoutes` within `<ProductPage />`, but this would mean that `childRoutes` would get re-defined each time the `<ProductPage />` component renders. That would be inefficient and could lead to poor performance.
 
-## Passing Additional Data to Routes
+### Passing Additional Data to Routes
+
+In the previous example, the `productSlug` was passed to child components. This would presumably be used to look up and load the product information, but since all of the components seem to need that information, it would make more sense to load it in the `<ProductPage />` component and pass the `product` object to the components instead.
+
+This can be accomplished in the same way as we are passing the `productSlug`. Instead of defining each route as a function of the `productSlug`, they can be defined as functions of the `product` object.
+
+The refactored code might look something like this:
+
+```js
+import { applyRouting } from './routing'
+import { ProductDetails, ProductPurchase, ProductSummary, Loading } from './components'
+
+const childRoutes = [
+    {
+        path: '/details',
+        route: () => (product) => <ProductDetails product={product} />
+    },
+    {
+        path: '/buy',
+        route: () => (product) => <ProductPurchase product={product} />
+    }
+]
+
+const ProductPage = ({ productSlug }) => {
+    const [product, isLoadingProduct] = useProduct(productSlug)
+
+    if (isLoadingProduct) {
+        return <Loading />
+    }
+
+    const renderComponent = applyRouting(childRoutes) || () => <ProductSummary product={product} />
+    return renderComponent(product)
+}
+```
