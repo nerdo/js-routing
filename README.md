@@ -1,3 +1,7 @@
+> TODO Consider swapping `path` with `id` for a more universal naming convention that can apply to URL routing and state routing. Rationale: it's more agnostic than `path`, which is a very URL-specific term. Cons: `id` doesn't quite convey hierarchy like `path` or `state` do.
+
+> TODO There seems to be no way to capture URL parameters using the regex or function matchers. Come up with a simple way to accomplish this.
+
 # @nerdo/routing
 A general purpose routing behavior for applications and components.
 
@@ -286,9 +290,9 @@ Once routes have been set up, we can programmatically send users to routes with 
 
 It has the signature `navigate(path, [replace], [params])`.
 
-  * `path` is the absolute or relative path to navigate to.
-  * `replace` is a boolean which will replace the current state in navigation history if set to `true`; it defaults to `false`.
-  * `params` is an object of parameters to pass to the route. They will be encoded as query string params in URL routing; it defaults to an empty object.
+  * `path` - The absolute or relative path to navigate to.
+  * `[replace]` - Optional: A boolean which will replace the current state in navigation history if set to `true`; it defaults to `false`.
+  * `[params]` - Optional: An object of parameters to pass to the route. They will be encoded as query string params in URL routing; it defaults to `{}`.
 
 For example, if this is the `<HomePage />` component, the following would navigate to the `<AboutPage />` component when the button is clicked:
 
@@ -310,17 +314,22 @@ const HomePage = () => {
 
 ### Interceptors
 
-> TODO there is information lost the way this is currently documented. The addInterceptor callback should receive the from path + params, to path + params. This becomes even more important when using the state router which won't have a concept of path parameters.
-
 There are times where it is necessary to listen for navigation events and manipulate it to perform various tasks.
 
 A simple use case for an interceptor is redirection. Perhaps a path which used to route to a page no longer exists, and you want to redirect users who have the old link to a new location.
 
 You can use the `addInterceptor()` function to accomplish this. The `addInterceptor()` function takes a callback function as its argument, and returns a function which will remove the interceptor when called.
 
-The callback function will receive two arguments - `from` and `to` - which contain the current path and next or target path respectively.
+The callback function will receive two arguments - `from` and `to`. These are `NavigationTarget` objects which represent the current and next or target routes respectively.
 
-It should return the path that the router should navigate to, or a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that will resolve to the path.
+`NavigationTarget` objects have the following properties:
+
+  * `path` - The path that the object represents. This could be absolute or relative.
+  * `[replace]` - Optional: Whether the target replaces the state in history; defaults to `false`.
+  * `[relativeTo]` - Present if `path` is relative: The path that `path` is relative to. This will always be absolute.
+  * `[params]` - Optional: An object with parameters for the route; defaults to `{}`.
+
+It should return the path or a `NavigationTarget` object that the router should navigate to, or a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that will resolve to either.
 
 Here's what a simple redirection interceptor might look like:
 
@@ -329,7 +338,7 @@ Here's what a simple redirection interceptor might look like:
 import { addInterceptor } from './routing'
 
 export const removeRedirectInterceptor = addInterceptor((from, to) => {
-    if (to === '/old-path') {
+    if (to.path === '/old-path') {
         return '/new-path'
     }
     return to
@@ -346,8 +355,13 @@ import { addInterceptor } from './routing'
 const redirects = {
     '/old-path': '/new-path',
     '/info': '/about',
-    '/foo': '/bar'
+    '/foo': {
+        path: '/bar',
+        params: {
+            q: 'hello'
+        }
+    }
 }
 
-export const removeRedirectInterceptor = addInterceptor((from, to) => redirects[from] || to
+export const removeRedirectInterceptor = addInterceptor((from, to) => redirects[from.path] || to
 ```
