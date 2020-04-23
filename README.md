@@ -16,6 +16,8 @@ Since React is the industry standard JavaScript UI library at the time of this w
 * [Applying Routing](#applying-routing)
   * [Nested Routing](#nested-routing)
   * [Passing Additional Data to Routes](#passing-additional-data-to-routes)
+* [Navigation](#navigation)
+  * [Interceptors](#interceptors)
 
 ## Goals
 * Test driven.
@@ -276,4 +278,76 @@ const ProductPage = ({ productSlug }) => {
     const renderComponent = applyRouting(childRoutes) || () => <ProductSummary product={product} />
     return renderComponent(product)
 }
+```
+
+## Navigation
+
+Once routes have been set up, we can programmatically send users to routes with the provided `navigate()` function.
+
+It has the signature `navigate(path, [replace], [params])`.
+
+  * `path` is the absolute or relative path to navigate to.
+  * `replace` is a boolean which will replace the current state in navigation history if set to `true`; it defaults to `false`.
+  * `params` is an object of parameters to pass to the route. They will be encoded as query string params in URL routing; it defaults to an empty object.
+
+For example, if this is the `<HomePage />` component, the following would navigate to the `<AboutPage />` component when the button is clicked:
+
+```js
+import { applyRouting, navigate } from './routing'
+import { AboutPage } from './pages'
+
+const routes = [
+    {
+        path: '/about',
+        route: () => <AboutPage />
+    }
+]
+
+const HomePage = () => {
+    return applyRouting(routes) || <button onClick={() => navigate('/about')}>About</button>
+}
+```
+
+### Interceptors
+
+> TODO there is information lost the way this is currently documented. The addInterceptor callback should receive the from path + params, to path + params. This becomes even more important when using the state router which won't have a concept of path parameters.
+
+There are times where it is necessary to listen for navigation events and manipulate it to perform various tasks.
+
+A simple use case for an interceptor is redirection. Perhaps a path which used to route to a page no longer exists, and you want to redirect users who have the old link to a new location.
+
+You can use the `addInterceptor()` function to accomplish this. The `addInterceptor()` function takes a callback function as its argument, and returns a function which will remove the interceptor when called.
+
+The callback function will receive two arguments - `from` and `to` - which contain the current path and next or target path respectively.
+
+It should return the path that the router should navigate to, or a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that will resolve to the path.
+
+Here's what a simple redirection interceptor might look like:
+
+```js
+// redirectInterceptor.js
+import { addInterceptor } from './routing'
+
+export const removeRedirectInterceptor = addInterceptor((from, to) => {
+    if (to === '/old-path') {
+        return '/new-path'
+    }
+    return to
+})
+```
+
+You could have a more generic redirection interceptor that defines several redirects that looks like this:
+
+```js
+// redirectInterceptor.js
+import { addInterceptor } from './routing'
+
+// redirects could be defined in another file and imported here...
+const redirects = {
+    '/old-path': '/new-path',
+    '/info': '/about',
+    '/foo': '/bar'
+}
+
+export const removeRedirectInterceptor = addInterceptor((from, to) => redirects[from] || to
 ```
