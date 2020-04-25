@@ -1,4 +1,6 @@
 export const makeRouting = () => ({
-  applyRouting() {},
+  applyRouting() {
+    return null
+  },
   addInterceptor() {}
 })
