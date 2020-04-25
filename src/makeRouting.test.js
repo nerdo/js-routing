@@ -18,5 +18,10 @@ describe('makeRouting', () => {
       expect(returnValue.addInterceptor).toBeDefined()
       expect(typeof returnValue.addInterceptor).toBe('function')
     })
+
+    it('has a navigate function', () => {
+      expect(returnValue.navigate).toBeDefined()
+      expect(typeof returnValue.navigate).toBe('function')
+    })
   })
 })
