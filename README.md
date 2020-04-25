@@ -1,5 +1,3 @@
-> TODO There seems to be no way to capture URL parameters using the regex or function matchers. Come up with a simple way to accomplish this.
-
 # @nerdo/routing
 A general purpose routing behavior for applications and components.
 
@@ -111,11 +109,35 @@ export const routes = {
 }
 ```
 
+Routes can also define required path parameters and/or query string parmaters.
+
+Here's an example with both:
+
+```js
+// routes.js
+import { DocumentSearchPage } from './pages'
+export const routes = {
+    '/documents/:folder?find': ({ folder, find }, { page }) => <DocumentSearchPage folder={folder} query={find} page={page} />
+}
+```
+
+The `:` in the path identifier starts the definition of a named dynamic parameter.
+
+In this case, `:folder` is a dynamic parameter. It gets passed to the `route(...)` function as the `folder` property of its first argument. In other words, if the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value "reports" from the URL. It will also have captured `summary` as the `find` query parameter.
+
+It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match.
+
+**Query parameters defined in the path identifier are REQUIRED**.
+
+To use an optional query string parameter, simply use it as a property on the 2nd route argument.
+
+In the example, the query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route(...)` function's second argument as object properties.
+
 ### Expanded (Array) Form
 
 In expanded array form, each item in the array is an object. Each object defines the path identifier using the `id` key and the route using the `route` key.
 
-Here are the same routes as above in expanded array form:
+Here are simple home and about page routes in expanded array form:
 
 ```js
 // routes.js
@@ -132,7 +154,7 @@ export const routes = [
 ]
 ```
 
-The abbreviated form is more concise, but limited. The expanded array form allows for matching the path identifer using a regular expression or a function.
+The example above doesn't seem to offer any advantage over the abbreviated form, but it allows for more advanced route definitions that can use regular expressions and functions to match the path identifier.
 
 The following demonstrates a simple function matcher routing the path identifier `/` to the `<HomePage />` component, and a regular expression routing both `/info` and `/about` path identifiers to the `<AboutPage />` component.
 
@@ -151,32 +173,7 @@ export const routes = [
 ]
 ```
 
-Routes can also define required path parameters and/or query string parmaters.
-
-Here's an example with both:
-
-```js
-// routes.js
-import { DocumentSearchPage } from './pages'
-export const routes = [
-    {
-        id: '/documents/:folder?find',
-        route: ({ folder, find }, { page }) => <DocumentSearchPage folder={folder} query={find} page={page} />
-    }
-]
-```
-
-The `:` in the path identifier starts the definition of a named dynamic parameter.
-
-In this case, `:folder` is a dynamic parameter. It gets passed to the `route(...)` function as the `folder` property of its first argument. In other words, if the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value "reports" from the URL. It will also have captured `summary` as the `find` query parameter.
-
-It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match.
-
-**Query parameters defined in the path identifier are REQUIRED**.
-
-To use an optional query string parameter, simply use it as a property on the 2nd route argument.
-
-In the example, the query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route(...)` function's second argument as object properties.
+> TODO There seems to be no way to capture URL parameters using the regex or function matchers. Come up with a simple way to accomplish this.
 
 ## Applying Routing
 
