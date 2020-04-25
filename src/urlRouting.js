@@ -1,1 +1,4 @@
-export const urlRouting = {}
+export const urlRouting = {
+  applyRouting() {},
+  addInterceptor() {}
+}
