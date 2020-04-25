@@ -1,5 +1,7 @@
+import { history } from './url/history'
+
 export const makeRouting = () => ({
-  applyRouting() {
+  applyRouting(routes) {
     return null
   },
 
