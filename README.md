@@ -74,8 +74,8 @@ export default stateRouting
 @nerdo/routing navigates via the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History), but it does not presume that it will run in the a browser. Routing can be configured with whatever scheme one dreams up.
 
 To set up custom writing, call `makeRouting(...)` and pass it an object with the properties:
-* `navigator`: an object that _implements_ the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
-* `getSelectedRoute(...)`: a function that takes a navigator state and route definitions as arguments. It should return the definition that matches the navigator state or null if no match was found.
+* `navigator` - an object that implements the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
+* `getSelectedRoute(navigatorState, routes)` - a function that takes a navigator state and route definitions as arguments. It should return the definition that matches the navigator state or null if no match was found.
 
 ```js
 // routing.js
@@ -88,13 +88,13 @@ export default makeRouting({ navigator, getSelectedRoute })
 
 When routing is applied, the `applyRouting(...)` function takes a list of routes and looks for the most specific URL match. `applyRouting(...)` then calls the route function associated with the matched URL and returns its value.
 
-Routes can be defined in abbreviated format (as an object) or in an expanded form (as an array).
+Routes can be defined in abbreviated format as an object, or in an expanded form as an array.
 
-In the abbreviated form, each object key is the route's URL path, and each value is the route function. The route function returns what the path routes to.
+In the abbreviated form, each object key is the route's URL path identifier, and each value is the route function. The route function returns what the path identifier routes to.
 
 Typically, the route function will return a renderable component, but you can return anything you need: a string, a number, an object, a function, etc.
 
->Returning functions is especially useful when dealing with [Nested Routing](#nested-routing) or [Passing Additional Data to Routes](#passing-additional-data-to-routes).
+> Returning functions is especially useful when dealing with [Nested Routing](#nested-routing) or [Passing Additional Data to Routes](#passing-additional-data-to-routes).
 
 Here is a simple example routing the `/` path identifier to the `<HomePage />` component, and the `/about` path identifier to the `<AboutPage />` component.
 
@@ -107,7 +107,7 @@ export const routes = {
 }
 ```
 
-In expanded array form, ach item in the array is an object. Each object defines the path identifier using the `id` key and the route using the `route` key.
+In expanded array form, each item in the array is an object. Each object defines the path identifier using the `id` key and the route using the `route` key.
 
 Here are the same routes as above in expanded array form:
 
@@ -164,7 +164,7 @@ The section of the path identifier, `:folder`, is a dynamic URL parameter that g
 
 It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match.
 
-**Query parameters defined in the path are REQUIRED**.
+**Query parameters defined in the path identifier are REQUIRED**.
 
 To use an optional query string parameter, simply use it as a property on the 2nd route argument.
 
@@ -275,6 +275,7 @@ This can be accomplished in the same way as we are passing the `productSlug`. In
 The refactored code might look something like this:
 
 ```js
+// ProductPage.js
 import { applyRouting } from './routing'
 import { ProductDetails, ProductPurchase, ProductSummary, Loading } from './components'
 
@@ -314,6 +315,7 @@ The function has the signature `navigate(id, [replace], [params])`.
 For example, if this is the `<HomePage />` component, the following would navigate to the `<AboutPage />` component when the button is clicked:
 
 ```js
+// HomePage.js
 import { applyRouting, navigate } from './routing'
 import { AboutPage } from './pages'
 
