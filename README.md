@@ -167,13 +167,40 @@ export const routes = [
         route: () => <HomePage />
     },
     [
-        id: /^\/(?:info|about)/,
+        id: /^\/(?:info|about)$/,
         route: () => <AboutPage />
     ]
 ]
 ```
 
-> TODO There seems to be no way to capture URL parameters using the regex or function matchers. Come up with a simple way to accomplish this.
+When matching path identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. It will receive the URL (i.e. the navigation state) it matched on as the first argument, and an array of capture groups from the regular expression as the second argument. If your matches is a function, the second argument will be an empty array.
+
+The function is free to parse the navigation state in any way, but it must return an object containing a map of the dynamic parameters.
+
+Here's a more complex example demonstrating `getParameters(...)`:
+
+```js
+// routes.js
+import { HomePage, AboutPage } from './pages'
+export const routes = [
+    {
+        id: () => p => p === '/' || p === '/home',
+        getParameters: url => ({ actualPath: url }),
+        route: () => <HomePage />
+    },
+    [
+        id: /^\/(?:info|about)/([^\/+])\/?$/,
+        getParameters: (url, captureGroups) => ({ subPath: captureGroups[0] }),
+        route: () => <AboutPage />
+    ]
+]
+```
+
+The first route matches the path identifiers `/` and `/home`. Its `getParameters(...)` function sets the dynamic parameter named `actualPath` to the URL it matched on.
+
+The second route matches path identifiers starting with `/info` and `/about` which contain one more path component and it captures that path component. Its `getParameters(...)` function sets the dynamic parameter named `subPath` to the captured path component.
+
+`getParameters(...)` can also be defined if the path identifier is a string. In this scenario, the default dynamic parameter parsing rules are not used and your implementation of `getParameters(...)` is entirely responsible for parsing them out of the navigation state.
 
 ## Applying Routing
 
