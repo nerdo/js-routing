@@ -1,1 +1,3 @@
-export const configuredUrlRouting = () => {}
+import { makeRouting } from './makeRouting'
+
+export const configuredUrlRouting = () => makeRouting()

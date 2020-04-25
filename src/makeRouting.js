@@ -1,1 +1,4 @@
-export const makeRouting = () => {}
+export const makeRouting = () => ({
+  applyRouting() {},
+  addInterceptor() {}
+})
