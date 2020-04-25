@@ -1,6 +1,6 @@
 import { URLHistory } from './URLHistory'
 
-describe('URLHistory', () => {
+describe('URLHistory class', () => {
   describe('constrcutor()', () => {
     it('should throw an error if no URL is passed in', () => {
       expect(() => {

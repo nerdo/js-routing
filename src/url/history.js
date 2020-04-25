@@ -1,3 +1,3 @@
 import { URLHistory } from './URLHistory'
 
-export const history = new URLHistory
+export const history = new URLHistory(null)

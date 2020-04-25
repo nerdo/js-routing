@@ -1,8 +1,6 @@
-import { history } from './url/history'
-
 export const makeRouting = () => ({
   applyRouting(routes) {
-    return null
+    return getExpandedRoutes(routes).filter(r => r.id === history.current.id)[0] || null
   },
 
   addInterceptor() {
