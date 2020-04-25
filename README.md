@@ -15,6 +15,8 @@ Since React is the industry standard JavaScript UI library at the time of this w
   * [State Routing](#state-routing)
   * [Custom Routing](#custom-routing)
 * [Defining Routes](#defining-routes)
+  * [Abbreviated (Object) Form](#abbreviated-object-form)
+  * [Expanded (Array) Form](#expanded-array-form)
 * [Applying Routing](#applying-routing)
   * [Nested Routing](#nested-routing)
   * [Passing Additional Data to Routes](#passing-additional-data-to-routes)
@@ -88,6 +90,8 @@ export default makeRouting({ navigator, getSelectedRoute })
 
 When routing is applied, the `applyRouting(...)` function takes a list of routes and looks for the most specific URL match. `applyRouting(...)` then calls the route function associated with the matched URL and returns its value.
 
+### Abbreviated (Object) Form
+
 Routes can be defined in abbreviated format as an object, or in an expanded form as an array.
 
 In the abbreviated form, each object key is the route's URL path identifier, and each value is the route function. The route function returns what the path identifier routes to.
@@ -106,6 +110,8 @@ export const routes = {
     '/about': () => <AboutPage />
 }
 ```
+
+### Expanded (Array) Form
 
 In expanded array form, each item in the array is an object. Each object defines the path identifier using the `id` key and the route using the `route` key.
 
@@ -160,7 +166,9 @@ export const routes = [
 ]
 ```
 
-The section of the path identifier, `:folder`, is a dynamic URL parameter that gets passed to the `route(...)` function. If the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value `reports` from the URL. It will also have captured `summary` as the `find` query parameter.
+The `:` in the path identifier starts the definition of a named dynamic parameter.
+
+In this case, `:folder` is a dynamic parameter. It gets passed to the `route(...)` function as the `folder` property of its first argument. In other words, if the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value "reports" from the URL. It will also have captured `summary` as the `find` query parameter.
 
 It's important to note that if the `find` parameter is not part of the URL (e.g. `/documents/reports`), this route will **NOT** match.
 
