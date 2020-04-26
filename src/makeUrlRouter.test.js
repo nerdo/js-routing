@@ -7,7 +7,7 @@ describe('makeUrlRouter()', () => {
     expect(typeof makeUrlRouter).toBe('function')
   })
 
-  it('should return an object', () => {
+  it('should return a router object', () => {
     const router = makeUrlRouter()
     expect(typeof router).toBe('object')
   })
