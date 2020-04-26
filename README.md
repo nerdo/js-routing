@@ -37,36 +37,34 @@ Since React is the industry standard JavaScript UI library at the time of this w
 ### URL Routing
 URL routing and navigation take place in the web browser using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 
-@nerdo/routing exports a pre-configured `urlRouting` object for this scenario.
+The `makeUrlRouter(...)` function returns a router pre-configured for this scenario.
 
 ```js
-// routing.js
-import { urlRouting } from '@nerdo/routing'
-export default urlRouting
+// router.js
+import { makeUrlRouter } from '@nerdo/routing'
+export default makeUrlRouter()
 ```
 
-Sometimes, URL routing needs configuration.
+`makeUrlRouter(...)` takes an object with configuration options. It may contain these properties:
 
-For example, the component you are writing could be a re-usable component that is substantial enough to have its own routing, but might be used in a larger application that already has URL routing in place. Your custom component's router needs to respect the base URL that it is loaded on.
-
-By default, the base URL will be set to the current URL, but if that needs to be changed, you can call the helper function `configuredUrlRouting(...)` and pass it an object with `baseUrl` set.
+* `baseUrl` - The base URL to use when matching URLs and navigating; defaults to the current URL (when `makeUrlRouter(...)` is called).
 
 ```js
-// routing.js
-import { configuredUrlRouting } from  '@nerdo/routing'
-export default configuredUrlRouting({ baseUrl: '/foo/bar' })
+// router.js
+import { makeUrlRouter } from  '@nerdo/routing'
+export default makeUrlRouter({ baseUrl: '/foo/bar' })
 ```
 
 ### State Routing
 
-Another routing  use case might be a desktop application which navigates using states instead of URLs.
+Another routing use case might be a desktop application which navigates using states instead of URLs.
 
-@nerdo/routing exports a pre-configured `stateRouting` object for scenarios like this.
+The `makeStateRouter(...)` function returns a pre-configured router for scenarios like this.
 
 ```js
-// routing.js
-import { stateRouting } from '@nerdo/routing'
-export default stateRouting
+// router.js
+import { makeStateRouter } from '@nerdo/routing'
+export default makeStateRouter()
 ```
 
 ### Custom Routing
@@ -78,10 +76,10 @@ To set up custom writing, call `makeRouting(...)` and pass it an object with the
 * `getSelectedRoute(navigatorState, routes)` - a function that takes a navigator state and route definitions as arguments. It should return the definition that matches the navigator state or null if no match was found.
 
 ```js
-// routing.js
-import { makeRouting } from '@nerdo/routing'
+// router.js
+import { makeRouter } from '@nerdo/routing'
 import { history, getSelectedRoute } from './dreamScheme'
-export default makeRouting({ history, getSelectedRoute })
+export default makeRouter({ history, getSelectedRoute })
 ```
 
 ## Defining Routes
@@ -210,7 +208,7 @@ If no match was found, `applyRouting(...)` will return `null`, making it trivial
 
 ```js
 // App.js
-import { applyRouting } from './routing'
+import { applyRouting } from './router'
 import { routes } from './routes'
 import { NotFoundPage } from './pages'
 
@@ -225,7 +223,7 @@ When defining routes in abbreviated form, end the identifier with an asterisks (
 
 ```js
 // App.js
-import { applyRouting } from './routing'
+import { applyRouting } from './router'
 import { HomePage, ProductPage, NotFoundPage } from './pages'
 
 const routes = {
@@ -242,7 +240,7 @@ Here's the same thing as above in expanded form:
 
 ```js
 // App.js
-import { applyRouting } from './routing'
+import { applyRouting } from './router'
 import { HomePage, ProductPage, NotFoundPage } from './pages'
 
 const routes = [
@@ -268,7 +266,7 @@ Continuing this example, consider a `<ProductPage />` component that looked some
 
 ```js
 // ProductPage.js
-import { applyRouting } from './routing'
+import { applyRouting } from './router'
 import { ProductDetails, ProductPurchase, ProductSummary } from './components'
 
 const childRoutes = [
@@ -308,7 +306,7 @@ The refactored code might look something like this:
 
 ```js
 // ProductPage.js
-import { applyRouting } from './routing'
+import { applyRouting } from './router'
 import { ProductDetails, ProductPurchase, ProductSummary, Loading } from './components'
 
 const childRoutes = [
@@ -348,7 +346,7 @@ For example, if this is the `<HomePage />` component, the following would naviga
 
 ```js
 // HomePage.js
-import { applyRouting, navigate } from './routing'
+import { applyRouting, navigate } from './router'
 import { AboutPage } from './pages'
 
 const routes = [
@@ -386,7 +384,7 @@ Here's what a simple redirection interceptor might look like:
 
 ```js
 // redirectInterceptor.js
-import { addInterceptor } from './routing'
+import { addInterceptor } from './router'
 
 export const removeRedirectInterceptor = addInterceptor((from, to) => {
     if (to.id === '/old-path-identifier') {
@@ -400,7 +398,7 @@ You could have a more generic redirection interceptor that defines several redir
 
 ```js
 // redirectInterceptor.js
-import { addInterceptor } from './routing'
+import { addInterceptor } from './router'
 
 // redirects could be defined in another file and imported here...
 const redirects = {
