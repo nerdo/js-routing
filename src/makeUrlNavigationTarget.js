@@ -2,7 +2,7 @@ export const makeUrlNavigationTarget = input => {
   const anchorIndex = input.indexOf('#')
   const queryIndex = input.indexOf('?')
   const toMaxIndex = anchorIndex >= 0 ? anchorIndex : (queryIndex >= 0 ? queryIndex : void 0)
-  const to = input.substr(0, toMaxIndex)
+  const id = input.substr(0, toMaxIndex)
   const params = queryIndex < 0
     ? void 0
     : input
@@ -20,5 +20,5 @@ export const makeUrlNavigationTarget = input => {
         }),
         {}
       )
-  return { input, to, params }
+  return { input, id, params }
 }

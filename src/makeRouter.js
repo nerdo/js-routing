@@ -20,8 +20,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
     },
 
     navigate(input) {
-      const target = makeNavigationTarget(input)
-      history.push(target.to, target.params)
+      history.push(makeNavigationTarget(input))
     },
 
     addInterceptor() {

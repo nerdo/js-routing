@@ -20,16 +20,16 @@ describe('makeUrlNavigationTarget()', () => {
       })
     })
 
-    describe('to', () => {
+    describe('id', () => {
       it('should be the path minus the anchor and query string', () => {
         const a = makeUrlNavigationTarget('/a/b/c')
-        expect(a.to).toBe('/a/b/c')
+        expect(a.id).toBe('/a/b/c')
 
         const b = makeUrlNavigationTarget('/a/b/c#anchor?query&string')
-        expect(b.to).toBe('/a/b/c')
+        expect(b.id).toBe('/a/b/c')
 
         const c = makeUrlNavigationTarget('/a/b/c?query&string')
-        expect(c.to).toBe('/a/b/c')
+        expect(c.id).toBe('/a/b/c')
       })
     })
 

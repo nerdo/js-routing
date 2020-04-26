@@ -1,6 +1,7 @@
 const getPathParts = path => path.split('/').filter(part => part !== '')
 
 export const getSelectedUrlRoute = (routes, history) => {
+  history //?
   const target = {
     pathParts: getPathParts(history.current.id),
   }

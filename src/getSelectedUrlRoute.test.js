@@ -30,7 +30,7 @@ describe('getSelectedUrlRoute()', () => {
         about,
         fooBar
       ]
-      const history = new NavigationHistory('/about')
+      const history = new NavigationHistory({ id: '/about' })
 
       const selected = getSelectedUrlRoute(routes, history)
 
@@ -45,15 +45,15 @@ describe('getSelectedUrlRoute()', () => {
         about,
         fooBar
       ]
-      const history = new NavigationHistory('/')
+      const history = new NavigationHistory({ id: '/' })
 
-      history.push('/about///')
+      history.push({ id: '/about///' })
       expect(getSelectedUrlRoute(routes, history)).toBe(about)
 
-      history.push('//about///')
+      history.push({ id: '//about///' })
       expect(getSelectedUrlRoute(routes, history)).toBe(about)
 
-      history.push('//about')
+      history.push({ id: '//about' })
       expect(getSelectedUrlRoute(routes, history)).toBe(about)
     })
   })
@@ -67,15 +67,15 @@ describe('getSelectedUrlRoute()', () => {
         userPhotos,
         fooBar
       ]
-      const history = new NavigationHistory('/')
+      const history = new NavigationHistory({ id: '/' })
 
-      history.push('/user/foo')
+      history.push({ id: '/user/foo' })
       expect(getSelectedUrlRoute(routes, history)).toBe(userProfile)
 
-      history.push('/user//bar///')
+      history.push({ id: '/user//bar///' })
       expect(getSelectedUrlRoute(routes, history)).toBe(userProfile)
 
-      history.push('/user/bar/photos')
+      history.push({ id: '/user/bar/photos' })
       expect(getSelectedUrlRoute(routes, history)).toBe(userPhotos)
     })
   })

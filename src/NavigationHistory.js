@@ -1,40 +1,28 @@
 export class NavigationHistory {
-  constructor(id, params, state) {
-    if (typeof id === 'undefined') {
-      throw new Error('NavigationHistory requires the current id as an argument')
+  constructor(target) {
+    if (typeof target.id === 'undefined') {
+      throw new Error('NavigationHistory requires the target.id as an argument')
     }
 
     this.initialize = this.initialize.bind(this)
     this.replace = this.replace.bind(this)
     this.push = this.push.bind(this)
 
-    this.initialize(id, params)
+    this.initialize(target)
   }
 
-  initialize(id, params, state) {
-    this.current = {
-      id,
-      params,
-      state
-    }
+  initialize(target) {
+    this.current = target
     this.targets = [this.current]
   }
 
-  replace(id, params, state) {
-    this.current = {
-      id,
-      params,
-      state
-    }
+  replace(target) {
+    this.current = target
     this.targets[this.targets.length - 1] = this.current
   }
 
-  push(id, params, state) {
-    this.current = {
-      id,
-      params,
-      state
-    }
+  push(target) {
+    this.current = target
     this.targets.push(this.current)
   }
 }
