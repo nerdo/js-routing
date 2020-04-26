@@ -1,5 +1,7 @@
 import { getExpandedRoutes } from './getExpandedRoutes'
 
+const nullRoute = { route: () => null }
+
 export const makeRouter = ({ history, getSelectedRoute } = {}) => {
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
@@ -9,13 +11,15 @@ export const makeRouter = ({ history, getSelectedRoute } = {}) => {
 
   return {
     applyRouting(routes) {
-      return getExpandedRoutes(routes || []).filter(r => r.id === history.current.id)[0] || null
+      const { route } = getExpandedRoutes(routes || []).filter(r => r.id === history.current.id)[0] || nullRoute
+      return route()
     },
 
     addInterceptor() {
     },
 
-    navigate() {
+    navigate(id) {
+      history.pushState(null, '', id)
     }
   }
 }

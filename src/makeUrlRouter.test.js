@@ -12,36 +12,47 @@ describe('makeUrlRouter()', () => {
     expect(typeof router).toBe('object')
   })
 
-  describe('applyRouting()', () => {
-    let router
+  describe('router', () => {
+    let history, router
 
     beforeEach(() => {
-      router = makeUrlRouter({ history: new FakeHistory(null, '', null) })
+      history = new FakeHistory(null, '', null)
+      router = makeUrlRouter({ history })
     })
 
-    it('should return null when no routes are provided', () => {
-      const returnValue = router.applyRouting()
-      expect(returnValue).toBeNull()
-    })
-
-    it('should return null when no routes match', () => {
-      const returnValue = router.applyRouting([])
-      expect(returnValue).toBeNull()
-    })
-
-    describe('simple routes', () => {
-      it('should return the correct route', () => {
-        const routes = {
-          '/': () => 'home',
-          '/about': () => 'about',
-          '/foo/bar': () => 'foo bar'
-        }
-
+    describe('navigate()', () => {
+      it('should update history', () => {
+        expect(history.current.id).not.toBe('/')
         router.navigate('/')
+        expect(history.current.id).toBe('/')
+      })
+    })
 
-        const route = router.applyRouting(routes)
+    describe('applyRouting()', () => {
+      it('should return null when no routes are provided', () => {
+        const returnValue = router.applyRouting()
+        expect(returnValue).toBeNull()
+      })
 
-        expect(route).toBe('home')
+      it('should return null when no routes match', () => {
+        const returnValue = router.applyRouting([])
+        expect(returnValue).toBeNull()
+      })
+
+      describe('simple routes', () => {
+        it('should return the correct route', () => {
+          const routes = {
+            '/': () => 'home',
+            '/about': () => 'about',
+            '/foo/bar': () => 'foo bar'
+          }
+
+          router.navigate('/')
+
+          const route = router.applyRouting(routes)
+
+          expect(route).toBe('home')
+        })
       })
     })
   })
