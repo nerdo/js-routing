@@ -7,9 +7,7 @@ const typical = {
   history: () => new NavigationHistory(null, '', null)
 }
 
-export const makeUrlRouter = ({ history = typical.history } = typical) => {
-  return makeRouter({
-    history: typeof history === 'function' ? history() : history,
-    getSelectedRoute: getSelectedUrlRoute
-  })
-}
+export const makeUrlRouter = ({ history = typical.history } = typical) => makeRouter({
+  history: typeof history === 'function' ? history() : history,
+  getSelectedRoute: getSelectedUrlRoute
+})

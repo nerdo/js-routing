@@ -1,5 +1,6 @@
 import { makeUrlRouter } from '.'
 import { NavigationHistory } from './NavigationHistory'
+import { getSelectedUrlRoute } from './getSelectedUrlRoute'
 
 describe('makeUrlRouter()', () => {
   it('should be defined as a function', () => {
@@ -10,6 +11,19 @@ describe('makeUrlRouter()', () => {
   it('should return a router object', () => {
     const router = makeUrlRouter()
     expect(typeof router).toBe('object')
+  })
+
+  it('should store the history argument', () => {
+    const history = {}
+    const router = makeUrlRouter({ history })
+    expect(router.history).toBe(history)
+  })
+
+  it('should not store the getSelectedRoute argument (it should always be getSelectedUrlRoute())', () => {
+    const getSelectedRoute = () => {}
+    const router = makeUrlRouter({ getSelectedRoute })
+    expect(router.getSelectedRoute).not.toBe(getSelectedRoute)
+    expect(router.getSelectedRoute).toBe(getSelectedUrlRoute)
   })
 
   describe('router', () => {

@@ -9,6 +9,7 @@ export const makeRouter = ({ history, getSelectedRoute } = {}) => {
 
   return {
     history,
+    getSelectedRoute,
 
     applyRouting(routes) {
       const selected = getSelectedRoute(getExpandedRoutes(routes || []), history)
