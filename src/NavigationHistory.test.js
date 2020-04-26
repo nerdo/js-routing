@@ -9,32 +9,37 @@ describe('NavigationHistory class', () => {
     })
 
     it('should store the id passed in as the current one', () => {
-      const navigationHistory = new NavigationHistory(null, '', '/')
+      const navigationHistory = new NavigationHistory('/')
       expect(navigationHistory.current.id).toBe('/')
 
-      // History API validation
-      expect(navigationHistory.length).toBe(1)
-      expect(navigationHistory.state).toBe(null)
-
-      // Routing API validation
-      expect(navigationHistory.items.length).toBe(1)
-      expect(navigationHistory.items[0]).toBe(navigationHistory.current)
+      expect(navigationHistory.targets.length).toBe(1)
+      expect(navigationHistory.targets[0]).toBe(navigationHistory.current)
     })
   })
 
-  describe('pushState()', () => {
+  describe('push()', () => {
     it('should append the new navigation target', () => {
-      const navigationHistory = new NavigationHistory(null, '', '/')
+      const navigationHistory = new NavigationHistory('/')
+      const params = {}
 
-      navigationHistory.pushState(null, '', '/abc')
+      navigationHistory.push('/abc', params)
 
-      // History API validation
-      expect(navigationHistory.length).toBe(2)
-      expect(navigationHistory.state).toBe(null)
-
-      // Routing API validation
-      expect(navigationHistory.items.length).toBe(2)
+      expect(navigationHistory.targets.length).toBe(2)
       expect(navigationHistory.current.id).toBe('/abc')
+      expect(navigationHistory.current.params).toBe(params)
+    })
+  })
+
+  describe('replace()', () => {
+    it('should replace the current navigation target', () => {
+      const navigationHistory = new NavigationHistory('/')
+      const params = {}
+
+      navigationHistory.replace('/bar', params)
+
+      expect(navigationHistory.targets.length).toBe(1)
+      expect(navigationHistory.current.id).toBe('/bar')
+      expect(navigationHistory.current.params).toBe(params)
     })
   })
 })

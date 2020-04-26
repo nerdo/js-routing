@@ -20,7 +20,7 @@ export const makeRouter = ({ history, getSelectedRoute } = {}) => {
     },
 
     navigate(id) {
-      history.pushState(null, '', id)
+      history.push(id)
     }
   }
 }

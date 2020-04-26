@@ -21,7 +21,7 @@ describe('getSelectedUrlRoute()', () => {
         about,
         foobar
       ]
-      const history = new NavigationHistory(null, '', '/about')
+      const history = new NavigationHistory('/about')
 
       const selected = getSelectedUrlRoute(routes, history)
 
