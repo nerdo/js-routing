@@ -35,9 +35,9 @@ describe('makeUrlRouter()', () => {
 
     describe('navigate()', () => {
       it('should update history', () => {
-        expect(router.history.current.id).not.toBe('/')
-        router.navigate('/')
-        expect(router.history.current.id).toBe('/')
+        expect(router.history.current.id).not.toBe('/foo/bar')
+        router.navigate('/foo/bar')
+        expect(router.history.current.id).toBe('/foo/bar')
       })
     })
 
