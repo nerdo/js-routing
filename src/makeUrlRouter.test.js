@@ -1,5 +1,5 @@
 import { makeUrlRouter } from '.'
-import { RouteHistory } from './RouteHistory'
+import { NavigationHistory } from './NavigationHistory'
 
 describe('makeUrlRouter()', () => {
   it('should be defined as a function', () => {
@@ -16,7 +16,7 @@ describe('makeUrlRouter()', () => {
     let history, router
 
     beforeEach(() => {
-      history = new RouteHistory(null, '', null)
+      history = new NavigationHistory(null, '', null)
       router = makeUrlRouter({ history })
     })
 

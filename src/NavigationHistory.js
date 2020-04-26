@@ -1,7 +1,7 @@
-export class RouteHistory {
+export class NavigationHistory {
   constructor(state, title, id) {
     if (typeof id === 'undefined') {
-      throw new Error('RouteHistory requires the current id as an argument')
+      throw new Error('NavigationHistory requires the current id as an argument')
     }
 
     this.replaceState = this.replaceState.bind(this)
