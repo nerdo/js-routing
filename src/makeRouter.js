@@ -1,14 +1,17 @@
 import { getExpandedRoutes } from './getExpandedRoutes'
 
-export const makeRouter = ({ history, getSelectedRoute } = {}) => {
+export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } = {}) => {
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
   } else if (typeof getSelectedRoute === 'undefined') {
     throw new Error('getSelectedRoute property is required')
+  } else if (typeof makeNavigationTarget === 'undefined') {
+    throw new Error('makeNavigationTarget property is required')
   }
 
   return {
     history,
+    makeNavigationTarget,
     getSelectedRoute,
 
     applyRouting(routes) {
@@ -16,11 +19,12 @@ export const makeRouter = ({ history, getSelectedRoute } = {}) => {
       return selected ? selected.route() : null
     },
 
-    addInterceptor() {
+    navigate(input) {
+      const target = makeNavigationTarget(input)
+      history.push(target.to, target.params)
     },
 
-    navigate(id) {
-      history.push(id)
+    addInterceptor() {
     }
   }
 }
