@@ -53,7 +53,7 @@ describe('getSelectedUrlRoute()', () => {
       history.push('//about///')
       expect(getSelectedUrlRoute(routes, history)).toBe(about)
 
-      history.push('//about?')
+      history.push('//about')
       expect(getSelectedUrlRoute(routes, history)).toBe(about)
     })
   })
