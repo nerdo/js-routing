@@ -1,6 +1,18 @@
+jest.mock('./makeRouter', () => {
+  const { makeRouter } = jest.requireActual('./makeRouter')
+  return {
+    makeRouter: jest.fn(makeRouter)
+  }
+})
+
 import { makeUrlRouter } from '.'
 import { NavigationHistory } from './NavigationHistory'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
+import { makeRouter } from './makeRouter'
+
+beforeEach(() => {
+  makeRouter.mockClear()
+})
 
 describe('makeUrlRouter()', () => {
   it('should be defined as a function', () => {
@@ -8,22 +20,23 @@ describe('makeUrlRouter()', () => {
     expect(typeof makeUrlRouter).toBe('function')
   })
 
-  it('should return a router object', () => {
-    const router = makeUrlRouter()
-    expect(typeof router).toBe('object')
-  })
+  describe('calling it', () => {
+    it('should return a router object', () => {
+      const router = makeUrlRouter()
+      expect(typeof router).toBe('object')
+    })
 
-  it('should store the history argument', () => {
-    const history = {}
-    const router = makeUrlRouter({ history })
-    expect(router.history).toBe(history)
-  })
+    it('should call makeRouter', () => {
+      const router = makeUrlRouter()
+      expect(makeRouter).toHaveBeenCalledTimes(1)
+    })
 
-  it('should not store the getSelectedRoute argument (it should always be getSelectedUrlRoute())', () => {
-    const getSelectedRoute = () => {}
-    const router = makeUrlRouter({ getSelectedRoute })
-    expect(router.getSelectedRoute).not.toBe(getSelectedRoute)
-    expect(router.getSelectedRoute).toBe(getSelectedUrlRoute)
+    it('should not store the getSelectedRoute argument (it should always be getSelectedUrlRoute())', () => {
+      const getSelectedRoute = () => {}
+      const router = makeUrlRouter({ getSelectedRoute })
+      expect(router.getSelectedRoute).not.toBe(getSelectedRoute)
+      expect(router.getSelectedRoute).toBe(getSelectedUrlRoute)
+    })
   })
 
   describe('router', () => {
