@@ -1,3 +1,3 @@
 export const makeNavigate = history => id => {
-  history.append(id)
+  // history.pushState(null, '', id)
 }

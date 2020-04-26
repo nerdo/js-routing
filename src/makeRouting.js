@@ -9,7 +9,7 @@ export const makeRouting = ({ history, getSelectedRoute } = {}) => {
 
   return {
     applyRouting(routes) {
-      return getExpandedRoutes(routes).filter(r => r.id === history.current.id)[0] || null
+      // return getExpandedRoutes(routes).filter(r => r.id === history.current.id)[0] || null
     },
 
     addInterceptor() {
