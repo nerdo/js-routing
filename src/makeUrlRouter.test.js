@@ -13,18 +13,17 @@ describe('makeUrlRouter()', () => {
   })
 
   describe('router', () => {
-    let history, router
+    let router
 
     beforeEach(() => {
-      history = new NavigationHistory(null, '', null)
-      router = makeUrlRouter({ history })
+      router = makeUrlRouter()
     })
 
     describe('navigate()', () => {
       it('should update history', () => {
-        expect(history.current.id).not.toBe('/')
+        expect(router.history.current.id).not.toBe('/')
         router.navigate('/')
-        expect(history.current.id).toBe('/')
+        expect(router.history.current.id).toBe('/')
       })
     })
 

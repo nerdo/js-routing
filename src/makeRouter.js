@@ -8,6 +8,8 @@ export const makeRouter = ({ history, getSelectedRoute } = {}) => {
   }
 
   return {
+    history,
+
     applyRouting(routes) {
       const selected = getSelectedRoute(getExpandedRoutes(routes || []), history)
       return selected ? selected.route() : null

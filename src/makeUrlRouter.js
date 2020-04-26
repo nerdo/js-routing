@@ -1,9 +1,10 @@
 import { makeRouter } from './makeRouter'
-import { URLHistory } from './URLHistory'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
+import { NavigationHistory } from './NavigationHistory'
 
 const typical = {
-  history: () => new URLHistory(null, '', null)
+  // TODO pass the browser history object as the 4th parameter
+  history: () => new NavigationHistory(null, '', null)
 }
 
 export const makeUrlRouter = ({ history = typical.history } = typical) => {
