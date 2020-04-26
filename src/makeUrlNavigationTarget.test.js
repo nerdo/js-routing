@@ -7,6 +7,19 @@ describe('makeUrlNavigationTarget()', () => {
   })
 
   describe('return value properties', () => {
+    describe('input', () => {
+      it('should be the input to the function', () => {
+        const a = makeUrlNavigationTarget('/a/b/c')
+        expect(a.input).toBe('/a/b/c')
+
+        const b = makeUrlNavigationTarget('/a/b/c#anchor?query&string')
+        expect(b.input).toBe('/a/b/c#anchor?query&string')
+
+        const c = makeUrlNavigationTarget('/a/b/c?query&string')
+        expect(c.input).toBe('/a/b/c?query&string')
+      })
+    })
+
     describe('to', () => {
       it('should be the path minus the anchor and query string', () => {
         const a = makeUrlNavigationTarget('/a/b/c')

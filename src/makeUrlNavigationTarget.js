@@ -20,5 +20,5 @@ export const makeUrlNavigationTarget = input => {
         }),
         {}
       )
-  return { to, params }
+  return { input, to, params }
 }
