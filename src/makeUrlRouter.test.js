@@ -1,17 +1,22 @@
 jest.mock('./makeRouter', () => {
   const { makeRouter } = jest.requireActual('./makeRouter')
-  return {
-    makeRouter: jest.fn(makeRouter)
-  }
+  return { makeRouter: jest.fn(makeRouter) }
+})
+
+jest.mock('./makeUrlNavigationTarget', () => {
+  const { makeUrlNavigationTarget } = jest.requireActual('./makeUrlNavigationTarget')
+  return { makeUrlNavigationTarget: jest.fn(makeUrlNavigationTarget) }
 })
 
 import { makeUrlRouter } from '.'
 import { NavigationHistory } from './NavigationHistory'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
 import { makeRouter } from './makeRouter'
+import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 
 beforeEach(() => {
   makeRouter.mockClear()
+  makeUrlNavigationTarget.mockClear()
 })
 
 describe('makeUrlRouter()', () => {
@@ -37,6 +42,13 @@ describe('makeUrlRouter()', () => {
       expect(router.getSelectedRoute).not.toBe(getSelectedRoute)
       expect(router.getSelectedRoute).toBe(getSelectedUrlRoute)
     })
+
+    it('should not store the makeNavigationTarget argument (it should always be makeUrlNavigationTarget())', () => {
+      const makeNavigationTarget = () => {}
+      const router = makeUrlRouter({ makeNavigationTarget })
+      expect(router.makeNavigationTarget).not.toBe(makeNavigationTarget)
+      expect(router.makeNavigationTarget).toBe(makeUrlNavigationTarget)
+    })
   })
 
   describe('router', () => {
@@ -49,7 +61,9 @@ describe('makeUrlRouter()', () => {
     describe('navigate()', () => {
       it('should update history', () => {
         expect(router.history.current.id).not.toBe('/foo/bar')
+
         router.navigate('/foo/bar')
+        expect(makeUrlNavigationTarget).toHaveBeenCalledTimes(1)
         expect(router.history.current.id).toBe('/foo/bar')
       })
     })
