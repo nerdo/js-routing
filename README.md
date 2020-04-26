@@ -5,7 +5,7 @@ Code samples here look like React code, but @nerdo/routing is _not_ limited to b
 
 Since React is the industry standard JavaScript UI library at the time of this writing, the choice to use samples that look like it is strictly _for the sake of familiarity_.
 
-## Table of Contents
+# Table of Contents
 
 * [Goals](#goals)
 * [Routing Scenarios](#routing-scenarios)
@@ -20,23 +20,22 @@ Since React is the industry standard JavaScript UI library at the time of this w
   * [Passing Additional Data to Routes](#passing-additional-data-to-routes)
 * [Navigation](#navigation)
   * [Interceptors](#interceptors)
+    * [NavigationTarget](#navigationtarget)
 
-## Goals
+# Goals
 * Test driven.
 * Framework agnostic.
 * Environment agnostic.
 
 @nerdo/routing is heavily inspired by [React Hook Router](https://github.com/Paratron/hookrouter), but aspires to abstract routing behavior beyond React and the web browser.
 
-## Routing Scenarios
+# Routing Scenarios
 
 **URL Routing** is the most common routing use case, but it is not the only kind of routing that can take place with @nerdo/routing.
 
 > Aside from this section, this guide uses **URL Routing** to explain @nerdo/routing concepts. For details on how other scenarios differ, please refer to [the full API documentation](#full-api-documentation).
 
-### URL Routing
-URL routing and navigation take place in the web browser using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
-
+## URL Routing
 The `makeUrlRouter(...)` function returns a router pre-configured for this scenario.
 
 ```js
@@ -55,7 +54,7 @@ import { makeUrlRouter } from  '@nerdo/routing'
 export default makeUrlRouter({ baseUrl: '/foo/bar' })
 ```
 
-### State Routing
+## State Routing
 
 Another routing use case might be a desktop application which navigates using states instead of URLs.
 
@@ -67,26 +66,26 @@ import { makeStateRouter } from '@nerdo/routing'
 export default makeStateRouter()
 ```
 
-### Custom Routing
-
-@nerdo/routing navigates via the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History), but it does not presume that it will run in the a browser. Routing can be configured with whatever scheme one dreams up.
+## Custom Routing
 
 To set up custom writing, call `makeRouter(...)` and pass it an object with the properties:
-* `history` - an object that implements the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
+
+* `history` - An object that implements the [NavigationHistory](#navigation-history-interface), which **optionally** _interacts_ with the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
+* `makeNavigationTarget(input)` - A function that converts the `input` into a [NavigationTarget](#navigationtarget).
 * `getSelectedRoute(navigatorState, routes)` - a function that takes a navigator state and route definitions as arguments. It should return the definition that matches the navigator state or null if no match was found.
 
 ```js
 // router.js
 import { makeRouter } from '@nerdo/routing'
-import { history, getSelectedRoute } from './dreamScheme'
-export default makeRouter({ history, getSelectedRoute })
+import { history, makeNavigationTarget, getSelectedRoute } from './dreamScheme'
+export default makeRouter({ history, makeNavigationTarget, getSelectedRoute })
 ```
 
-## Defining Routes
+# Defining Routes
 
 When routing is applied, the `applyRouting(...)` function takes a list of routes and looks for the most specific URL match. `applyRouting(...)` then calls the route function associated with the matched URL and returns its value.
 
-### Abbreviated (Object) Form
+## Abbreviated (Object) Form
 
 Routes can be defined in abbreviated format as an object, or in an expanded form as an array.
 
@@ -131,7 +130,7 @@ To use an optional query string parameter, simply use it as a property on the 2n
 
 In the example, the query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route(...)` function's second argument as object properties.
 
-### Expanded (Array) Form
+## Expanded (Array) Form
 
 In expanded array form, each item in the array is an object. Each object defines the path identifier using the `id` key and the route using the `route` key.
 
@@ -200,7 +199,7 @@ The second route matches path identifiers starting with `/info` and `/about` whi
 
 `getParameters(...)` can also be defined if the path identifier is a string. In this scenario, the default dynamic parameter parsing rules are not used and your implementation of `getParameters(...)` is entirely responsible for parsing them out of the navigation state.
 
-## Applying Routing
+# Applying Routing
 
 The `applyRouting(...)` function takes a list of routes and will try to find the most specific route that matches. When it finds the best match, it calls the function and returns its value to your code.
 
@@ -215,7 +214,7 @@ import { NotFoundPage } from './pages'
 const App = () => applyRouting(routes) || <NotFoundPage />
 ```
 
-### Nested Routing
+## Nested Routing
 
 You may "nest" routes. This allows you to have parent routes that partially match a URL, and child routes which route to path identifiers relative to the parent or "nest" path identifier.
 
@@ -296,7 +295,7 @@ The fallback component, `<ProductSummary />`, is wrapped in a function, but it i
 
 > One might be tempted to move the definition of the `childRoutes` within `<ProductPage />`, but this would mean that `childRoutes` would get re-defined each time the `<ProductPage />` component renders. That would be inefficient and could lead to poor performance.
 
-### Passing Additional Data to Routes
+## Passing Additional Data to Routes
 
 In the previous example, the `productSlug` was passed to child components. This would presumably be used to look up and load the product information, but since all of the components seem to need that information, it would make more sense to load it in the `<ProductPage />` component and pass the `product` object to the components instead.
 
@@ -332,7 +331,7 @@ const ProductPage = ({ productSlug }) => {
 }
 ```
 
-## Navigation
+# Navigation
 
 Once routes have been set up, the `navigate()` function can be used to send users to them.
 
@@ -361,7 +360,7 @@ const HomePage = () => {
 }
 ```
 
-### Interceptors
+## Interceptors
 
 There are times where it is necessary to listen for navigation events and manipulate it to perform various tasks.
 
@@ -371,12 +370,12 @@ You can use the `addInterceptor()` function to accomplish this. The `addIntercep
 
 The callback function will receive two arguments - `from` and `to`. These are `NavigationTarget` objects which represent the current and next or target routes respectively.
 
-`NavigationTarget` objects have the following properties:
+### NavigationTarget
 
   * `id` - The identifier that the object represents. This could be absolute or relative.
+  * `[params]` - Optional: An object with parameters for the route; defaults to `{}`.
   * `[replace]` - Optional: Whether the target replaces the state in history; defaults to `false`.
   * `[relativeTo]` - Present if `id` is relative: The identifier that `id` is relative to. This will always be absolute.
-  * `[params]` - Optional: An object with parameters for the route; defaults to `{}`.
 
 It should return the path or a `NavigationTarget` object that the router should navigate to, or a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that will resolve to either.
 
