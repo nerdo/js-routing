@@ -1,22 +1,22 @@
-import { makeRouting } from '.'
+import { makeRouter } from '.'
 
 const defaultArgs = { history:1, getSelectedRoute: 1 }
 
-describe('makeRouting()', () => {
+describe('makeRouter()', () => {
   it('should be defined as a function', () => {
-    expect(makeRouting).toBeDefined()
-    expect(typeof makeRouting).toBe('function')
+    expect(makeRouter).toBeDefined()
+    expect(typeof makeRouter).toBe('function')
   })
 
   it('should throw an error if it does not receive required parameters', () => {
-    expect(() => makeRouting()).toThrow()
-    expect(() => makeRouting({ history: 1 })).toThrow()
-    expect(() => makeRouting({ getSelectedRoute: 1 })).toThrow()
-    expect(() => makeRouting(defaultArgs)).not.toThrow()
+    expect(() => makeRouter()).toThrow()
+    expect(() => makeRouter({ history: 1 })).toThrow()
+    expect(() => makeRouter({ getSelectedRoute: 1 })).toThrow()
+    expect(() => makeRouter(defaultArgs)).not.toThrow()
   })
 
   describe('properties of return value', () => {
-    const returnValue = makeRouting(defaultArgs)
+    const returnValue = makeRouter(defaultArgs)
 
     it('has an applyRouting function', () => {
       expect(returnValue.applyRouting).toBeDefined()

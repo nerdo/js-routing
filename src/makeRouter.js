@@ -1,6 +1,6 @@
 import { getExpandedRoutes } from './getExpandedRoutes'
 
-export const makeRouting = ({ history, getSelectedRoute } = {}) => {
+export const makeRouter = ({ history, getSelectedRoute } = {}) => {
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
   } else if (typeof getSelectedRoute === 'undefined') {
@@ -9,7 +9,7 @@ export const makeRouting = ({ history, getSelectedRoute } = {}) => {
 
   return {
     applyRouting(routes) {
-      // return getExpandedRoutes(routes).filter(r => r.id === history.current.id)[0] || null
+      return getExpandedRoutes(routes || []).filter(r => r.id === history.current.id)[0] || null
     },
 
     addInterceptor() {

@@ -1,3 +1,2 @@
-export { urlRouting } from './urlRouting'
-export { configuredUrlRouting } from './configuredUrlRouting'
-export { makeRouting } from './makeRouting'
+export { makeUrlRouter } from './makeUrlRouter'
+export { makeRouter } from './makeRouter'
