@@ -76,6 +76,15 @@ describe('makeUrlRouter()', () => {
           router.navigate('/about')
           expect(router.applyRouting(routes)).toBe('about')
 
+          router.navigate('/about#anchor')
+          expect(router.applyRouting(routes)).toBe('about')
+
+          router.navigate('/about?query')
+          expect(router.applyRouting(routes)).toBe('about')
+
+          router.navigate('/about#anchor?and=1&query=present')
+          expect(router.applyRouting(routes)).toBe('about')
+
           router.navigate('/')
           expect(router.applyRouting(routes)).toBe('home')
 
