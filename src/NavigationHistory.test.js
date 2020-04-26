@@ -18,12 +18,12 @@ describe('NavigationHistory class', () => {
 
       // Routing API validation
       expect(navigationHistory.items.length).toBe(1)
-      expect(navigationHistory.items[navigationHistory.items.length - 1]).toBe(navigationHistory.current)
+      expect(navigationHistory.items[0]).toBe(navigationHistory.current)
     })
   })
 
-  describe('append()', () => {
-    it('should append the new URL', () => {
+  describe('pushState()', () => {
+    it('should append the new navigation target', () => {
       const navigationHistory = new NavigationHistory(null, '', '/')
 
       navigationHistory.pushState(null, '', '/abc')
