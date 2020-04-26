@@ -74,14 +74,14 @@ export default stateRouting
 @nerdo/routing navigates via the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History), but it does not presume that it will run in the a browser. Routing can be configured with whatever scheme one dreams up.
 
 To set up custom writing, call `makeRouting(...)` and pass it an object with the properties:
-* `navigator` - an object that implements the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
+* `history` - an object that implements the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
 * `getSelectedRoute(navigatorState, routes)` - a function that takes a navigator state and route definitions as arguments. It should return the definition that matches the navigator state or null if no match was found.
 
 ```js
 // routing.js
 import { makeRouting } from '@nerdo/routing'
-import { navigator, getSelectedRoute } from './dreamScheme'
-export default makeRouting({ navigator, getSelectedRoute })
+import { history, getSelectedRoute } from './dreamScheme'
+export default makeRouting({ history, getSelectedRoute })
 ```
 
 ## Defining Routes
