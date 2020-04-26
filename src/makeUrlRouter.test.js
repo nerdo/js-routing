@@ -47,11 +47,11 @@ describe('makeUrlRouter()', () => {
             '/foo/bar': () => 'foo bar'
           }
 
-          router.navigate('/')
+          router.navigate('/about')
 
           const route = router.applyRouting(routes)
 
-          expect(route).toBe('home')
+          expect(route).toBe('about')
         })
       })
     })
