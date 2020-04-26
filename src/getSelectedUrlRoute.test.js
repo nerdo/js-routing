@@ -15,8 +15,12 @@ describe('getSelectedUrlRoute()', () => {
     route: () => 'foo bar'
   }
   const userProfile = {
-    id: '/profile/:username',
+    id: '/user/:username',
     route: () => 'user profile'
+  }
+  const userPhotos = {
+    id: '/user/:username/photos',
+    route: () => 'user photos'
   }
 
   describe('exact match', () => {
@@ -34,18 +38,17 @@ describe('getSelectedUrlRoute()', () => {
     })
   })
 
-  describe('URL with extra slashes', () => {
+  describe('URL variations that should match', () => {
     it('should return the correct route', () => {
       const routes = [
         home,
         about,
         fooBar
       ]
-      const history = new NavigationHistory('/about///')
+      const history = new NavigationHistory('/')
 
-      const selected = getSelectedUrlRoute(routes, history)
-
-      expect(selected).toBe(about)
+      history.push('/about///')
+      expect(getSelectedUrlRoute(routes, history)).toBe(about)
     })
   })
 
@@ -55,13 +58,19 @@ describe('getSelectedUrlRoute()', () => {
         home,
         about,
         userProfile,
+        userPhotos,
         fooBar
       ]
-      const history = new NavigationHistory('/user/cue8chalk')
+      const history = new NavigationHistory('/')
 
-      const selected = getSelectedUrlRoute(routes, history)
+      history.push('/user/foo')
+      expect(getSelectedUrlRoute(routes, history)).toBe(userProfile)
 
-      expect(selected).toBe(userProfile)
+      history.push('/user//bar///')
+      expect(getSelectedUrlRoute(routes, history)).toBe(userProfile)
+
+      history.push('/user/bar/photos')
+      expect(getSelectedUrlRoute(routes, history)).toBe(userPhotos)
     })
   })
 })

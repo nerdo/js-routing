@@ -61,10 +61,19 @@ describe('makeUrlRouter()', () => {
           }
 
           router.navigate('/about')
+          expect(router.applyRouting(routes)).toBe('about')
 
-          const route = router.applyRouting(routes)
+          router.navigate('/')
+          expect(router.applyRouting(routes)).toBe('home')
 
-          expect(route).toBe('about')
+          router.navigate('/foo/bar')
+          expect(router.applyRouting(routes)).toBe('foo bar')
+
+          router.navigate('/not-found')
+          expect(router.applyRouting(routes)).toBeNull()
+
+          router.navigate('/not/found')
+          expect(router.applyRouting(routes)).toBeNull()
         })
       })
     })
