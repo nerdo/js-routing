@@ -23,9 +23,11 @@ Since React is the industry standard JavaScript UI library at the time of this w
     * [NavigationTarget](#navigationtarget)
 
 # Goals
-* Test driven.
-* Framework agnostic.
-* Environment agnostic.
+* Reliability.
+  * Test driven.
+* Flexibility.
+  * Framework agnostic.
+  * Environment agnostic.
 
 @nerdo/routing is heavily inspired by [React Hook Router](https://github.com/Paratron/hookrouter), but aspires to abstract routing behavior beyond React and the web browser.
 
@@ -335,11 +337,12 @@ const ProductPage = ({ productSlug }) => {
 
 Once routes have been set up, the `navigate()` function can be used to send users to them.
 
-The function has the signature `navigate(id, [replace], [params])`.
+The function has the signature `navigate(id, [replace], [params], [state])`.
 
   * `id` - The absolute or relative identifier to navigate to.
   * `[replace]` - Optional: A boolean which will replace the current state in navigation history if set to `true`; it defaults to `false`.
-  * `[params]` - Optional: An object of parameters to pass to the route. They will be encoded as query string params in URL routing; it defaults to `{}`.
+  * `[params]` - Optional: An object of parameters to pass to the route. These parameters are intended to be publicly visible (e.g. query string params); it defaults to `{}`.
+  * `[state]` - Optional: An object of state to pass to the route. These parameters are intended to be **hidden** and not immediately visible to the user. `state` can end up in history, but should not be exposed to the user in an obvious place like the query string; it defaults to `{}`.
 
 For example, if this is the `<HomePage />` component, the following would navigate to the `<AboutPage />` component when the button is clicked:
 
@@ -374,6 +377,7 @@ The callback function will receive two arguments - `from` and `to`. These are `N
 
   * `id` - The identifier that the object represents. This could be absolute or relative.
   * `[params]` - Optional: An object with parameters for the route; defaults to `{}`.
+  * `[state]` - Optional: An object with state for the route; defaults to `{}`.
   * `[replace]` - Optional: Whether the target replaces the state in history; defaults to `false`.
   * `[relativeTo]` - Present if `id` is relative: The identifier that `id` is relative to. This will always be absolute.
 
@@ -407,6 +411,9 @@ const redirects = {
         id: '/bar',
         params: {
             q: 'hello'
+        },
+        state: {
+            data: someObject
         }
     }
 }

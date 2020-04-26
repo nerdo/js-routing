@@ -1,5 +1,5 @@
 export class NavigationHistory {
-  constructor(id, params) {
+  constructor(id, params, state) {
     if (typeof id === 'undefined') {
       throw new Error('NavigationHistory requires the current id as an argument')
     }
@@ -11,26 +11,29 @@ export class NavigationHistory {
     this.initialize(id, params)
   }
 
-  initialize(id, params) {
+  initialize(id, params, state) {
     this.current = {
       id,
-      params
+      params,
+      state
     }
     this.targets = [this.current]
   }
 
-  replace(id, params) {
+  replace(id, params, state) {
     this.current = {
       id,
-      params
+      params,
+      state
     }
     this.targets[this.targets.length - 1] = this.current
   }
 
-  push(id, params) {
+  push(id, params, state) {
     this.current = {
       id,
-      params
+      params,
+      state
     }
     this.targets.push(this.current)
   }

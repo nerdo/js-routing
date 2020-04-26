@@ -21,12 +21,14 @@ describe('NavigationHistory class', () => {
     it('should append the new navigation target', () => {
       const navigationHistory = new NavigationHistory('/')
       const params = {}
+      const state = {}
 
-      navigationHistory.push('/abc', params)
+      navigationHistory.push('/abc', params, state)
 
       expect(navigationHistory.targets.length).toBe(2)
       expect(navigationHistory.current.id).toBe('/abc')
       expect(navigationHistory.current.params).toBe(params)
+      expect(navigationHistory.current.state).toBe(state)
     })
   })
 
@@ -34,12 +36,14 @@ describe('NavigationHistory class', () => {
     it('should replace the current navigation target', () => {
       const navigationHistory = new NavigationHistory('/')
       const params = {}
+      const state = {}
 
-      navigationHistory.replace('/bar', params)
+      navigationHistory.replace('/bar', params, state)
 
       expect(navigationHistory.targets.length).toBe(1)
       expect(navigationHistory.current.id).toBe('/bar')
       expect(navigationHistory.current.params).toBe(params)
+      expect(navigationHistory.current.state).toBe(state)
     })
   })
 })
