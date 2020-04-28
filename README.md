@@ -235,7 +235,7 @@ const routes = {
 const App = () => applyRouting(routes) || <NotFoundPage />
 ```
 
-When defining the routes in expanded array form, the `{ nest: true }` property defines the route as a nest.
+When defining the routes in expanded array form, the `{ isNest: true }` property defines the route as a nest.
 
 Here's the same thing as above in expanded form:
 
@@ -251,7 +251,7 @@ const routes = [
   },
   {
     id: '/product/:productSlug',
-    nest: true,
+    isNest: true,
     route: ({ productSlug }) => <ProductPage productSlug={productSlug} />
   }
 ]

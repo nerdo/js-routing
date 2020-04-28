@@ -22,6 +22,15 @@ describe('getSelectedUrlRoute()', () => {
     id: '/user/:username/photos',
     route: () => 'user photos'
   }
+  const productNest = {
+    id: '/product/:productSlug',
+    isNest: true,
+    route: () => 'product nest'
+  }
+  const productDetailsChild = {
+    id: '/details',
+    route: () => 'product details'
+  }
 
   describe('exact match', () => {
     it('should return the correct route', () => {
@@ -77,6 +86,23 @@ describe('getSelectedUrlRoute()', () => {
 
       history.push({ id: '/user/bar/photos' })
       expect(getSelectedUrlRoute(routes, history)).toBe(userPhotos)
+    })
+  })
+
+  describe('nests', () => {
+    it('should return the correct route', () => {
+      const routes = [
+        home,
+        productNest,
+        about
+      ]
+      const history = new NavigationHistory({ id: '/' })
+
+      history.push({ id: '/product/foo-bars/details' })
+      expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
+
+      history.push({ id: '/product/foo-bars/details/edit' })
+      expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
     })
   })
 })
