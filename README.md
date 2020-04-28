@@ -17,6 +17,7 @@ Since React is the industry standard JavaScript UI library at the time of this w
   * [Expanded (Array) Form](#expanded-array-form)
 * [Applying Routing](#applying-routing)
   * [Nested Routing](#nested-routing)
+    * [Route Precedence](#route-precedence)
   * [Passing Additional Data to Routes](#passing-additional-data-to-routes)
 * [Navigation](#navigation)
   * [Interceptors](#interceptors)
@@ -89,7 +90,7 @@ When routing is applied, the `applyRouting(...)` function takes a list of routes
 
 ## Abbreviated (Object) Form
 
-Routes can be defined in abbreviated format as an object, or in an expanded form as an array.
+Routes can be defined in abbreviated form as an object, or in an expanded form as an array.
 
 In the abbreviated form, each object key is the route's URL path identifier, and each value is the route function. The route function returns what the path identifier routes to.
 
@@ -120,7 +121,7 @@ export const routes = {
 }
 ```
 
-The `:` in the path identifier starts the definition of a named dynamic parameter.
+The `:` in the path identifier starts the definition of a named dynamic parameter. The name of the parameter will include all characters until the following `/` or `?`.
 
 In this case, `:folder` is a dynamic parameter. It gets passed to the `route(...)` function as the `folder` property of its first argument. In other words, if the URL is `/documents/reports?query=summary`, the `folder` variable will capture the value "reports" from the URL. It will also have captured `summary` as the `find` query parameter.
 
@@ -132,9 +133,13 @@ To use an optional query string parameter, simply use it as a property on the 2n
 
 In the example, the query string parameter `page` is an optional parameter. _All_ query string parameters (including required ones) are passed to the `route(...)` function's second argument as object properties.
 
+Abbreviated object form is convenient and concise, but it is intended for the simplest of use cases.
+
+Defining routes using the expanded array form opens up the full @nerdo/routing feature set to your application.
+
 ## Expanded (Array) Form
 
-In expanded array form, each item in the array is an object. Each object defines the path identifier using the `id` key and the route using the `route` key.
+In expanded array form, each route definition is an object in the array. Each object defines the path identifier using the `id` key and the route using the `route` key.
 
 Here are simple home and about page routes in expanded array form:
 
@@ -171,6 +176,8 @@ export const routes = [
     ]
 ]
 ```
+
+> ![Note!](assets/OOjs_UI_icon_alert-warning.svg) Matching routes with a function or regular expression introduces the dilemma of [Route Precedence](#route-precedence). Review the explanation of what route precedence is and how @nerdo/routing handles it for a clear understanding of how routing will work.
 
 When matching path identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. It will receive the URL (i.e. the navigation state) it matched on as the first argument, and an array of capture groups from the regular expression as the second argument. If your matches is a function, the second argument will be an empty array.
 
@@ -220,24 +227,9 @@ const App = () => applyRouting(routes) || <NotFoundPage />
 
 You may "nest" routes. This allows you to have parent routes that partially match a URL, and child routes which route to path identifiers relative to the parent or "nest" path identifier.
 
-When defining routes in abbreviated form, end the identifier with an asterisks (`*`) to mark it as a nest.
+Nests must be defined using expanded array form by adding the `{ isNest: true }` property.
 
-```js
-// App.js
-import { applyRouting } from './router'
-import { HomePage, ProductPage, NotFoundPage } from './pages'
-
-const routes = {
-    '/': () => <HomePage />,
-    '/product/:productSlug*': ({ productSlug }) => <ProductPage productSlug={productSlug} />
-]
-
-const App = () => applyRouting(routes) || <NotFoundPage />
-```
-
-When defining the routes in expanded array form, the `{ isNest: true }` property defines the route as a nest.
-
-Here's the same thing as above in expanded form:
+Here's an example.
 
 ```js
 // App.js
@@ -259,7 +251,7 @@ const routes = [
 const App = () => applyRouting(routes) || <NotFoundPage />
 ```
 
-The `/product/:productSlug` route is a _**nest**_.
+The `/product/:productSlug` route is a **nest**.
 
 It will match URLs that begin with that path identifier and those that have more path components. Defining it as a nest allows paths like `/product/super-sponge/details` and `/product/super-sponge/buy` to match.
 
@@ -297,9 +289,48 @@ The fallback component, `<ProductSummary />`, is wrapped in a function, but it i
 
 > One might be tempted to move the definition of the `childRoutes` within `<ProductPage />`, but this would mean that `childRoutes` would get re-defined each time the `<ProductPage />` component renders. That would be inefficient and could lead to poor performance.
 
+### Route Precedence
+
+The concept of nested routes (along with regular expression and function matching routes) raises an important question: what happens when multiple routes are a valid match?
+
+The answer is simple: route definitions are evaluated in the order they are defined and **the first match takes precedence**.
+
+This makes behavior deterministic and fixing any mismatches is trivial.
+
+Consider this example.
+
+```js
+// RoutePrecedence.js
+import { applyRouting } from './router'
+import { HomePage, ProductPage, SpecialProductPage, NotFoundPage } from './pages'
+
+const routes = [
+  {
+    id: '/',
+    route: () => <HomePage />
+  },
+  {
+    id: '/product/:productSlug',
+    isNest: true,
+    route: ({ productSlug }) => <ProductPage productSlug={productSlug} />
+  },
+  {
+    id: '/product/special-product',
+    route: () => <SpecialProductPage />
+  }
+]
+
+const App = () => applyRouting(routes) || <NotFoundPage />
+]
+```
+
+The route identified by `/product/special-product` is unreachable. The nest `/product/:productSlug` will always match when the path identifier is `/product/special-product` because it precedes `/product/:productSlug` in the array.
+
+To fix this, move the definition for `/product/special-product` before the definition for `/product/:productSlug`.
+
 ## Passing Additional Data to Routes
 
-In the previous example, the `productSlug` was passed to child components. This would presumably be used to look up and load the product information, but since all of the components seem to need that information, it would make more sense to load it in the `<ProductPage />` component and pass the `product` object to the components instead.
+In the [Nested Routing](#nested-routing) example, the `productSlug` was passed to child components. This would presumably be used to look up and load the product information, but since all of the components seem to need that information, it would make more sense to load it in the `<ProductPage />` component and pass the `product` object to the components instead.
 
 This can be accomplished in the same way as we are passing the `productSlug`. Instead of defining each route as a function of the `productSlug`, they can be defined as functions of the `product` object.
 
@@ -418,5 +449,5 @@ const redirects = {
     }
 }
 
-export const removeRedirectInterceptor = addInterceptor((from, to) => redirects[from.id] || to
+export const removeRedirectInterceptor = addInterceptor((from, to) => redirects[from.id] || to)
 ```

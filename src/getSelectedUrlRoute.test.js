@@ -107,5 +107,8 @@ describe('getSelectedUrlRoute()', () => {
       history.push({ id: '/product/foo-bars/details/edit' })
       expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
     })
+
+    describe('precedence', () => {
+    })
   })
 })
