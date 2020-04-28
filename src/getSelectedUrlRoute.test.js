@@ -101,6 +101,9 @@ describe('getSelectedUrlRoute()', () => {
       history.push({ id: '/product/foo-bars/details' })
       expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
 
+      history.push({ id: '/product/foo-bars//details' })
+      expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
+
       history.push({ id: '/product/foo-bars/details/edit' })
       expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
     })

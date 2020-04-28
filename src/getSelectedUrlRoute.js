@@ -1,20 +1,22 @@
 const getPathParts = path => path.split('/').filter(part => part !== '')
 
 export const getSelectedUrlRoute = (routes, history) => {
-  history //?
   const target = {
     pathParts: getPathParts(history.current.id),
   }
-  target.id = `/${target.pathParts.join('/')}` //?
+  target.id = `/${target.pathParts.join('/')}`
 
   const toMetaData = original => ({
     pathParts: getPathParts(original.id),
     original
   })
-  const eliminateIncompatibleNumPathParts = ({ pathParts }) => pathParts.length === target.pathParts.length
-  const eliminateNonMatches = ({ pathParts }) => {
+  const eliminateIncompatibleNumPathParts = ({ pathParts, original: { isNest } }) => {
+    return isNest ? pathParts.length <= target.pathParts.length : pathParts.length === target.pathParts.length
+  }
+  const eliminateNonMatches = ({ pathParts, original: { isNest } }) => {
     const id = `/${pathParts.map((p, i) => p[0] === ':' ? target.pathParts[i] : p).join('/')}`
-    return id === target.id
+    const targetId = isNest ? `/${target.pathParts.slice(0, pathParts.length).join('/')}` : target.id
+    return id === targetId
   }
 
   const match = routes
