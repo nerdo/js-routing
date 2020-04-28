@@ -7,6 +7,6 @@ export const getExpandedRoutes = routes => {
     .keys(routes)
     .map(key => ({
       id: key,
-      route: routes[key]
+      action: routes[key]
     }))
 }

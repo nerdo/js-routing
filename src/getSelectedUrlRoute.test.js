@@ -4,32 +4,32 @@ import { NavigationHistory } from './NavigationHistory'
 describe('getSelectedUrlRoute()', () => {
   const home = {
     id: '/',
-    route: () => 'home'
+    action: () => 'home'
   }
   const about = {
     id: '/about',
-    route: () => 'about'
+    action: () => 'about'
   }
   const fooBar = {
     id: '/foo/bar',
-    route: () => 'foo bar'
+    action: () => 'foo bar'
   }
   const userProfile = {
     id: '/user/:username',
-    route: () => 'user profile'
+    action: () => 'user profile'
   }
   const userPhotos = {
     id: '/user/:username/photos',
-    route: () => 'user photos'
+    action: () => 'user photos'
   }
   const productNest = {
     id: '/product/:productSlug',
     isNest: true,
-    route: () => 'product nest'
+    action: () => 'product nest'
   }
   const productDetailsChild = {
     id: '/details',
-    route: () => 'product details'
+    action: () => 'product details'
   }
 
   describe('exact match', () => {

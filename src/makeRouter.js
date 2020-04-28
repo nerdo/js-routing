@@ -16,7 +16,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
 
     applyRouting(routes) {
       const selected = getSelectedRoute(getExpandedRoutes(routes || []), history)
-      return selected ? selected.route() : null
+      return selected ? selected.action() : null
     },
 
     navigate(input) {

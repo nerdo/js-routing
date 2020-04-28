@@ -5,11 +5,11 @@ describe('getExpandedRoutes()', () => {
     const routes = [
       {
           id: '/',
-          route: 'home'
+          action: 'home'
       },
       {
           id: '/about',
-          route: 'about'
+          action: 'about'
       },
       'it',
       'should',
@@ -42,8 +42,8 @@ describe('getExpandedRoutes()', () => {
     const aboutRoute = expanded.filter(r => r.id === '/about')[0]
 
     expect(homeRoute.id).toBe('/')
-    expect(homeRoute.route).toBe('home')
+    expect(homeRoute.action).toBe('home')
     expect(aboutRoute.id).toBe('/about')
-    expect(aboutRoute.route).toBe('about')
+    expect(aboutRoute.action).toBe('about')
   })
 })
