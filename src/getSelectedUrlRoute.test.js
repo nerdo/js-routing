@@ -35,6 +35,10 @@ describe('getSelectedUrlRoute()', () => {
     id: '/product/special-product',
     action: () => 'special product'
   }
+  const functionMatcher = {
+    id: id => id === '/function/matcher' || id === '/method/man/wu/tang',
+    action: () => 'function matcher'
+  }
 
   const allRoutes = [
     home,
@@ -44,7 +48,8 @@ describe('getSelectedUrlRoute()', () => {
     userPhotos,
     specialProduct,
     productNest,
-    productDetailsChild
+    productDetailsChild,
+    functionMatcher
   ]
 
   describe('exact match', () => {
@@ -134,6 +139,19 @@ describe('getSelectedUrlRoute()', () => {
           expect(getSelectedUrlRoute(routes, history)).toBe(specialProduct)
         })
       })
+    })
+  })
+
+  describe('function matcher', () => {
+    it('should return the correct route', () => {
+      const routes = allRoutes
+      const history = new NavigationHistory({ id: '/' })
+
+      history.push({ id: '/function/matcher' })
+      expect(getSelectedUrlRoute(routes, history)).toBe(functionMatcher)
+
+      history.push({ id: '/method/man/wu/tang' })
+      expect(getSelectedUrlRoute(routes, history)).toBe(functionMatcher)
     })
   })
 })
