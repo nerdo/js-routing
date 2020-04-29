@@ -36,13 +36,21 @@ describe('getSelectedUrlRoute()', () => {
     action: () => 'special product'
   }
 
+  const allRoutes = [
+    home,
+    about,
+    fooBar,
+    userProfile,
+    userPhotos,
+    specialProduct,
+    productNest,
+    productDetailsChild
+  ]
+
   describe('exact match', () => {
     it('should return the correct route', () => {
-      const routes = [
-        home,
-        about,
-        fooBar
-      ]
+      const routes = allRoutes
+
       const history = new NavigationHistory({ id: '/about' })
 
       const selected = getSelectedUrlRoute(routes, history)
@@ -53,11 +61,7 @@ describe('getSelectedUrlRoute()', () => {
 
   describe('URL variations that should match', () => {
     it('should return the correct route', () => {
-      const routes = [
-        home,
-        about,
-        fooBar
-      ]
+      const routes = allRoutes
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/about///' })
@@ -73,13 +77,7 @@ describe('getSelectedUrlRoute()', () => {
 
   describe('URL parameters', () => {
     it('should return the correct route', () => {
-      const routes = [
-        home,
-        about,
-        userProfile,
-        userPhotos,
-        fooBar
-      ]
+      const routes = allRoutes
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/user/foo' })
@@ -95,11 +93,7 @@ describe('getSelectedUrlRoute()', () => {
 
   describe('nests', () => {
     it('should return the correct route', () => {
-      const routes = [
-        home,
-        productNest,
-        about
-      ]
+      const routes = allRoutes
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/product/foo-bars/details' })
