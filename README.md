@@ -191,7 +191,7 @@ export const routes = [
 
 > ![Note!](assets/OOjs_UI_icon_alert-warning.svg) Matching routes with a function or regular expression introduces the dilemma of [Route Precedence](#route-precedence). Review the explanation of what route precedence is and how @nerdo/routing handles it for a clear understanding of how routing will work.
 
-When matching identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. It will receive the URL (i.e. the navigation state) it matched on as the first argument, and an array of capture groups from the regular expression as the second argument. If your matches is a function, the second argument will be an empty array.
+When matching identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. If `id` is a regular expression, `getParameters(...)` will receive the identifier it matched on as the first argument, and an array of capture groups from the regular expression as the second argument. If `id` is a function, the second argument will be an empty array.
 
 The function is free to parse the navigation state in any way, but it must return an object containing a map of the dynamic parameters.
 
