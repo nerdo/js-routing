@@ -31,6 +31,10 @@ describe('getSelectedUrlRoute()', () => {
     id: '/details',
     action: () => 'product details'
   }
+  const specialProduct = {
+    id: '/product/special-product',
+    action: () => 'special product'
+  }
 
   describe('exact match', () => {
     it('should return the correct route', () => {
@@ -109,6 +113,33 @@ describe('getSelectedUrlRoute()', () => {
     })
 
     describe('precedence', () => {
+      describe('array form', () => {
+        it('should return the nest if it is defined first', () => {
+          const routes = [
+            home,
+            productNest,
+            specialProduct,
+            about
+          ]
+
+          const history = new NavigationHistory({ id: '/' })
+          history.push({ id: '/product/special-product' })
+          expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
+        })
+
+        it('should return the regular route if it is defined first', () => {
+          const routes = [
+            home,
+            specialProduct,
+            productNest,
+            about
+          ]
+
+          const history = new NavigationHistory({ id: '/' })
+          history.push({ id: '/product/special-product' })
+          expect(getSelectedUrlRoute(routes, history)).toBe(specialProduct)
+        })
+      })
     })
   })
 })
