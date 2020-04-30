@@ -39,6 +39,10 @@ describe('getSelectedUrlRoute()', () => {
     id: id => id === '/function/matcher' || id === '/method/man/wu/tang',
     action: () => 'function matcher'
   }
+  const regExRoute = {
+    id: /^\/employee\/T(\d{5})\/?/,
+    action: () => 'regex route'
+  }
 
   const allRoutes = [
     home,
@@ -49,7 +53,8 @@ describe('getSelectedUrlRoute()', () => {
     specialProduct,
     productNest,
     productDetailsChild,
-    functionMatcher
+    functionMatcher,
+    regExRoute
   ]
 
   describe('exact match', () => {
@@ -156,6 +161,15 @@ describe('getSelectedUrlRoute()', () => {
   })
 
   describe('regular expression matcher', () => {
+    it('should return the correct route', () => {
+      const routes = allRoutes
+      const history = new NavigationHistory({ id: '/' })
 
+      history.push({ id: '/employee/T90210' })
+      expect(getSelectedUrlRoute(routes, history)).toBe(regExRoute)
+
+      history.push({ id: '/employee/T90210/' })
+      expect(getSelectedUrlRoute(routes, history)).toBe(regExRoute)
+    })
   })
 })

@@ -6,20 +6,29 @@ export const getSelectedUrlRoute = (routes, history) => {
   }
   target.id = `/${target.pathParts.join('/')}`
 
-  const toMetaData = original => ({
-    pathParts: typeof original.id !== 'function' ? getPathParts(original.id) : null,
-    original
-  })
-  const eliminateIncompatibleNumPathParts = ({ pathParts, original: { id, isNest } }) => {
-    if (typeof id === 'function') {
+  const toMetaData = original => {
+    const isFunction = typeof original.id === 'function'
+    const isRegExp = typeof original.id === 'object' && original.id.constructor === RegExp
+    return {
+      isFunction,
+      isRegExp,
+      pathParts: !isFunction && !isRegExp ? getPathParts(original.id) : null,
+      original
+    }
+  }
+  const eliminateIncompatibleNumPathParts = ({ isFunction, isRegExp, pathParts, original: { id, isNest } }) => {
+    if (isFunction || isRegExp) {
       return true
     }
     return isNest ? pathParts.length <= target.pathParts.length : pathParts.length === target.pathParts.length
   }
-  const eliminateNonMatches = ({ pathParts, original: { id: originalId, isNest } }) => {
-    if (typeof originalId === 'function') {
+  const eliminateNonMatches = ({ isFunction, isRegExp, pathParts, original: { id: originalId, isNest } }) => {
+    if (isFunction) {
       return originalId(target.id)
+    } else if (isRegExp) {
+      return originalId.test(target.id)
     }
+
     const id = `/${pathParts.map((p, i) => p[0] === ':' ? target.pathParts[i] : p).join('/')}`
     const targetId = isNest ? `/${target.pathParts.slice(0, pathParts.length).join('/')}` : target.id
     return id === targetId
