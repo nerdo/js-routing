@@ -154,4 +154,8 @@ describe('getSelectedUrlRoute()', () => {
       expect(getSelectedUrlRoute(routes, history)).toBe(functionMatcher)
     })
   })
+
+  describe('regular expression matcher', () => {
+
+  })
 })

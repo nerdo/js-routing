@@ -61,12 +61,12 @@ export default makeUrlRouter()
 
 `makeUrlRouter(...)` takes an object with configuration options. It may contain these properties:
 
-* `baseUrl` - The base URL to use when matching URLs and navigating; defaults to the current URL (when `makeUrlRouter(...)` is called).
+* `basePath` - The base path to use when matching URL paths and navigating; defaults to the path of the URL at the time `makeUrlRouter(...)` is called.
 
 ```js
 // router.js
 import { makeUrlRouter } from  '@nerdo/routing'
-export default makeUrlRouter({ baseUrl: '/foo/bar' })
+export default makeUrlRouter({ basePath: '/foo/bar' })
 ```
 
 ## State Routing
