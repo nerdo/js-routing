@@ -7,9 +7,10 @@ describe('NavigationHistory class', () => {
 
   describe('constrcutor()', () => {
     it('should throw an error if no id is passed in', () => {
-      expect(() => {
+      const instantiation = () => {
         const navigationHistory = new NavigationHistory
-      }).toThrow()
+      }
+      expect(instantiation).toThrow('NavigationHistory requires the target.id as an argument')
     })
 
     it('should store the id passed in as the current one', () => {

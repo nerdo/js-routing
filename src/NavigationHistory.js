@@ -1,6 +1,6 @@
 export class NavigationHistory {
   constructor(target) {
-    if (typeof target.id === 'undefined') {
+    if (typeof target === 'undefined' || typeof target.id === 'undefined') {
       throw new Error('NavigationHistory requires the target.id as an argument')
     }
 

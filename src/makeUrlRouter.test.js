@@ -14,9 +14,16 @@ import { getSelectedUrlRoute } from './getSelectedUrlRoute'
 import { makeRouter } from './makeRouter'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 
+let windowSpy
+
 beforeEach(() => {
   makeRouter.mockClear()
   makeUrlNavigationTarget.mockClear()
+  windowSpy = jest.spyOn(global, 'window', 'get')
+})
+
+afterEach(() => {
+  windowSpy.mockRestore()
 })
 
 describe('makeUrlRouter()', () => {
@@ -26,6 +33,14 @@ describe('makeUrlRouter()', () => {
   })
 
   describe('calling it', () => {
+    describe('when window does not exist', () => {
+      it('should still return a router object', () => {
+        windowSpy.mockImplementation(() => undefined)
+        const router = makeUrlRouter()
+        expect(typeof router).toBe('object')
+      })
+    })
+
     it('should return a router object', () => {
       const router = makeUrlRouter()
       expect(typeof router).toBe('object')
@@ -34,6 +49,13 @@ describe('makeUrlRouter()', () => {
     it('should call makeRouter', () => {
       const router = makeUrlRouter()
       expect(makeRouter).toHaveBeenCalledTimes(1)
+    })
+
+    it('should accept a history object', () => {
+      const history = new NavigationHistory({ id: '/custom' })
+      const router = makeUrlRouter({ history })
+      expect(typeof router).toBe('object')
+      expect(router.history).toBe(history)
     })
 
     it('should not store the getSelectedRoute argument (it should always be getSelectedUrlRoute())', () => {
