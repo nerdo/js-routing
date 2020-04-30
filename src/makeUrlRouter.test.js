@@ -1,19 +1,11 @@
-jest.mock('./makeRouter', () => {
-  const { makeRouter } = jest.requireActual('./makeRouter')
-  return { makeRouter: jest.fn(makeRouter) }
-})
-
-jest.mock('./makeUrlNavigationTarget', () => {
-  const { makeUrlNavigationTarget } = jest.requireActual('./makeUrlNavigationTarget')
-  return { makeUrlNavigationTarget: jest.fn(makeUrlNavigationTarget) }
-})
-
 import { makeUrlRouter } from '.'
 import { NavigationHistory } from './NavigationHistory'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
-import { makeRouter } from './makeRouter'
-import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
+import * as makeRouterImport from './makeRouter'
+import * as makeUrlNavigationTargetImport from './makeUrlNavigationTarget'
 
+const makeUrlNavigationTarget = jest.spyOn(makeUrlNavigationTargetImport, 'makeUrlNavigationTarget')
+const makeRouter = jest.spyOn(makeRouterImport, 'makeRouter')
 let windowSpy
 
 beforeEach(() => {
