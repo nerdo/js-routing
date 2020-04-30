@@ -1,4 +1,5 @@
 import { getExpandedRoutes } from './getExpandedRoutes'
+import { getPathParts } from './getPathParts'
 
 export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } = {}) => {
   if (typeof history === 'undefined') {
@@ -16,7 +17,26 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
 
     applyRouting(routes) {
       const selected = getSelectedRoute(getExpandedRoutes(routes || []), history)
-      return selected ? selected.action() : null
+      const getParamsFromRoute = route => {
+        if (!route) {
+          return
+        }
+
+        const targetPathParts = getPathParts(history.current.id)
+        const params = getPathParts(route.id)
+          .map((part, i) => ({ name: part, value: targetPathParts[i] }))
+          .filter(current => current.name[0] === ':')
+          .reduce(
+            (obj, current) => {
+              obj[current.name.substr(1)] = current.value
+              return obj
+            },
+            {}
+          )
+        return params
+      }
+      const params = getParamsFromRoute(selected)
+      return selected ? selected.action(params) : null
     },
 
     navigate(input) {

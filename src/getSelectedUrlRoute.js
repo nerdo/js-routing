@@ -1,4 +1,4 @@
-const getPathParts = path => path.split('/').filter(part => part !== '')
+import { getPathParts } from './getPathParts'
 
 export const getSelectedUrlRoute = (routes, history) => {
   const target = {

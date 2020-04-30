@@ -126,6 +126,21 @@ describe('makeUrlRouter()', () => {
           expect(router.applyRouting(routes)).toBeNull()
         })
       })
+
+      describe('routes with URL parameters', () => {
+        it('should provide the parameters to the action function', () => {
+          const userProfile = {
+            id: '/user/:username',
+            action: ({ username }) => username
+          }
+          const routes = [
+            userProfile
+          ]
+
+          router.navigate('/user/joey')
+          expect(router.applyRouting(routes)).toBe('joey')
+        })
+      })
     })
   })
 })
