@@ -172,4 +172,20 @@ describe('getSelectedUrlRoute()', () => {
       expect(getSelectedUrlRoute(routes, history)).toBe(regExRoute)
     })
   })
+
+  describe('non matches', () => {
+    it('should return undefined', () => {
+      const routes = allRoutes
+      const history = new NavigationHistory({ id: '/' })
+
+      history.push({ id: '/a' })
+      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+
+      history.push({ id: '/lamb/chops' })
+      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+
+      history.push({ id: '/employee/TXX210' })
+      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+    })
+  })
 })
