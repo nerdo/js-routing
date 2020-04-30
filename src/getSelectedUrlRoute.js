@@ -22,7 +22,7 @@ export const getSelectedUrlRoute = (routes, history) => {
     }
     return isNest ? pathParts.length <= target.pathParts.length : pathParts.length === target.pathParts.length
   }
-  const eliminateNonMatches = ({ isFunction, isRegExp, pathParts, original: { id: originalId, isNest } }) => {
+  const doesMatch = ({ isFunction, isRegExp, pathParts, original: { id: originalId, isNest } }) => {
     if (isFunction) {
       return originalId(target.id)
     } else if (isRegExp) {
@@ -37,8 +37,7 @@ export const getSelectedUrlRoute = (routes, history) => {
   const match = routes
     .map(toMetaData)
     .filter(eliminateIncompatibleNumPathParts)
-    .filter(eliminateNonMatches)
-    [0]
+    .reduce((match, current) => match || (doesMatch(current) ? current : void 0), void 0)
 
   return match ? match.original : void 0
 }
