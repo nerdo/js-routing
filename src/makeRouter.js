@@ -36,7 +36,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
         return params
       }
       const params = getParamsFromRoute(selected)
-      return selected ? selected.action(params) : null
+      return selected ? selected.action(params, history.current.params) : null
     },
 
     navigate(input) {

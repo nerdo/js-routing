@@ -127,35 +127,77 @@ describe('makeUrlRouter()', () => {
         })
       })
 
-      describe('routes with URL parameters', () => {
-        it('should provide the parameters to the action function', () => {
-          const userProfile = {
-            id: '/user/:username',
-            action: p => p
-          }
-          const userPhoto = {
-            id: '/user/:username/photos/:photoId',
-            action: p => p
-          }
-          const routes = [
-            userProfile,
-            userPhoto
-          ]
+      describe('parameters', () => {
+        describe('query string', () => {
+          it('should provide all URL parameters as the second argument of the action function', () => {
+            const about = {
+              id: '/about',
+              action: (p, q) => q
+            }
+            const routes = [about]
 
-          router.navigate('/user/joey')
-          const userProfileParams = router.applyRouting(routes)
-          expect(Object.keys(userProfileParams)).toHaveLength(1)
-          expect(userProfileParams).toEqual(expect.objectContaining({
-            username: 'joey'
-          }))
+            router.navigate('/about')
+            expect(router.applyRouting(routes)).toBeUndefined()
 
-          router.navigate('/user/joey/photos/29386')
-          const userPhotoParams = router.applyRouting(routes)
-          expect(Object.keys(userPhotoParams)).toHaveLength(2)
-          expect(userPhotoParams).toEqual(expect.objectContaining({
-            username: 'joey',
-            photoId: '29386'
-          }))
+            router.navigate('/about?')
+            const justQueryStringCharacter = router.applyRouting(routes)
+            expect(Object.keys(justQueryStringCharacter)).toHaveLength(0)
+
+            router.navigate('/about?a')
+            const varWithoutEquals = router.applyRouting(routes)
+            expect(Object.keys(varWithoutEquals)).toHaveLength(1)
+            expect(varWithoutEquals).toEqual(expect.objectContaining({
+              a: ''
+            }))
+
+            router.navigate('/about?a=')
+            const explicitEmptyValue = router.applyRouting(routes)
+            expect(Object.keys(explicitEmptyValue)).toHaveLength(1)
+            expect(explicitEmptyValue).toEqual(expect.objectContaining({
+              a: ''
+            }))
+
+            router.navigate('/about?a=123&b&&c=xyz&')
+            const mixedValues = router.applyRouting(routes)
+            expect(Object.keys(mixedValues)).toHaveLength(3)
+            expect(mixedValues).toEqual(expect.objectContaining({
+              a: '123',
+              b: '',
+              c: 'xyz'
+            }))
+          })
+        })
+
+        describe('in the URL', () => {
+          it('should provide the parameters to the action function', () => {
+            const userProfile = {
+              id: '/user/:username',
+              action: p => p
+            }
+            const userPhoto = {
+              id: '/user/:username/photos/:photoId',
+              action: p => p
+            }
+            const routes = [
+              userProfile,
+              userPhoto
+            ]
+
+            router.navigate('/user/joey')
+            const userProfileParams = router.applyRouting(routes)
+            expect(Object.keys(userProfileParams)).toHaveLength(1)
+            expect(userProfileParams).toEqual(expect.objectContaining({
+              username: 'joey'
+            }))
+
+            router.navigate('/user/joey/photos/29386')
+            const userPhotoParams = router.applyRouting(routes)
+            expect(Object.keys(userPhotoParams)).toHaveLength(2)
+            expect(userPhotoParams).toEqual(expect.objectContaining({
+              username: 'joey',
+              photoId: '29386'
+            }))
+          })
         })
       })
     })
