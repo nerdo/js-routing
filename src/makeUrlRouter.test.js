@@ -131,14 +131,31 @@ describe('makeUrlRouter()', () => {
         it('should provide the parameters to the action function', () => {
           const userProfile = {
             id: '/user/:username',
-            action: ({ username }) => username
+            action: p => p
+          }
+          const userPhoto = {
+            id: '/user/:username/photos/:photoId',
+            action: p => p
           }
           const routes = [
-            userProfile
+            userProfile,
+            userPhoto
           ]
 
           router.navigate('/user/joey')
-          expect(router.applyRouting(routes)).toBe('joey')
+          const userProfileParams = router.applyRouting(routes)
+          expect(Object.keys(userProfileParams)).toHaveLength(1)
+          expect(userProfileParams).toEqual(expect.objectContaining({
+            username: 'joey'
+          }))
+
+          router.navigate('/user/joey/photos/29386')
+          const userPhotoParams = router.applyRouting(routes)
+          expect(Object.keys(userPhotoParams)).toHaveLength(2)
+          expect(userPhotoParams).toEqual(expect.objectContaining({
+            username: 'joey',
+            photoId: '29386'
+          }))
         })
       })
     })
