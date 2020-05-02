@@ -33,7 +33,22 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
             },
             {}
           )
-        return params
+        const isFunction = typeof route.id === 'function'
+        const isRegExp = typeof route.id === 'object' && route.id.constructor === RegExp
+        const target = !isFunction && !isRegExp ? makeNavigationTarget(route.id) : {}
+        const currentParams = history.current.params || {}
+        const requiredQueryParams = Object.keys(target.params || {})
+            .reduce(
+              (obj, paramName) => {
+                obj[paramName] = currentParams[paramName]
+                return obj
+              },
+              {}
+            )
+        return {
+          ...params,
+          ...requiredQueryParams
+        }
       }
       const params = getParamsFromRoute(selected)
       return selected ? selected.action(params, history.current.params) : null

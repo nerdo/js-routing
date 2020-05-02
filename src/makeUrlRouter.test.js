@@ -184,25 +184,25 @@ describe('makeUrlRouter()', () => {
             expect(router.applyRouting(routes)).toBeNull()
 
             router.navigate('/about?who&what')
-            const emptyWhoWhat = router.applyRouting(routes)
-            expect(emptyWhoWhat).not.toBeNull()
-            expect(Object.keys(emptyWhoWhat.required)).toHaveLength(0)
-            expect(Object.keys(emptyWhoWhat.query)).toHaveLength(2)
-            expect(emptyWhoWhat.query).toEqual(expect.objectContaining({
+            const empty = router.applyRouting(routes)
+            expect(empty).not.toBeNull()
+            expect(Object.keys(empty.required)).toHaveLength(2)
+            expect(Object.keys(empty.query)).toHaveLength(2)
+            expect(empty.query).toEqual(expect.objectContaining({
               who: '',
               what: ''
             }))
 
             router.navigate('/about?who=bill&what=pilot&sanford=son')
-            const typicalWhoWhat = router.applyRouting(routes)
-            expect(typicalWhoWhat).not.toBeNull()
-            expect(Object.keys(typicalWhoWhat.required)).toHaveLength(2)
-            expect(Object.keys(typicalWhoWhat.query)).toHaveLength(3)
-            expect(typicalWhoWhat.required).toEqual(expect.objectContaining({
+            const typical = router.applyRouting(routes)
+            expect(typical).not.toBeNull()
+            expect(Object.keys(typical.required)).toHaveLength(2)
+            expect(Object.keys(typical.query)).toHaveLength(3)
+            expect(typical.required).toEqual(expect.objectContaining({
               who: 'bill',
               what: 'pilot'
             }))
-            expect(typicalWhoWhat.query).toEqual(expect.objectContaining({
+            expect(typical.query).toEqual(expect.objectContaining({
               who: 'bill',
               what: 'pilot',
               sanford: 'son'
