@@ -43,6 +43,10 @@ describe('getSelectedUrlRoute()', () => {
     id: /^\/employee\/T(\d{5})\/?/,
     action: () => 'regex route'
   }
+  const documents = {
+    id: '/documents?page&numPerPage',
+    action: () => 'required query string'
+  }
 
   const allRoutes = [
     home,
@@ -54,7 +58,8 @@ describe('getSelectedUrlRoute()', () => {
     productNest,
     productDetailsChild,
     functionMatcher,
-    regExRoute
+    regExRoute,
+    documents
   ]
 
   describe('exact match', () => {
@@ -98,6 +103,31 @@ describe('getSelectedUrlRoute()', () => {
 
       history.push({ id: '/user/bar/photos' })
       expect(getSelectedUrlRoute(routes, history)).toBe(userPhotos)
+    })
+  })
+
+  describe('required query string parameters', () => {
+    it('should return the correct route', () => {
+      const routes = allRoutes
+      const history = new NavigationHistory({ id: '/' })
+
+      history.push({ id: '/documents' })
+      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+
+      history.push({ id: '/documents?page=1' })
+      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+
+      history.push({ id: '/documents?numPerPage=10' })
+      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+
+      history.push({
+        id: '/documents',
+        params: {
+          page: '1',
+          numPerPage: '10'
+        }
+      })
+      expect(getSelectedUrlRoute(routes, history)).toBe(documents)
     })
   })
 

@@ -166,6 +166,48 @@ describe('makeUrlRouter()', () => {
               c: 'xyz'
             }))
           })
+
+          it('should provide required URL parameters in both parameters to the action function', () => {
+            const about = {
+              id: '/about?who&what',
+              action: (required, query) => ({ required, query })
+            }
+            const routes = [about]
+
+            router.navigate('/about')
+            expect(router.applyRouting(routes)).toBeNull()
+
+            router.navigate('/about?who')
+            expect(router.applyRouting(routes)).toBeNull()
+
+            router.navigate('/about?what')
+            expect(router.applyRouting(routes)).toBeNull()
+
+            router.navigate('/about?who&what')
+            const emptyWhoWhat = router.applyRouting(routes)
+            expect(emptyWhoWhat).not.toBeNull()
+            expect(Object.keys(emptyWhoWhat.required)).toHaveLength(0)
+            expect(Object.keys(emptyWhoWhat.query)).toHaveLength(2)
+            expect(emptyWhoWhat.query).toEqual(expect.objectContaining({
+              who: '',
+              what: ''
+            }))
+
+            router.navigate('/about?who=bill&what=pilot&sanford=son')
+            const typicalWhoWhat = router.applyRouting(routes)
+            expect(typicalWhoWhat).not.toBeNull()
+            expect(Object.keys(typicalWhoWhat.required)).toHaveLength(2)
+            expect(Object.keys(typicalWhoWhat.query)).toHaveLength(3)
+            expect(typicalWhoWhat.required).toEqual(expect.objectContaining({
+              who: 'bill',
+              what: 'pilot'
+            }))
+            expect(typicalWhoWhat.query).toEqual(expect.objectContaining({
+              who: 'bill',
+              what: 'pilot',
+              sanford: 'son'
+            }))
+          })
         })
 
         describe('in the URL', () => {
