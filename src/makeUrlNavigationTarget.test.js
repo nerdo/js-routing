@@ -51,10 +51,12 @@ describe('makeUrlNavigationTarget()', () => {
         const { params } = makeUrlNavigationTarget('/a/b/c?a&b=1&&c=hello&d=d%3D%23decode%20this%26please%3F')
 
         expect(Object.keys(params).length).toBe(4)
-        expect(params.a).toBe('')
-        expect(params.b).toBe('1')
-        expect(params.c).toBe('hello')
-        expect(params.d).toBe('d=#decode this&please?')
+        expect(params).toEqual(expect.objectContaining({
+          a: '',
+          b: '1',
+          c: 'hello',
+          d: 'd=#decode this&please?'
+        }))
       })
     })
   })
