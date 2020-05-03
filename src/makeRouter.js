@@ -28,11 +28,11 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
         const isRegExp = typeof route.id === 'object' && route.id.constructor === RegExp
 
         const getParameters = typeof route.getParameters === 'function'
-          ? (id) => {
-            const matches = !isRegExp ? [] : route.id.exec(id).splice(1)
-            return route.getParameters(id, matches)
+          ? history => {
+            const matches = !isRegExp ? [] : route.id.exec(history.current.id).splice(1)
+            return route.getParameters(history, matches)
           }
-          : () => {
+          : history => {
             const targetPathParts = getPathParts(history.current.id)
             const params = getPathParts(route.id)
               .map((part, i) => ({ name: part, value: targetPathParts[i] }))
@@ -60,7 +60,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
             }
           }
 
-        return getParameters(history.current.id)
+        return getParameters(history)
       }
       const params = getParamsFromRoute(selected)
       return selected ? selected.action(params, history.current.params) : null

@@ -191,9 +191,9 @@ export const routes = [
 
 > ![Note!](assets/OOjs_UI_icon_alert-warning.svg) Matching routes with a function or regular expression introduces the dilemma of [Route Precedence](#route-precedence). Review the explanation of what route precedence is and how @nerdo/routing handles it for a clear understanding of how routing will work.
 
-When matching identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. If `id` is a regular expression, `getParameters(...)` will receive the identifier it matched on as the first argument, and an array of capture groups from the regular expression as the second argument. If `id` is a function, the second argument will be an empty array.
+When matching identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. If `id` is a regular expression, `getParameters(...)` will receive the [NavigationHistory](#navigation-history-interface) object as the first argument, and an array of capture groups from the regular expression as the second argument. If `id` is *not* a regular expression, the second argument will be an empty array.
 
-The function is free to parse the navigation state in any way, but it must return an object containing a map of the dynamic parameters.
+The function is free to parse things in any way, but it must return an object containing a map of the dynamic parameters.
 
 Here's a more complex example demonstrating `getParameters(...)`:
 
@@ -203,12 +203,12 @@ import { HomePage, AboutPage } from './pages'
 export const routes = [
     {
         id: (id) => id === '/' || id === '/home',
-        getParameters: (id) => ({ actualPath: id }),
+        getParameters: history => ({ actualPath: history.current.id }),
         action: () => <HomePage />
     },
     {
         id: /^\/(?:info|about)(\/?.*)$/,
-        getParameters: (id, captureGroups) => ({ subPath: captureGroups[0] }),
+        getParameters: (history, captureGroups) => ({ subPath: captureGroups[0] }),
         action: () => <AboutPage />
     }
 ]
@@ -218,7 +218,7 @@ The first route matches the identifiers `/` and `/home`. Its `getParameters(...)
 
 The second route matches identifiers starting with `/info` and `/about` which contain one more path component and it captures that path component. Its `getParameters(...)` function sets the dynamic parameter named `subPath` to the captured path component.
 
-`getParameters(...)` can also be defined if the identifier is a string. In this scenario, the default dynamic parameter parsing rules are not used and your implementation of `getParameters(...)` is entirely responsible for parsing them out of the navigation state.
+`getParameters(...)` can also be defined if the identifier is a string. In this scenario, the default dynamic parameter parsing rules are not used and your implementation of `getParameters(...)` is entirely responsible for any parsing that needs to occur.
 
 # Applying Routing
 

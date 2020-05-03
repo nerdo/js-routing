@@ -247,12 +247,12 @@ describe('makeUrlRouter()', () => {
           beforeEach(() => {
             home = {
               id: (id) => id === '/' || id === '/home',
-              getParameters: jest.fn((id) => ({ actualPath: id })),
+              getParameters: jest.fn(history => ({ actualPath: history.current.id })),
               action: jest.fn(params => params)
             }
             info = {
               id: /^\/(?:info|about)(\/?.*)$/,
-              getParameters: jest.fn((id, captureGroups) => ({ subPath: captureGroups[0] })),
+              getParameters: jest.fn((history, captureGroups) => ({ subPath: captureGroups[0] })),
               action: jest.fn(params => params)
             }
             overrideGetParameters = {
@@ -285,7 +285,7 @@ describe('makeUrlRouter()', () => {
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
             expect(home.getParameters).toHaveBeenCalledTimes(1)
-            expect(home.getParameters).toHaveBeenLastCalledWith('/', expect.arrayExclusivelyContaining([]))
+            expect(home.getParameters).toHaveBeenLastCalledWith(router.history, expect.arrayExclusivelyContaining([]))
             expect(home.action).toHaveBeenCalledTimes(1)
             expect(home.action).toHaveBeenLastCalledWith(
               expect.objectExclusivelyContaining({ actualPath: '/' }),
@@ -302,7 +302,7 @@ describe('makeUrlRouter()', () => {
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
             expect(home.getParameters).toHaveBeenCalledTimes(1)
-            expect(home.getParameters).toHaveBeenLastCalledWith('/home', expect.arrayExclusivelyContaining([]))
+            expect(home.getParameters).toHaveBeenLastCalledWith(router.history, expect.arrayExclusivelyContaining([]))
             expect(home.action).toHaveBeenCalledTimes(1)
             expect(home.action).toHaveBeenLastCalledWith(
               expect.objectExclusivelyContaining({ actualPath: '/home' }),
@@ -319,7 +319,7 @@ describe('makeUrlRouter()', () => {
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
             expect(info.getParameters).toHaveBeenCalledTimes(1)
-            expect(info.getParameters).toHaveBeenLastCalledWith('/about', expect.arrayExclusivelyContaining(['']))
+            expect(info.getParameters).toHaveBeenLastCalledWith(router.history, expect.arrayExclusivelyContaining(['']))
             expect(info.action).toHaveBeenLastCalledWith(expect.objectExclusivelyContaining({ subPath: '' }), void 0)
 
             clearMocks()
@@ -333,7 +333,7 @@ describe('makeUrlRouter()', () => {
               })
             expect(info.getParameters).toHaveBeenCalledTimes(1)
             expect(info.getParameters).toHaveBeenLastCalledWith(
-              '/info/toosie/slide',
+              router.history,
               expect.arrayExclusivelyContaining(['/toosie/slide'])
             )
             expect(info.action).toHaveBeenLastCalledWith(
@@ -352,7 +352,7 @@ describe('makeUrlRouter()', () => {
               })
             expect(overrideGetParameters.getParameters).toHaveBeenCalledTimes(1)
             expect(overrideGetParameters.getParameters).toHaveBeenLastCalledWith(
-              '/override/get/parameters',
+              router.history,
               expect.arrayExclusivelyContaining([])
             )
             expect(overrideGetParameters.action).toHaveBeenCalledTimes(1)
