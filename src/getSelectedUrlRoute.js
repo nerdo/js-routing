@@ -2,7 +2,6 @@ import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 
 export const getSelectedUrlRoute = (routes, history) => {
-  history.current //?
   const current = {
     pathParts: getPathParts(history.current.id),
     params: history.current.params || {}
