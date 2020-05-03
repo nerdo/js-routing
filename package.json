@@ -42,7 +42,8 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "./src/extend.arrayExclusivelyContaining.js"
+      "./jest/extend.arrayExclusivelyContaining.js",
+      "./jest/extend.objectExclusivelyContaining.js"
     ]
   }
 }
