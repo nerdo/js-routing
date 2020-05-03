@@ -51,14 +51,14 @@ describe('makeUrlRouter()', () => {
     })
 
     it('should not store the getSelectedRoute argument (it should always be getSelectedUrlRoute())', () => {
-      const getSelectedRoute = () => {}
+      const getSelectedRoute = () => { }
       const router = makeUrlRouter({ getSelectedRoute })
       expect(router.getSelectedRoute).not.toBe(getSelectedRoute)
       expect(router.getSelectedRoute).toBe(getSelectedUrlRoute)
     })
 
     it('should not store the makeNavigationTarget argument (it should always be makeUrlNavigationTarget())', () => {
-      const makeNavigationTarget = () => {}
+      const makeNavigationTarget = () => { }
       const router = makeUrlRouter({ makeNavigationTarget })
       expect(router.makeNavigationTarget).not.toBe(makeNavigationTarget)
       expect(router.makeNavigationTarget).toBe(makeUrlNavigationTarget)
@@ -239,6 +239,127 @@ describe('makeUrlRouter()', () => {
               username: 'joey',
               photoId: '29386'
             }))
+          })
+        })
+
+        describe('getParameters()', () => {
+          let home, info, overrideGetParameters, routes
+          beforeEach(() => {
+            home = {
+              id: (id) => id === '/' || id === '/home',
+              getParameters: jest.fn((id) => ({ actualPath: id })),
+              action: jest.fn(params => params)
+            }
+            info = {
+              id: /^\/(?:info|about)(\/?.*)$/,
+              getParameters: jest.fn((id, captureGroups) => ({ subPath: captureGroups[0] })),
+              action: jest.fn(params => params)
+            }
+            overrideGetParameters = {
+              id: '/override/get/parameters',
+              getParameters: jest.fn(() => ({ contrived: true })),
+              action: jest.fn(params => params)
+            }
+            routes = [
+              home,
+              info,
+              overrideGetParameters
+            ]
+          })
+
+          const clearMocks = () => {
+            routes.forEach(route => {
+              route.getParameters.mockClear()
+              route.action.mockClear()
+            })
+          }
+
+          it('should get called with the correct arguments and pass the params to the action function', () => {
+            clearMocks()
+            router.navigate('/')
+            router.applyRouting(routes)
+            routes
+              .filter(route => route !== home)
+              .forEach(otherRoute => {
+                expect(otherRoute.getParameters).not.toHaveBeenCalled()
+                expect(otherRoute.action).not.toHaveBeenCalled()
+              })
+            expect(home.getParameters).toHaveBeenCalledTimes(1)
+            expect(home.getParameters).toHaveBeenLastCalledWith('/', expect.arrayExclusivelyContaining([]))
+            expect(home.action).toHaveBeenCalledTimes(1)
+            expect(home.action).toHaveBeenLastCalledWith(
+              expect.objectExclusivelyContaining({ actualPath: '/' }),
+              void 0
+            )
+
+            clearMocks()
+            router.navigate('/home')
+            router.applyRouting(routes)
+            routes
+              .filter(route => route !== home)
+              .forEach(otherRoute => {
+                expect(otherRoute.getParameters).not.toHaveBeenCalled()
+                expect(otherRoute.action).not.toHaveBeenCalled()
+              })
+            expect(home.getParameters).toHaveBeenCalledTimes(1)
+            expect(home.getParameters).toHaveBeenLastCalledWith('/home', expect.arrayExclusivelyContaining([]))
+            expect(home.action).toHaveBeenCalledTimes(1)
+            expect(home.action).toHaveBeenLastCalledWith(
+              expect.objectExclusivelyContaining({ actualPath: '/home' }),
+              void 0
+            )
+
+            clearMocks()
+            router.navigate('/about')
+            router.applyRouting(routes)
+            routes
+              .filter(route => route !== info)
+              .forEach(otherRoute => {
+                expect(otherRoute.getParameters).not.toHaveBeenCalled()
+                expect(otherRoute.action).not.toHaveBeenCalled()
+              })
+            expect(info.getParameters).toHaveBeenCalledTimes(1)
+            expect(info.getParameters).toHaveBeenLastCalledWith('/about', expect.arrayExclusivelyContaining(['']))
+            expect(info.action).toHaveBeenLastCalledWith(expect.objectExclusivelyContaining({ subPath: '' }), void 0)
+
+            clearMocks()
+            router.navigate('/info/toosie/slide')
+            router.applyRouting(routes)
+            routes
+              .filter(route => route !== info)
+              .forEach(otherRoute => {
+                expect(otherRoute.getParameters).not.toHaveBeenCalled()
+                expect(otherRoute.action).not.toHaveBeenCalled()
+              })
+            expect(info.getParameters).toHaveBeenCalledTimes(1)
+            expect(info.getParameters).toHaveBeenLastCalledWith(
+              '/info/toosie/slide',
+              expect.arrayExclusivelyContaining(['/toosie/slide'])
+            )
+            expect(info.action).toHaveBeenLastCalledWith(
+              expect.objectExclusivelyContaining({ subPath: '/toosie/slide' }),
+              void 0
+            )
+
+            clearMocks()
+            router.navigate('/override/get/parameters')
+            router.applyRouting(routes)
+            routes
+              .filter(route => route !== overrideGetParameters)
+              .forEach(otherRoute => {
+                expect(otherRoute.getParameters).not.toHaveBeenCalled()
+                expect(otherRoute.action).not.toHaveBeenCalled()
+              })
+            expect(overrideGetParameters.getParameters).toHaveBeenCalledTimes(1)
+            expect(overrideGetParameters.getParameters).toHaveBeenLastCalledWith(
+              '/override/get/parameters',
+              expect.arrayExclusivelyContaining([])
+            )
+            expect(overrideGetParameters.action).toHaveBeenCalledTimes(1)
+            expect(overrideGetParameters.action).toHaveBeenLastCalledWith(
+              expect.objectExclusivelyContaining({ contrived: true }),
+              void 0
+            )
           })
         })
       })

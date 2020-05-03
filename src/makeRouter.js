@@ -17,38 +17,50 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
 
     applyRouting(routes) {
       const selected = getSelectedRoute(getExpandedRoutes(routes || []), history)
+
+      // TODO getParamsFromRoute should be supplied to makeRouter. This implementation is URL specific.
       const getParamsFromRoute = route => {
         if (!route) {
           return
         }
 
-        const targetPathParts = getPathParts(history.current.id)
-        const params = getPathParts(route.id)
-          .map((part, i) => ({ name: part, value: targetPathParts[i] }))
-          .filter(current => current.name[0] === ':')
-          .reduce(
-            (obj, current) => {
-              obj[current.name.substr(1)] = current.value
-              return obj
-            },
-            {}
-          )
         const isFunction = typeof route.id === 'function'
         const isRegExp = typeof route.id === 'object' && route.id.constructor === RegExp
-        const target = !isFunction && !isRegExp ? makeNavigationTarget(route.id) : {}
-        const currentParams = history.current.params || {}
-        const requiredQueryParams = Object.keys(target.params || {})
-            .reduce(
-              (obj, paramName) => {
-                obj[paramName] = currentParams[paramName]
-                return obj
-              },
-              {}
-            )
-        return {
-          ...params,
-          ...requiredQueryParams
-        }
+
+        const getParameters = typeof route.getParameters === 'function'
+          ? (id) => {
+            const matches = !isRegExp ? [] : route.id.exec(id).splice(1)
+            return route.getParameters(id, matches)
+          }
+          : () => {
+            const targetPathParts = getPathParts(history.current.id)
+            const params = getPathParts(route.id)
+              .map((part, i) => ({ name: part, value: targetPathParts[i] }))
+              .filter(current => current.name[0] === ':')
+              .reduce(
+                (obj, current) => {
+                  obj[current.name.substr(1)] = current.value
+                  return obj
+                },
+                {}
+              )
+            const target = !isFunction && !isRegExp ? makeNavigationTarget(route.id) : {}
+            const currentParams = history.current.params || {}
+            const requiredQueryParams = Object.keys(target.params || {})
+                .reduce(
+                  (obj, paramName) => {
+                    obj[paramName] = currentParams[paramName]
+                    return obj
+                  },
+                  {}
+                )
+            return {
+              ...params,
+              ...requiredQueryParams
+            }
+          }
+
+        return getParameters(history.current.id)
       }
       const params = getParamsFromRoute(selected)
       return selected ? selected.action(params, history.current.params) : null
