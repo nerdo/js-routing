@@ -1,3 +1,3 @@
-import { objectExclusivelyContaining } from '../src/objectExclusivelyContaining'
+import { objectExclusivelyContaining } from './objectExclusivelyContaining'
 
 expect.extend({ objectExclusivelyContaining })

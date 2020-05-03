@@ -1,3 +1,3 @@
-import { arrayExclusivelyContaining } from '../src/arrayExclusivelyContaining'
+import { arrayExclusivelyContaining } from './arrayExclusivelyContaining'
 
 expect.extend({ arrayExclusivelyContaining })
