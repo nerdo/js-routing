@@ -131,7 +131,7 @@ describe('getSelectedUrlRoute()', () => {
     })
   })
 
-  describe('nests', () => {
+  describe('nesting', () => {
     it('should return the correct route', () => {
       const routes = allRoutes
       const history = new NavigationHistory({ id: '/' })
@@ -173,6 +173,44 @@ describe('getSelectedUrlRoute()', () => {
           history.push({ id: '/product/special-product' })
           expect(getSelectedUrlRoute(routes, history)).toBe(specialProduct)
         })
+      })
+    })
+
+    describe('child routes', () => {
+      it('should select the correct parent and chilid routes', () => {
+        const actorComponent = () => {
+
+        }
+
+        const parent = {
+          id: '/actors/:actorSlug',
+          isNest: true,
+          action: actorComponent
+        }
+        const tagline = {
+          id: '/tagline',
+          action: () => 'tagline'
+        }
+        const filmography = {
+          id: '/filmography',
+          action: () => 'filmography'
+        }
+
+        const topLevelRoutes = [
+          home,
+          parent,
+          about,
+          fooBar
+        ]
+
+        const childRoutes = [
+          tagline,
+          filmography
+        ]
+
+        const history = new NavigationHistory({ id: '/' })
+        history.push({ id: '/actors/bernie-mac/tagline' })
+        expect(getSelectedUrlRoute(topLevelRoutes, history, '/actors/bernie-mac')).toBe(tagline)
       })
     })
   })
