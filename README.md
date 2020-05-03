@@ -206,11 +206,11 @@ export const routes = [
         getParameters: (id) => ({ actualPath: id }),
         action: () => <HomePage />
     },
-    [
-        id: /^\/(?:info|about)/([^\/+])\/?$/,
+    {
+        id: /^\/(?:info|about)\/([^\/+])\/?$/,
         getParameters: (id, captureGroups) => ({ subPath: captureGroups[0] }),
         action: () => <AboutPage />
-    ]
+    }
 ]
 ```
 
