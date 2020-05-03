@@ -39,5 +39,10 @@
         "@babel/env"
       ]
     ]
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./src/extend.arrayExclusivelyContaining.js"
+    ]
   }
 }
