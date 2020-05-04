@@ -177,16 +177,7 @@ describe('getSelectedUrlRoute()', () => {
     })
 
     describe('child routes', () => {
-      it('should select the correct parent and chilid routes', () => {
-        const actorComponent = () => {
-
-        }
-
-        const parent = {
-          id: '/actors/:actorSlug',
-          isNest: true,
-          action: actorComponent
-        }
+      it('should select the correct child route', () => {
         const tagline = {
           id: '/tagline',
           action: () => 'tagline'
@@ -196,21 +187,14 @@ describe('getSelectedUrlRoute()', () => {
           action: () => 'filmography'
         }
 
-        const topLevelRoutes = [
-          home,
-          parent,
-          about,
-          fooBar
-        ]
-
-        const childRoutes = [
+        const routes = [
           tagline,
           filmography
         ]
 
         const history = new NavigationHistory({ id: '/' })
         history.push({ id: '/actors/bernie-mac/tagline' })
-        expect(getSelectedUrlRoute(topLevelRoutes, history, '/actors/bernie-mac')).toBe(tagline)
+        expect(getSelectedUrlRoute(routes, history, '/actors/bernie-mac')).toBe(tagline)
       })
     })
   })

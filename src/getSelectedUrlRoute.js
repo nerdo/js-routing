@@ -1,9 +1,23 @@
 import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 
-export const getSelectedUrlRoute = (routes, history) => {
+const pathRelativeTo = (parentPath, path) => {
+  const pathEqualsParent = path === parentPath
+  if (pathEqualsParent) {
+    return '/'
+  }
+
+  const pathStartsWithParent = path.substr(0, parentPath.length) === parentPath && path[parentPath.length] === '/'
+  if (pathStartsWithParent) {
+    return path.substr(parentPath.length)
+  }
+
+  return path
+}
+
+export const getSelectedUrlRoute = (routes, history, parentId) => {
   const current = {
-    pathParts: getPathParts(history.current.id),
+    pathParts: getPathParts(pathRelativeTo(parentId || '', history.current.id)),
     params: history.current.params || {}
   }
   current.id = `/${current.pathParts.join('/')}`
