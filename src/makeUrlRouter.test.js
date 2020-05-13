@@ -363,6 +363,57 @@ describe('makeUrlRouter()', () => {
           })
         })
       })
+
+      describe('nesting', () => {
+        describe('child routes', () => {
+          it('should resolve relative to the parent route', () => {
+            const child = {
+              tagline: {
+                id: '/tagline',
+                action: jest.fn(() => slug => `${slug} tagline`)
+              },
+              filmography: {
+                id: '/filmography',
+                action: jest.fn(() => slug => `${slug} filmography`)
+              }
+            }
+            child.routes = [
+              child.tagline,
+              child.filmography
+            ]
+
+            const parent = {
+              actors: {
+                id: '/actors/:slug',
+                isNest: true,
+                action: jest.fn(({ slug }) => {
+                  const renderComponent = router.applyRouting(child.routes) || (() => null)
+                  return renderComponent(slug)
+                })
+              },
+              musicians: {
+                id: '/musicians/:slug',
+                action: jest.fn()
+              }
+            }
+            parent.routes = [
+              parent.actors,
+              parent.musicians
+            ]
+
+            router.navigate('/actors/bernie-mac/tagline')
+            const result = router.applyRouting(parent.routes)
+
+            expect(parent.actors.action).toHaveBeenCalledTimes(1)
+            expect(parent.musicians.action).not.toHaveBeenCalled()
+
+            expect(child.tagline.action).toHaveBeenCalledTimes(1)
+            expect(child.filmography.action).not.toHaveBeenCalled()
+
+            expect(result).toBe('bernie-mac tagline')
+          })
+        })
+      })
     })
   })
 })
