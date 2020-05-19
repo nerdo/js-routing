@@ -39,6 +39,18 @@ describe('makeRouter()', () => {
       it('should have the getSelectedRoute property', () => {
         expect(returnValue.getSelectedRoute).toBe(defaultArgs.getSelectedRoute)
       })
+
+      it('should have the getParamsFromRoute property', () => {
+        expect(returnValue.getParamsFromRoute).toBe(defaultArgs.getParamsFromRoute)
+      })
+
+      it('should have the getParentId property', () => {
+        expect(returnValue.getParentId).toBe(defaultArgs.getParentId)
+      })
+
+      it('should have a getCurrentBaseId function', () => {
+        expect(typeof returnValue.getCurrentBaseId).toBe('function')
+      })
     })
 
     it('has an applyRouting function', () => {

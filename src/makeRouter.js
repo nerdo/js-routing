@@ -23,6 +23,9 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
     getParamsFromRoute,
     getParentId,
 
+    getCurrentBaseId() {
+    },
+
     applyRouting(routes) {
       const selected = getSelectedRoute(getExpandedRoutes(routes || []), history, parentIds[parentIds.length - 1])
       const isFunction = selected && typeof selected.id === 'function'
