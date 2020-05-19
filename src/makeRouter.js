@@ -10,13 +10,36 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute } =
     throw new Error('makeNavigationTarget property is required')
   }
 
+  const parentIds = [void 0]
+
+  const getParentPath = (currentId, selectedRoute) => {
+    const selectedPathParts = getPathParts(selectedRoute.id)
+    const currentPathParts = getPathParts(currentId)
+
+    const parentStub = selectedPathParts
+      .map((part, index) => part[0] === ':' ? currentPathParts[index] : part)
+      .join('/')
+
+    return `/${parentStub}`
+  }
+
   return {
     history,
     makeNavigationTarget,
     getSelectedRoute,
 
     applyRouting(routes) {
-      const selected = getSelectedRoute(getExpandedRoutes(routes || []), history)
+      const selected = getSelectedRoute(getExpandedRoutes(routes || []), history, parentIds[parentIds.length - 1])
+      if (selected && selected.isNest) {
+        const isFunction = typeof selected.id === 'function'
+        const isRegExp = typeof selected.id === 'object' && selected.id.constructor === RegExp
+        const parentId = isFunction || isRegExp
+          // TODO if the id is a function or regular expression, the route needs to provide the getParentId function
+          ? selected.getParentId(history.current.id, selected)
+          // TODO getParentPath is URL specific. It should be supplied to makeRouter.
+          : getParentPath(history.current.id, selected)
+        parentIds.push(parentId)
+      }
 
       // TODO getParamsFromRoute should be supplied to makeRouter. This implementation is URL specific.
       const getParamsFromRoute = route => {
