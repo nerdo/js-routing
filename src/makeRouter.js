@@ -57,7 +57,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
       history.push(makeNavigationTarget(input))
     },
 
-    addInterceptor() {
+    addNavigationInterceptor() {
     }
   }
 }

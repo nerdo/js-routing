@@ -58,9 +58,9 @@ describe('makeRouter()', () => {
       expect(typeof returnValue.applyRouting).toBe('function')
     })
 
-    it('has an addInterceptor function', () => {
-      expect(returnValue.addInterceptor).toBeDefined()
-      expect(typeof returnValue.addInterceptor).toBe('function')
+    it('has an addNavigationInterceptor function', () => {
+      expect(returnValue.addNavigationInterceptor).toBeDefined()
+      expect(typeof returnValue.addNavigationInterceptor).toBe('function')
     })
 
     it('has a navigate function', () => {

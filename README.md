@@ -423,7 +423,7 @@ There are times where it is necessary to listen for navigation events and manipu
 
 A simple use case for an interceptor is redirection. For example, a URL which used to route to a page may no longer exist, and you want to redirect users who try to visit the old page to a new location.
 
-You can use the `addInterceptor()` function to accomplish this. The `addInterceptor()` function takes a callback function as its argument, and returns a function which will remove the interceptor when called.
+You can use the `addNavigationInterceptor()` function to accomplish this. The `addNavigationInterceptor()` function takes a callback function as its argument, and returns a function which will remove the interceptor when called.
 
 The callback function will receive two arguments - `from` and `to`. These are `NavigationTarget` objects which represent the current and next or target routes respectively.
 
@@ -441,9 +441,9 @@ Here's what a simple redirection interceptor might look like:
 
 ```js
 // redirectInterceptor.js
-import { addInterceptor } from './router'
+import { addNavigationInterceptor } from './router'
 
-export const removeRedirectInterceptor = addInterceptor((from, to) => {
+export const removeRedirectInterceptor = addNavigationInterceptor((from, to) => {
     if (to.id === '/old-path-identifier') {
         return '/new-path-identifier'
     }
@@ -455,7 +455,7 @@ You could have a more generic redirection interceptor that defines several redir
 
 ```js
 // redirectInterceptor.js
-import { addInterceptor } from './router'
+import { addNavigationInterceptor } from './router'
 
 // redirects could be defined in another file and imported here...
 const redirects = {
@@ -472,5 +472,5 @@ const redirects = {
     }
 }
 
-export const removeRedirectInterceptor = addInterceptor((from, to) => redirects[from.id] || to)
+export const removeRedirectInterceptor = addNavigationInterceptor((from, to) => redirects[from.id] || to)
 ```
