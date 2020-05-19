@@ -95,7 +95,7 @@ describe('makeUrlRouter()', () => {
       })
 
       describe('simple routes', () => {
-        it('should return the correct route', () => {
+        it('should resolve the correct route', () => {
           const routes = {
             '/': () => 'home',
             '/about': () => 'about',
@@ -450,6 +450,43 @@ describe('makeUrlRouter()', () => {
             router.navigate('/hello')
             expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
           })
+        })
+      })
+
+      describe('with a baseId set', () => {
+        it('should resolve the correct route', () => {
+          const routes = {
+            '/': () => 'home',
+            '/about': () => 'about',
+            '/foo/bar': () => 'foo bar'
+          }
+
+          router = makeUrlRouter({ baseId: '/some/base/path' })
+          expect(router.getCurrentBaseId()).toBe('/some/base/path')
+
+          router.navigate('/some/base/path/about')
+          expect(router.applyRouting(routes)).toBe('about')
+
+          router.navigate('/some/base/path/about#anchor')
+          expect(router.applyRouting(routes)).toBe('about')
+
+          router.navigate('/some/base/path/about?query')
+          expect(router.applyRouting(routes)).toBe('about')
+
+          router.navigate('/some/base/path/about#anchor?and=1&query=present')
+          expect(router.applyRouting(routes)).toBe('about')
+
+          router.navigate('/some/base/path')
+          expect(router.applyRouting(routes)).toBe('home')
+
+          router.navigate('/some/base/path/foo/bar')
+          expect(router.applyRouting(routes)).toBe('foo bar')
+
+          router.navigate('/some/base/path/not-found')
+          expect(router.applyRouting(routes)).toBeNull()
+
+          router.navigate('/some/base/path/not/found')
+          expect(router.applyRouting(routes)).toBeNull()
         })
       })
     })

@@ -10,10 +10,14 @@ const typical = {
   history: () => new NavigationHistory({ id: window ? window.location.pathname : '/' })
 }
 
-export const makeUrlRouter = ({ history = typical.history } = typical) => makeRouter({
-  history: typeof history === 'function' ? history() : history,
-  makeNavigationTarget: makeUrlNavigationTarget,
-  getSelectedRoute: getSelectedUrlRoute,
-  getParamsFromRoute: getUrlParamsFromRoute,
-  getParentId: getParentPath
-})
+export const makeUrlRouter = ({ history = typical.history, baseId } = typical) => {
+  const resolvedHistory = typeof history === 'function' ? history() : history
+  return makeRouter({
+    history: resolvedHistory,
+    makeNavigationTarget: makeUrlNavigationTarget,
+    getSelectedRoute: getSelectedUrlRoute,
+    getParamsFromRoute: getUrlParamsFromRoute,
+    getParentId: getParentPath,
+    baseId: typeof baseId === 'undefined' ? resolvedHistory.current.id : baseId
+  })
+}

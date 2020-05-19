@@ -1,7 +1,7 @@
 import { getExpandedRoutes } from './getExpandedRoutes'
 import { RoutingError } from './RoutingError'
 
-export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId } = {}) => {
+export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId, baseId } = {}) => {
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
   } else if (typeof makeNavigationTarget !== 'function') {
@@ -14,7 +14,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
     throw new Error('getParentId(route, history) property is required')
   }
 
-  const parentIds = [void 0]
+  const parentIds = [baseId]
 
   return {
     history,
@@ -24,6 +24,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
     getParentId,
 
     getCurrentBaseId() {
+      return parentIds[parentIds.length - 1]
     },
 
     applyRouting(routes) {
