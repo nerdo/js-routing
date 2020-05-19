@@ -6,8 +6,11 @@ import { getUrlParamsFromRoute } from './getUrlParamsFromRoute'
 import { getParentPath } from './getParentPath'
 
 const typical = {
-  // TODO pass the browser history object as the last parameter
-  history: () => new NavigationHistory({ id: window ? window.location.pathname : '/' })
+  history: () => {
+    const id = window ? window.location.pathname : '/'
+    const historyApi = window ? window.history : void 0
+    return new NavigationHistory({ id, historyApi })
+  }
 }
 
 export const makeUrlRouter = ({ history = typical.history, baseId } = typical) => {
