@@ -26,7 +26,7 @@ export const getUrlParamsFromRoute = (route, history) => {
           },
           {}
         )
-      const target = !isFunction && !isRegExp ? makeUrlNavigationTarget(route.id) : {}
+      const target = makeUrlNavigationTarget(route.id)
       const currentParams = history.current.params || {}
       const requiredQueryParams = Object.keys(target.params || {})
         .reduce(
