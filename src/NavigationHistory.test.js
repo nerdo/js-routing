@@ -22,6 +22,13 @@ describe('NavigationHistory class', () => {
       expect(navigationHistory.targets.length).toBe(1)
       expect(navigationHistory.targets[0]).toBe(navigationHistory.current)
     })
+
+    it('should accept an object that implments the History API as a second parameter', () => {
+      const historyApi = {}
+      const navigationHistory = new NavigationHistory({ id: '/' }, historyApi)
+
+      expect(navigationHistory.historyApi).toBe(historyApi)
+    })
   })
 
   describe('push()', () => {
@@ -38,6 +45,21 @@ describe('NavigationHistory class', () => {
       expect(navigationHistory.current.params).toBe(params)
       expect(navigationHistory.current.state).toBe(state)
     })
+
+    it('should call pushState() on the historyApi if it exists', () => {
+      const historyApi = {
+        pushState: jest.fn()
+      }
+      const navigationHistory = new NavigationHistory({ id: '/' }, historyApi)
+      const params = {}
+      const state = {}
+      const target = { id: '/abc', params, state }
+
+      navigationHistory.push(target)
+
+      expect(historyApi.pushState).toHaveBeenCalledTimes(1)
+      expect(historyApi.pushState).toHaveBeenCalledWith(target, '', target.id)
+    })
   })
 
   describe('replace()', () => {
@@ -53,6 +75,21 @@ describe('NavigationHistory class', () => {
       expect(navigationHistory.current.id).toBe(target.id)
       expect(navigationHistory.current.params).toBe(params)
       expect(navigationHistory.current.state).toBe(state)
+    })
+
+    it('should call replaceState() on the historyApi if it exists', () => {
+      const historyApi = {
+        replaceState: jest.fn()
+      }
+      const navigationHistory = new NavigationHistory({ id: '/' }, historyApi)
+      const params = {}
+      const state = {}
+      const target = { id: '/bar', params, state }
+
+      navigationHistory.replace(target)
+
+      expect(historyApi.replaceState).toHaveBeenCalledTimes(1)
+      expect(historyApi.replaceState).toHaveBeenCalledWith(target, '', target.id)
     })
   })
 })
