@@ -1,2 +1,5 @@
-* Flesh out baseId (forget URL router specific basePath, just make it generic)
-* Move jest/* into @nerdo/js-utils and add it as a dev dependency
+* Update NavigationHistory to take an object that implements the History API
+* Pass in window.history by default in makeUrlRouter
+* ??? Listen to popstate event from NavigationHistory?? Not sure if necessary...
+* Set up addNavigationInterceptor to call history.addNavigationInterceptor
+* ??? Maybe move jest/* into @nerdo/js-utils and add it as a dev dependency?
