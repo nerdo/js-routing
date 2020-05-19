@@ -391,7 +391,7 @@ const ProductPage = ({ productSlug }) => {
 
 Once routes have been set up, the `navigate()` function can be used to send users to them.
 
-The function has the signature `navigate(id, [replace], [params], [state])`.
+The function has the signature `async navigate(id, [replace], [params], [state])`.
 
   * `id` - The absolute or relative identifier to navigate to.
   * `[replace]` - Optional: A boolean which will replace the current state in navigation history if set to `true`; it defaults to `false`.

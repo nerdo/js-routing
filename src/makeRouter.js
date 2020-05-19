@@ -53,7 +53,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
       return selected ? selected.action(params, history.current.params) : null
     },
 
-    navigate(input) {
+    async navigate(input) {
       history.push(makeNavigationTarget(input))
     },
 

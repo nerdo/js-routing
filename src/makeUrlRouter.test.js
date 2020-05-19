@@ -73,11 +73,11 @@ describe('makeUrlRouter()', () => {
       router = makeUrlRouter()
     })
 
-    describe('navigate()', () => {
-      it('should update history', () => {
+    describe('navigate()', async () => {
+      it('should update history', async () => {
         expect(router.history.current.id).not.toBe('/foo/bar')
 
-        router.navigate('/foo/bar')
+        await router.navigate('/foo/bar')
         expect(makeUrlNavigationTarget).toHaveBeenCalledTimes(1)
         expect(router.history.current.id).toBe('/foo/bar')
       })
@@ -95,70 +95,70 @@ describe('makeUrlRouter()', () => {
       })
 
       describe('simple routes', () => {
-        it('should resolve the correct route', () => {
+        it('should resolve the correct route', async () => {
           const routes = {
             '/': () => 'home',
             '/about': () => 'about',
             '/foo/bar': () => 'foo bar'
           }
 
-          router.navigate('/about')
+          await router.navigate('/about')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/about#anchor')
+          await router.navigate('/about#anchor')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/about?query')
+          await router.navigate('/about?query')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/about#anchor?and=1&query=present')
+          await router.navigate('/about#anchor?and=1&query=present')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/')
+          await router.navigate('/')
           expect(router.applyRouting(routes)).toBe('home')
 
-          router.navigate('/foo/bar')
+          await router.navigate('/foo/bar')
           expect(router.applyRouting(routes)).toBe('foo bar')
 
-          router.navigate('/not-found')
+          await router.navigate('/not-found')
           expect(router.applyRouting(routes)).toBeNull()
 
-          router.navigate('/not/found')
+          await router.navigate('/not/found')
           expect(router.applyRouting(routes)).toBeNull()
         })
       })
 
       describe('parameters', () => {
         describe('query string', () => {
-          it('should provide all URL parameters as the second argument of the action function', () => {
+          it('should provide all URL parameters as the second argument of the action function', async () => {
             const about = {
               id: '/about',
               action: (p, q) => q
             }
             const routes = [about]
 
-            router.navigate('/about')
+            await router.navigate('/about')
             expect(router.applyRouting(routes)).toBeUndefined()
 
-            router.navigate('/about?')
+            await router.navigate('/about?')
             const justQueryStringCharacter = router.applyRouting(routes)
             expect(Object.keys(justQueryStringCharacter)).toHaveLength(0)
 
-            router.navigate('/about?a')
+            await router.navigate('/about?a')
             const varWithoutEquals = router.applyRouting(routes)
             expect(Object.keys(varWithoutEquals)).toHaveLength(1)
             expect(varWithoutEquals).toEqual(expect.objectContaining({
               a: ''
             }))
 
-            router.navigate('/about?a=')
+            await router.navigate('/about?a=')
             const explicitEmptyValue = router.applyRouting(routes)
             expect(Object.keys(explicitEmptyValue)).toHaveLength(1)
             expect(explicitEmptyValue).toEqual(expect.objectContaining({
               a: ''
             }))
 
-            router.navigate('/about?a=123&b&&c=xyz&')
+            await router.navigate('/about?a=123&b&&c=xyz&')
             const mixedValues = router.applyRouting(routes)
             expect(Object.keys(mixedValues)).toHaveLength(3)
             expect(mixedValues).toEqual(expect.objectContaining({
@@ -168,23 +168,23 @@ describe('makeUrlRouter()', () => {
             }))
           })
 
-          it('should provide required URL parameters in both parameters to the action function', () => {
+          it('should provide required URL parameters in both parameters to the action function', async () => {
             const about = {
               id: '/about?who&what',
               action: (required, query) => ({ required, query })
             }
             const routes = [about]
 
-            router.navigate('/about')
+            await router.navigate('/about')
             expect(router.applyRouting(routes)).toBeNull()
 
-            router.navigate('/about?who')
+            await router.navigate('/about?who')
             expect(router.applyRouting(routes)).toBeNull()
 
-            router.navigate('/about?what')
+            await router.navigate('/about?what')
             expect(router.applyRouting(routes)).toBeNull()
 
-            router.navigate('/about?who&what')
+            await router.navigate('/about?who&what')
             const empty = router.applyRouting(routes)
             expect(empty).not.toBeNull()
             expect(Object.keys(empty.required)).toHaveLength(2)
@@ -194,7 +194,7 @@ describe('makeUrlRouter()', () => {
               what: ''
             }))
 
-            router.navigate('/about?who=bill&what=pilot&sanford=son')
+            await router.navigate('/about?who=bill&what=pilot&sanford=son')
             const typical = router.applyRouting(routes)
             expect(typical).not.toBeNull()
             expect(Object.keys(typical.required)).toHaveLength(2)
@@ -212,7 +212,7 @@ describe('makeUrlRouter()', () => {
         })
 
         describe('in the URL', () => {
-          it('should provide the parameters to the action function', () => {
+          it('should provide the parameters to the action function', async () => {
             const userProfile = {
               id: '/user/:username',
               action: p => p
@@ -226,14 +226,14 @@ describe('makeUrlRouter()', () => {
               userPhoto
             ]
 
-            router.navigate('/user/joey')
+            await router.navigate('/user/joey')
             const userProfileParams = router.applyRouting(routes)
             expect(Object.keys(userProfileParams)).toHaveLength(1)
             expect(userProfileParams).toEqual(expect.objectContaining({
               username: 'joey'
             }))
 
-            router.navigate('/user/joey/photos/29386')
+            await router.navigate('/user/joey/photos/29386')
             const userPhotoParams = router.applyRouting(routes)
             expect(Object.keys(userPhotoParams)).toHaveLength(2)
             expect(userPhotoParams).toEqual(expect.objectContaining({
@@ -275,21 +275,21 @@ describe('makeUrlRouter()', () => {
             })
           }
 
-          it('should throw a RoutingError if the id is a regular expression or function and getParameters is not a function', () => {
+          it('should throw a RoutingError if the id is a regular expression or function and getParameters is not a function', async () => {
             clearMocks()
 
             home.getParameters = void 0
-            router.navigate('/')
+            await router.navigate('/')
             expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
 
             info.getParameters = void 0
-            router.navigate('/info')
+            await router.navigate('/info')
             expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
           })
 
-          it('should get called with the correct arguments and pass the params to the action function', () => {
+          it('should get called with the correct arguments and pass the params to the action function', async () => {
             clearMocks()
-            router.navigate('/')
+            await router.navigate('/')
             router.applyRouting(routes)
             routes
               .filter(route => route !== home)
@@ -306,7 +306,7 @@ describe('makeUrlRouter()', () => {
             )
 
             clearMocks()
-            router.navigate('/home')
+            await router.navigate('/home')
             router.applyRouting(routes)
             routes
               .filter(route => route !== home)
@@ -323,7 +323,7 @@ describe('makeUrlRouter()', () => {
             )
 
             clearMocks()
-            router.navigate('/about')
+            await router.navigate('/about')
             router.applyRouting(routes)
             routes
               .filter(route => route !== info)
@@ -336,7 +336,7 @@ describe('makeUrlRouter()', () => {
             expect(info.action).toHaveBeenLastCalledWith(expect.objectExclusivelyContaining({ subPath: '' }), void 0)
 
             clearMocks()
-            router.navigate('/info/toosie/slide')
+            await router.navigate('/info/toosie/slide')
             router.applyRouting(routes)
             routes
               .filter(route => route !== info)
@@ -355,7 +355,7 @@ describe('makeUrlRouter()', () => {
             )
 
             clearMocks()
-            router.navigate('/override/get/parameters')
+            await router.navigate('/override/get/parameters')
             router.applyRouting(routes)
             routes
               .filter(route => route !== overrideGetParameters)
@@ -379,7 +379,7 @@ describe('makeUrlRouter()', () => {
 
       describe('nesting', () => {
         describe('child routes', () => {
-          it('should resolve relative to the parent route', () => {
+          it('should resolve relative to the parent route', async () => {
             const child = {
               tagline: {
                 id: '/tagline',
@@ -414,7 +414,7 @@ describe('makeUrlRouter()', () => {
               parent.musicians
             ]
 
-            router.navigate('/actors/bernie-mac/tagline')
+            await router.navigate('/actors/bernie-mac/tagline')
             const result = router.applyRouting(parent.routes)
 
             expect(parent.actors.action).toHaveBeenCalledTimes(1)
@@ -426,7 +426,7 @@ describe('makeUrlRouter()', () => {
             expect(result).toBe('bernie-mac tagline')
           })
 
-          it('should throw a RoutingError when a nest with a non-string id does not have a getParentId function', () => {
+          it('should throw a RoutingError when a nest with a non-string id does not have a getParentId function', async () => {
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
@@ -444,14 +444,14 @@ describe('makeUrlRouter()', () => {
               fn
             ]
 
-            router.navigate('/info')
+            await router.navigate('/info')
             expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
 
-            router.navigate('/hello')
+            await router.navigate('/hello')
             expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
           })
 
-          it('should call the getParentId function provided on nests', () => {
+          it('should call the getParentId function provided on nests', async () => {
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
@@ -478,15 +478,15 @@ describe('makeUrlRouter()', () => {
               regularNest
             ]
 
-            router.navigate('/info')
+            await router.navigate('/info')
             expect(router.applyRouting(routes)).toBe('regex')
             expect(regex.getParentId).toHaveBeenCalledTimes(1)
 
-            router.navigate('/hello')
+            await router.navigate('/hello')
             expect(router.applyRouting(routes)).toBe('fn')
             expect(fn.getParentId).toHaveBeenCalledTimes(1)
 
-            router.navigate('/ice-cream/ben-and-jerrys')
+            await router.navigate('/ice-cream/ben-and-jerrys')
             expect(router.applyRouting(routes)).toBe('regularNest')
             expect(regularNest.getParentId).toHaveBeenCalledTimes(1)
           })
@@ -494,7 +494,7 @@ describe('makeUrlRouter()', () => {
       })
 
       describe('with a baseId set', () => {
-        it('should resolve the correct route', () => {
+        it('should resolve the correct route', async () => {
           const routes = {
             '/': () => 'home',
             '/about': () => 'about',
@@ -504,28 +504,28 @@ describe('makeUrlRouter()', () => {
           router = makeUrlRouter({ baseId: '/some/base/path' })
           expect(router.getCurrentBaseId()).toBe('/some/base/path')
 
-          router.navigate('/some/base/path/about')
+          await router.navigate('/some/base/path/about')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/some/base/path/about#anchor')
+          await router.navigate('/some/base/path/about#anchor')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/some/base/path/about?query')
+          await router.navigate('/some/base/path/about?query')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/some/base/path/about#anchor?and=1&query=present')
+          await router.navigate('/some/base/path/about#anchor?and=1&query=present')
           expect(router.applyRouting(routes)).toBe('about')
 
-          router.navigate('/some/base/path')
+          await router.navigate('/some/base/path')
           expect(router.applyRouting(routes)).toBe('home')
 
-          router.navigate('/some/base/path/foo/bar')
+          await router.navigate('/some/base/path/foo/bar')
           expect(router.applyRouting(routes)).toBe('foo bar')
 
-          router.navigate('/some/base/path/not-found')
+          await router.navigate('/some/base/path/not-found')
           expect(router.applyRouting(routes)).toBeNull()
 
-          router.navigate('/some/base/path/not/found')
+          await router.navigate('/some/base/path/not/found')
           expect(router.applyRouting(routes)).toBeNull()
         })
       })
