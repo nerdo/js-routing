@@ -34,7 +34,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
 
       if (selected && selected.isNest) {
         const hasGetParentIdFunction = typeof selected.getParentId === 'function'
-        if (isFunction || isRegExp && !hasGetParentIdFunction) {
+        if ((isFunction || isRegExp) && !hasGetParentIdFunction) {
           throw new RoutingError(
             'A getParentId() function must be defined on routes identified by regular expressions and functions.'
           )

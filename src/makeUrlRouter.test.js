@@ -450,6 +450,46 @@ describe('makeUrlRouter()', () => {
             router.navigate('/hello')
             expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
           })
+
+          it('should call the getParentId function provided on nests', () => {
+            const regex = {
+              id: /\/(info|about)/,
+              isNest: true,
+              getParameters: () => {},
+              getParentId: jest.fn(),
+              action: () => 'regex'
+            }
+            const fn = {
+              id: id => id === '/hello',
+              isNest: true,
+              getParameters: () => {},
+              getParentId: jest.fn(),
+              action: () => 'fn'
+            }
+            const regularNest = {
+              id: '/ice-cream/:brandSlug',
+              isNest: true,
+              getParentId: jest.fn(),
+              action: () => 'regularNest'
+            }
+            const routes = [
+              regex,
+              fn,
+              regularNest
+            ]
+
+            router.navigate('/info')
+            expect(router.applyRouting(routes)).toBe('regex')
+            expect(regex.getParentId).toHaveBeenCalledTimes(1)
+
+            router.navigate('/hello')
+            expect(router.applyRouting(routes)).toBe('fn')
+            expect(fn.getParentId).toHaveBeenCalledTimes(1)
+
+            router.navigate('/ice-cream/ben-and-jerrys')
+            expect(router.applyRouting(routes)).toBe('regularNest')
+            expect(regularNest.getParentId).toHaveBeenCalledTimes(1)
+          })
         })
       })
 
