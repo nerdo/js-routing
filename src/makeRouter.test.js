@@ -1,6 +1,12 @@
 import { makeRouter } from '.'
 
-const defaultArgs = { history: {}, makeNavigationTarget: () => {}, getSelectedRoute: () => {} }
+const defaultArgs = {
+  history: {},
+  makeNavigationTarget: () => {},
+  getSelectedRoute: () => {},
+  getParamsFromRoute: () => {},
+  getParentId: () => {}
+}
 
 describe('makeRouter()', () => {
   it('should be defined as a function', () => {
@@ -13,6 +19,8 @@ describe('makeRouter()', () => {
     expect(() => makeRouter({ ...defaultArgs, history: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, makeNavigationTarget: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, getSelectedRoute: void 0 })).toThrow()
+    expect(() => makeRouter({ ...defaultArgs, getParamsFromRoute: void 0 })).toThrow()
+    expect(() => makeRouter({ ...defaultArgs, getParentId: void 0 })).toThrow()
     expect(() => makeRouter(defaultArgs)).not.toThrow()
   })
 

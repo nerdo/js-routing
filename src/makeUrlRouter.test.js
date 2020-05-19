@@ -3,6 +3,7 @@ import { NavigationHistory } from './NavigationHistory'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
 import * as makeRouterImport from './makeRouter'
 import * as makeUrlNavigationTargetImport from './makeUrlNavigationTarget'
+import { RoutingError } from './RoutingError'
 
 const makeUrlNavigationTarget = jest.spyOn(makeUrlNavigationTargetImport, 'makeUrlNavigationTarget')
 const makeRouter = jest.spyOn(makeRouterImport, 'makeRouter')
@@ -274,6 +275,18 @@ describe('makeUrlRouter()', () => {
             })
           }
 
+          it('should throw a RoutingError if the id is a regular expression or function and getParameters is not a function', () => {
+            clearMocks()
+
+            home.getParameters = void 0
+            router.navigate('/')
+            expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
+
+            info.getParameters = void 0
+            router.navigate('/info')
+            expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
+          })
+
           it('should get called with the correct arguments and pass the params to the action function', () => {
             clearMocks()
             router.navigate('/')
@@ -411,6 +424,31 @@ describe('makeUrlRouter()', () => {
             expect(child.filmography.action).not.toHaveBeenCalled()
 
             expect(result).toBe('bernie-mac tagline')
+          })
+
+          it('should throw a RoutingError when a nest with a non-string id does not have a getParentId function', () => {
+            const regex = {
+              id: /\/(info|about)/,
+              isNest: true,
+              getParameters: () => {},
+              action: () => {}
+            }
+            const fn = {
+              id: id => id === '/hello',
+              isNest: true,
+              getParameters: () => {},
+              action: () => {}
+            }
+            const routes = [
+              regex,
+              fn
+            ]
+
+            router.navigate('/info')
+            expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
+
+            router.navigate('/hello')
+            expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
           })
         })
       })

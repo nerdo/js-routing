@@ -2,6 +2,8 @@ import { makeRouter } from './makeRouter'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
 import { NavigationHistory } from './NavigationHistory'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
+import { getUrlParamsFromRoute } from './getUrlParamsFromRoute'
+import { getParentPath } from './getParentPath'
 
 const typical = {
   // TODO pass the browser history object as the last parameter
@@ -11,5 +13,7 @@ const typical = {
 export const makeUrlRouter = ({ history = typical.history } = typical) => makeRouter({
   history: typeof history === 'function' ? history() : history,
   makeNavigationTarget: makeUrlNavigationTarget,
-  getSelectedRoute: getSelectedUrlRoute
+  getSelectedRoute: getSelectedUrlRoute,
+  getParamsFromRoute: getUrlParamsFromRoute,
+  getParentId: getParentPath
 })

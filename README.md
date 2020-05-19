@@ -87,16 +87,22 @@ To set up custom writing, call `makeRouter(...)` and pass it an object with the 
 
 * `history` - An object that implements the [NavigationHistory](#navigation-history-interface), which **optionally** *interacts* with the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
 * `makeNavigationTarget(input)` - A function that converts the `input` into a [NavigationTarget](#navigationtarget).
-* `getSelectedRoute(routes, history, [parentId])` - A function that returns the definition that matches the current navigation state or null if no match was found. Its arguments are:
-  * `routes` - route definitions in expanded array form
+* `getSelectedRoute(routes, history, [parentId])` - A function that returns the definition that matches the current navigation state or null if no match was found.
+  * `routes` - Route definitions in expanded array form.
   * `history` - A [NavigationHistory](#navigation-history-interface) instance.
   * `[parentId]` - The parent identifier the routes are relative to.
+* `getParamsFromRoute(route, history)` - A function that returns the route parameters from the route using history as context.
+  * `route` - The route definition.
+  * `history` - A [NavigationHistory](#navigation-history-interface) instance.
+* `getParentId(route, history)` - A function that reutns the parent ID of the route using history as context.
+  * `route` - The route definition.
+  * `history` - A [NavigationHistory](#navigation-history-interface) instance.
 
 ```js
 // router.js
 import { makeRouter } from '@nerdo/routing'
-import { history, makeNavigationTarget, getSelectedRoute } from './dreamScheme'
-export default makeRouter({ history, makeNavigationTarget, getSelectedRoute })
+import { history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId } from './dreamScheme'
+export default makeRouter({ history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId  })
 ```
 
 # Defining Routes
@@ -269,6 +275,8 @@ const App = () => applyRouting(routes) || <NotFoundPage />
 The `/product/:productSlug` route is a **nest**.
 
 It will match URLs that begin with that identifier **and those that have more path components**. Defining it as a nest allows `/product/super-sponge/details` and `/product/super-sponge/buy` and the like to match.
+
+> If your nest happens to be identified by a regular expression or function, you are also required to provide a `getParentId(route, history)` function. This function takes the route and the history as context and needs to return the part of the id that is considered the parent. You may also provide it to override the default implementation of `getParentId(...)` when the nest id is a string.
 
 Continuing this example, consider a `<ProductPage />` component that looked something like this:
 
