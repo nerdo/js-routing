@@ -9,7 +9,7 @@ const typical = {
   history: () => {
     const id = window ? window.location.pathname : '/'
     const historyApi = window ? window.history : void 0
-    return new NavigationHistory({ id, historyApi })
+    return new NavigationHistory({ id }, historyApi)
   }
 }
 
