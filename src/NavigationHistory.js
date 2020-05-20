@@ -1,12 +1,10 @@
+import EventEmitter from 'events'
+
 export class NavigationHistory {
   constructor(target, historyApi) {
     if (typeof target === 'undefined' || typeof target.id === 'undefined') {
       throw new Error('NavigationHistory requires the target.id as an argument')
     }
-
-    this.initialize = this.initialize.bind(this)
-    this.replace = this.replace.bind(this)
-    this.push = this.push.bind(this)
 
     this.initialize(target, historyApi)
   }
@@ -15,6 +13,7 @@ export class NavigationHistory {
     this.current = target
     this.targets = [this.current]
     this.historyApi = historyApi
+    this.events = new EventEmitter()
   }
 
   replace(target) {
@@ -23,6 +22,8 @@ export class NavigationHistory {
     if (this.historyApi) {
       this.historyApi.replaceState(target, '', target.id)
     }
+    this.events.emit('replace', this.current)
+    this.events.emit('navigation', this.current)
   }
 
   push(target) {
@@ -31,5 +32,7 @@ export class NavigationHistory {
     if (this.historyApi) {
       this.historyApi.pushState(target, '', target.id)
     }
+    this.events.emit('push', this.current)
+    this.events.emit('navigation', this.current)
   }
 }
