@@ -67,14 +67,10 @@ describe('makeUrlRouter()', () => {
   })
 
   describe('router', () => {
-    let router
-
-    beforeEach(() => {
-      router = makeUrlRouter()
-    })
-
     describe('navigate()', () => {
       it('should update history', async () => {
+        const router = makeUrlRouter()
+
         expect(router.history.current.id).not.toBe('/foo/bar')
 
         await router.navigate('/foo/bar')
@@ -85,17 +81,20 @@ describe('makeUrlRouter()', () => {
 
     describe('applyRouting()', () => {
       it('should return null when no routes are provided', () => {
+        const router = makeUrlRouter()
         const returnValue = router.applyRouting()
         expect(returnValue).toBeNull()
       })
 
       it('should return null when no routes match', () => {
+        const router = makeUrlRouter()
         const returnValue = router.applyRouting([])
         expect(returnValue).toBeNull()
       })
 
       describe('simple routes', () => {
         it('should resolve the correct route', async () => {
+          const router = makeUrlRouter()
           const routes = {
             '/': () => 'home',
             '/about': () => 'about',
@@ -131,6 +130,7 @@ describe('makeUrlRouter()', () => {
       describe('parameters', () => {
         describe('query string', () => {
           it('should provide all URL parameters as the second argument of the action function', async () => {
+            const router = makeUrlRouter()
             const about = {
               id: '/about',
               action: (p, q) => q
@@ -169,6 +169,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should provide required URL parameters in both parameters to the action function', async () => {
+            const router = makeUrlRouter()
             const about = {
               id: '/about?who&what',
               action: (required, query) => ({ required, query })
@@ -213,6 +214,7 @@ describe('makeUrlRouter()', () => {
 
         describe('in the URL', () => {
           it('should provide the parameters to the action function', async () => {
+            const router = makeUrlRouter()
             const userProfile = {
               id: '/user/:username',
               action: p => p
@@ -276,6 +278,7 @@ describe('makeUrlRouter()', () => {
           }
 
           it('should throw a RoutingError if the id is a regular expression or function and getParameters is not a function', async () => {
+            const router = makeUrlRouter()
             clearMocks()
 
             home.getParameters = void 0
@@ -288,6 +291,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should get called with the correct arguments and pass the params to the action function', async () => {
+            const router = makeUrlRouter()
             clearMocks()
             await router.navigate('/')
             router.applyRouting(routes)
@@ -380,6 +384,7 @@ describe('makeUrlRouter()', () => {
       describe('nesting', () => {
         describe('child routes', () => {
           it('should resolve relative to the parent route', async () => {
+            const router = makeUrlRouter()
             const child = {
               tagline: {
                 id: '/tagline',
@@ -427,6 +432,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should throw a RoutingError when a nest with a non-string id does not have a getParentId function', async () => {
+            const router = makeUrlRouter()
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
@@ -452,6 +458,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should call the getParentId function provided on nests', async () => {
+            const router = makeUrlRouter()
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
@@ -495,13 +502,13 @@ describe('makeUrlRouter()', () => {
 
       describe('with a baseId set', () => {
         it('should resolve the correct route', async () => {
+          const router = makeUrlRouter({ baseId: '/some/base/path' })
           const routes = {
             '/': () => 'home',
             '/about': () => 'about',
             '/foo/bar': () => 'foo bar'
           }
 
-          router = makeUrlRouter({ baseId: '/some/base/path' })
           expect(router.getCurrentBaseId()).toBe('/some/base/path')
 
           await router.navigate('/some/base/path/about')
