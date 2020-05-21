@@ -1,19 +1,6 @@
 import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
-
-const getPathRelativeTo = (parentPath, path) => {
-  const pathEqualsParent = path === parentPath
-  if (pathEqualsParent) {
-    return '/'
-  }
-
-  const pathStartsWithParent = path.substr(0, parentPath.length) === parentPath && path[parentPath.length] === '/'
-  if (pathStartsWithParent) {
-    return path.substr(parentPath.length)
-  }
-
-  return path
-}
+import { getPathRelativeTo } from './getPathRelativeTo'
 
 export const getSelectedUrlRoute = (routes, history, parentId) => {
   const current = {
