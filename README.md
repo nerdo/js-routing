@@ -94,9 +94,10 @@ To set up custom writing, call `makeRouter(...)` and pass it an object with the 
 * `getParamsFromRoute(route, history)` - A function that returns the route parameters from the route using history as context.
   * `route` - The route definition.
   * `history` - A [NavigationHistory](#navigation-history-interface) instance.
-* `getParentId(route, history)` - A function that reutns the parent ID of the route using history as context.
+* `getParentId(route, history)` - A function that reutns the parent ID of the route using history and baseId as context.
   * `route` - The route definition.
   * `history` - A [NavigationHistory](#navigation-history-interface) instance.
+  * `baseId` - The base ID of the router.
 
 ```js
 // router.js

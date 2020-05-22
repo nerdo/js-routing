@@ -1,6 +1,6 @@
 import { getPathParts } from './getPathParts'
 
-export const getParentPath = (route, history) => {
+export const getParentPath = (route, history, baseId) => {
   const routePathParts = getPathParts(route.id)
   const currentPathParts = getPathParts(history.current.id)
 
@@ -8,5 +8,7 @@ export const getParentPath = (route, history) => {
     .map((part, index) => part[0] === ':' ? currentPathParts[index] : part)
     .join('/')
 
-  return `/${parentStub}`
+  const prepend = baseId === '/' ? '' : baseId
+
+  return `${prepend}/${parentStub}`
 }

@@ -40,8 +40,8 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
           )
         }
         const parentId = hasGetParentIdFunction
-          ? selected.getParentId(selected, history)
-          : getParentId(selected, history)
+          ? selected.getParentId(selected, history, baseId)
+          : getParentId(selected, history, baseId)
         parentIds.push(parentId)
       }
 
