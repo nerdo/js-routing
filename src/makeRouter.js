@@ -33,6 +33,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
       history,
       router.parentIds[router.parentIds.length - 1]
     )
+    router.lastSelectedRoute = selected
     const isFunction = selected && typeof selected.id === 'function'
     const isRegExp = selected && typeof selected.id === 'object' && selected.id.constructor === RegExp
 
@@ -65,7 +66,9 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
       return actionResult
     }
 
-    return typeof transaction === 'function' ? transaction(result) : actionResult
+    const result = typeof transaction === 'function' ? transaction(actionResult) : actionResult
+    router.commitRouting()
+    return result
   }
 
   router.commitRouting = () => {

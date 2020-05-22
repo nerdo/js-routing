@@ -587,6 +587,65 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(parentResult).toBe('childish-gambino')
           })
 
+          it('should resolve correctly with a deferred action in a transaction', async () => {
+            // a "deferred action" is an action function that returns
+            // a function that gets executed  after applyRouting returns.
+            const router = makeUrlRouter({ history: getNewNavigationHistory(), baseId: '/celebrities' })
+            const child = {
+              tagline: {
+                id: '/tagline',
+                action: jest.fn(() => slug => `${slug} tagline`)
+              },
+              filmography: {
+                id: '/filmography',
+                action: jest.fn(() => slug => `${slug} filmography`)
+              }
+            }
+            child.routes = [
+              child.tagline,
+              child.filmography
+            ]
+
+            const parent = {
+              actors: {
+                id: '/actors/:slug',
+                isNest: true,
+                action: jest.fn(({ slug }) => () => {
+                  const renderComponent = router.applyRouting(child.routes) || (() => null)
+                  const result = renderComponent(slug)
+                  router.commitRouting()
+                  return result
+                })
+              },
+              musicians: {
+                id: '/musicians/:slug',
+                action: jest.fn(({ slug }) => slug)
+              }
+            }
+            parent.routes = [
+              parent.actors,
+              parent.musicians
+            ]
+
+            await router.navigate('/celebrities/actors/bernie-mac/tagline')
+            const result = router.applyRouting(parent.routes, deferred => deferred())
+
+            expect(parent.actors.action).toHaveBeenCalledTimes(1)
+            expect(parent.musicians.action).not.toHaveBeenCalled()
+
+            expect(child.tagline.action).toHaveBeenCalledTimes(1)
+            expect(child.filmography.action).not.toHaveBeenCalled()
+
+            expect(result).toBe('bernie-mac tagline')
+
+            // ensure that routing outside of the nest still works
+            await router.navigate('/celebrities/musicians/childish-gambino')
+            const parentResult = router.applyRouting(parent.routes, false)
+            router.commitRouting()
+
+            expect(parentResult).toBe('childish-gambino')
+          })
+
           it('should throw a RoutingError when a nest with a non-string id does not have a getParentId function', async () => {
             const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const regex = {
