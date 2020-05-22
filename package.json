@@ -35,7 +35,14 @@
     "env": {
       "test": {
         "presets": [
-          "@babel/env"
+          [
+            "@babel/env",
+            {
+              "targets": {
+                "node": "current"
+              }
+            }
+          ]
         ],
         "plugins": [
           "@babel/plugin-transform-modules-commonjs",
