@@ -19,7 +19,9 @@ afterEach(() => {
   windowSpy.mockRestore()
 })
 
-describe('makeUrlRouter()', () => {
+const getNewNavigationHistory = () => new NavigationHistory({ id: '/' })
+
+describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
   it('should be defined as a function', () => {
     expect(makeUrlRouter).toBeDefined()
     expect(typeof makeUrlRouter).toBe('function')
@@ -29,18 +31,18 @@ describe('makeUrlRouter()', () => {
     describe('when window does not exist', () => {
       it('should still return a router object', () => {
         windowSpy.mockImplementation(() => undefined)
-        const router = makeUrlRouter()
+        const router = makeUrlRouter({ history: getNewNavigationHistory() })
         expect(typeof router).toBe('object')
       })
     })
 
     it('should return a router object', () => {
-      const router = makeUrlRouter()
+      const router = makeUrlRouter({ history: getNewNavigationHistory() })
       expect(typeof router).toBe('object')
     })
 
     it('should call makeRouter', () => {
-      const router = makeUrlRouter()
+      const router = makeUrlRouter({ history: getNewNavigationHistory() })
       expect(makeRouter).toHaveBeenCalledTimes(1)
     })
 
@@ -69,7 +71,7 @@ describe('makeUrlRouter()', () => {
   describe('router', () => {
     describe('navigate()', () => {
       it('should update history', async () => {
-        const router = makeUrlRouter()
+        const router = makeUrlRouter({ history: getNewNavigationHistory() })
 
         expect(router.history.current.id).not.toBe('/foo/bar')
 
@@ -81,20 +83,20 @@ describe('makeUrlRouter()', () => {
 
     describe('applyRouting()', () => {
       it('should return null when no routes are provided', () => {
-        const router = makeUrlRouter()
+        const router = makeUrlRouter({ history: getNewNavigationHistory() })
         const returnValue = router.applyRouting()
         expect(returnValue).toBeNull()
       })
 
       it('should return null when no routes match', () => {
-        const router = makeUrlRouter()
+        const router = makeUrlRouter({ history: getNewNavigationHistory() })
         const returnValue = router.applyRouting([])
         expect(returnValue).toBeNull()
       })
 
       describe('simple routes', () => {
         it('should resolve the correct route', async () => {
-          const router = makeUrlRouter()
+          const router = makeUrlRouter({ history: getNewNavigationHistory() })
           const routes = {
             '/': () => 'home',
             '/about': () => 'about',
@@ -130,7 +132,7 @@ describe('makeUrlRouter()', () => {
       describe('parameters', () => {
         describe('query string', () => {
           it('should provide all URL parameters as the second argument of the action function', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const about = {
               id: '/about',
               action: (p, q) => q
@@ -169,7 +171,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should provide required URL parameters in both parameters to the action function', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const about = {
               id: '/about?who&what',
               action: (required, query) => ({ required, query })
@@ -214,7 +216,7 @@ describe('makeUrlRouter()', () => {
 
         describe('in the URL', () => {
           it('should provide the parameters to the action function', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const userProfile = {
               id: '/user/:username',
               action: p => p
@@ -278,7 +280,7 @@ describe('makeUrlRouter()', () => {
           }
 
           it('should throw a RoutingError if the id is a regular expression or function and getParameters is not a function', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             clearMocks()
 
             home.getParameters = void 0
@@ -291,7 +293,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should get called with the correct arguments and pass the params to the action function', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             clearMocks()
             await router.navigate('/')
             router.applyRouting(routes)
@@ -384,7 +386,7 @@ describe('makeUrlRouter()', () => {
       describe('nesting', () => {
         describe('child routes', () => {
           it('should resolve relative to the parent route', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const child = {
               tagline: {
                 id: '/tagline',
@@ -432,7 +434,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should throw a RoutingError when a nest with a non-string id does not have a getParentId function', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
@@ -458,7 +460,7 @@ describe('makeUrlRouter()', () => {
           })
 
           it('should call the getParentId function provided on nests', async () => {
-            const router = makeUrlRouter()
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
