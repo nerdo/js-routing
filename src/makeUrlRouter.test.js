@@ -31,14 +31,15 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
     describe('when window does not exist', () => {
       it('should still return a router object', () => {
         windowSpy.mockImplementation(() => undefined)
-        const router = makeUrlRouter({ history: getNewNavigationHistory() })
+        const router = makeUrlRouter()
         expect(typeof router).toBe('object')
       })
     })
 
     it('should return a router object', () => {
-      const router = makeUrlRouter({ history: getNewNavigationHistory() })
+      const router = makeUrlRouter()
       expect(typeof router).toBe('object')
+      expect(router.history.historyApi).toBe(window.history)
     })
 
     it('should call makeRouter', () => {
