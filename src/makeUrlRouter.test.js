@@ -491,7 +491,9 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
                 isNest: true,
                 action: jest.fn(({ slug }) => {
                   const renderComponent = router.applyRouting(child.routes) || (() => null)
-                  return renderComponent(slug)
+                  const result = renderComponent(slug)
+                  router.commitRouting()
+                  return result
                 })
               },
               musicians: {
