@@ -1,7 +1,7 @@
 import { getExpandedRoutes } from './getExpandedRoutes'
 import { RoutingError } from './RoutingError'
 
-export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId, baseId } = {}) => {
+export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId, baseId: initialBaseId } = {}) => {
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
   } else if (typeof makeNavigationTarget !== 'function') {
@@ -14,54 +14,78 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
     throw new Error('getParentId(route, history) property is required')
   }
 
-  const parentIds = [baseId]
-
-  return {
+  const router = {
+    parentIds: [initialBaseId],
+    commits: [],
     history,
     makeNavigationTarget,
     getSelectedRoute,
     getParamsFromRoute,
-    getParentId,
+    getParentId
+  }
 
-    getCurrentBaseId() {
-      return parentIds[parentIds.length - 1]
-    },
+  router.getCurrentBaseId = () => router.parentIds[router.parentIds.length - 1]
 
-    applyRouting(routes) {
-      const selected = getSelectedRoute(getExpandedRoutes(routes || []), history, parentIds[parentIds.length - 1])
-      const isFunction = selected && typeof selected.id === 'function'
-      const isRegExp = selected && typeof selected.id === 'object' && selected.id.constructor === RegExp
+  router.applyRouting = (routes, transaction) => {
+    const baseId = router.parentIds[0]
+    const selected = getSelectedRoute(
+      getExpandedRoutes(routes || []),
+      history,
+      router.parentIds[router.parentIds.length - 1]
+    )
+    const isFunction = selected && typeof selected.id === 'function'
+    const isRegExp = selected && typeof selected.id === 'object' && selected.id.constructor === RegExp
 
-      if (selected && selected.isNest) {
-        const hasGetParentIdFunction = typeof selected.getParentId === 'function'
-        if ((isFunction || isRegExp) && !hasGetParentIdFunction) {
-          throw new RoutingError(
-            'A getParentId() function must be defined on routes identified by regular expressions and functions.'
-          )
-        }
-        const parentId = hasGetParentIdFunction
-          ? selected.getParentId(selected, history, baseId)
-          : getParentId(selected, history, baseId)
-        parentIds.push(parentId)
+    if (selected && selected.isNest) {
+      const hasGetParentIdFunction = typeof selected.getParentId === 'function'
+      if ((isFunction || isRegExp) && !hasGetParentIdFunction) {
+        throw new RoutingError(
+          'A getParentId() function must be defined on routes identified by regular expressions and functions.'
+        )
       }
+      const parentId = hasGetParentIdFunction
+        ? selected.getParentId(selected, history, baseId)
+        : getParentId(selected, history, baseId)
+      router.parentIds.push(parentId)
+      router.commits.push(router.popParentIds)
+    } else {
+      router.commits.push(void 0)
+    }
 
-      if ((isFunction || isRegExp) && selected && typeof selected.getParameters !== 'function') {
-        throw new RoutingError('Routes identified by a function or regular expression must define a getParameters function.')
-      }
+    if ((isFunction || isRegExp) && selected && typeof selected.getParameters !== 'function') {
+      throw new RoutingError(
+        'Routes identified by a function or regular expression must define a getParameters function.'
+      )
+    }
 
-      const params = getParamsFromRoute(selected, history, parentIds[0])
-      const result = selected ? selected.action(params, history.current.params) : null
-      if (selected && selected.isNest) {
-        parentIds.pop()
-      }
-      return result
-    },
+    const params = getParamsFromRoute(selected, history, baseId)
+    const actionResult = selected ? selected.action(params, history.current.params) : null
 
-    async navigate(input) {
-      history.push(makeNavigationTarget(input))
-    },
+    if (transaction === false) {
+      return actionResult
+    }
 
-    addNavigationInterceptor() {
+    return typeof transaction === 'function' ? transaction(result) : actionResult
+  }
+
+  router.commitRouting = () => {
+    const commit = router.commits.pop()
+    if (commit) {
+      commit()
     }
   }
+
+  router.navigate = async input => {
+    history.push(makeNavigationTarget(input, router.parentIds[0]))
+  }
+
+  router.popParentIds = () => {
+    if (router.parentIds.length > 1) {
+      router.parentIds.pop()
+    }
+  }
+
+  router.addNavigationInterceptor = () => { }
+
+  return router
 }

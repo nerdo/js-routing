@@ -95,6 +95,17 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
         expect(returnValue).toBeNull()
       })
 
+      describe('commitRouting()', () => {
+        it('should not allow the baseId to be removed', () => {
+          const router = makeUrlRouter({ history: getNewNavigationHistory() })
+          expect(router.parentIds).toHaveLength(1)
+          router.applyRouting([])
+          expect(router.parentIds).toHaveLength(1)
+          router.commitRouting()
+          expect(router.parentIds).toHaveLength(1)
+        })
+      })
+
       describe('simple routes', () => {
         it('should resolve the correct route', async () => {
           const router = makeUrlRouter({ history: getNewNavigationHistory() })
@@ -494,7 +505,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             ]
 
             await router.navigate('/celebrities/actors/bernie-mac/tagline')
-            const result = router.applyRouting(parent.routes)
+            const result = router.applyRouting(parent.routes, false)
+            router.commitRouting()
 
             expect(parent.actors.action).toHaveBeenCalledTimes(1)
             expect(parent.musicians.action).not.toHaveBeenCalled()
@@ -506,7 +518,69 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
 
             // ensure that routing outside of the nest still works
             await router.navigate('/celebrities/musicians/childish-gambino')
-            const parentResult = router.applyRouting(parent.routes)
+            const parentResult = router.applyRouting(parent.routes, false)
+            router.commitRouting()
+
+            expect(parentResult).toBe('childish-gambino')
+          })
+
+          it('should resolve correctly with a deferred action', async () => {
+            // a "deferred action" is an action function that returns
+            // a function that gets executed  after applyRouting returns.
+            const router = makeUrlRouter({ history: getNewNavigationHistory(), baseId: '/celebrities' })
+            const child = {
+              tagline: {
+                id: '/tagline',
+                action: jest.fn(() => slug => `${slug} tagline`)
+              },
+              filmography: {
+                id: '/filmography',
+                action: jest.fn(() => slug => `${slug} filmography`)
+              }
+            }
+            child.routes = [
+              child.tagline,
+              child.filmography
+            ]
+
+            const parent = {
+              actors: {
+                id: '/actors/:slug',
+                isNest: true,
+                action: jest.fn(({ slug }) => () => {
+                  const renderComponent = router.applyRouting(child.routes) || (() => null)
+                  const result = renderComponent(slug)
+                  router.commitRouting()
+                  return result
+                })
+              },
+              musicians: {
+                id: '/musicians/:slug',
+                action: jest.fn(({ slug }) => slug)
+              }
+            }
+            parent.routes = [
+              parent.actors,
+              parent.musicians
+            ]
+
+            await router.navigate('/celebrities/actors/bernie-mac/tagline')
+            const deferred = router.applyRouting(parent.routes, false)
+            const result = deferred()
+            router.commitRouting()
+
+            expect(parent.actors.action).toHaveBeenCalledTimes(1)
+            expect(parent.musicians.action).not.toHaveBeenCalled()
+
+            expect(child.tagline.action).toHaveBeenCalledTimes(1)
+            expect(child.filmography.action).not.toHaveBeenCalled()
+
+            expect(result).toBe('bernie-mac tagline')
+
+            // ensure that routing outside of the nest still works
+            await router.navigate('/celebrities/musicians/childish-gambino')
+            const parentResult = router.applyRouting(parent.routes, false)
+            router.commitRouting()
 
             expect(parentResult).toBe('childish-gambino')
           })
