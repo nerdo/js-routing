@@ -91,13 +91,14 @@ To set up custom writing, call `makeRouter(...)` and pass it an object with the 
   * `routes` - Route definitions in expanded array form.
   * `history` - A [NavigationHistory](#navigation-history-interface) instance.
   * `[parentId]` - The parent identifier the routes are relative to.
-* `getParamsFromRoute(route, history)` - A function that returns the route parameters from the route using history as context.
+* `getParamsFromRoute(route, history, baseId)` - A function that returns the route parameters from the route using history and baseId as context.
   * `route` - The route definition.
   * `history` - A [NavigationHistory](#navigation-history-interface) instance.
+  * `baseId` - The base id of the router.
 * `getParentId(route, history)` - A function that reutns the parent ID of the route using history and baseId as context.
   * `route` - The route definition.
   * `history` - A [NavigationHistory](#navigation-history-interface) instance.
-  * `baseId` - The base ID of the router.
+  * `baseId` - The base id of the router.
 
 ```js
 // router.js
@@ -201,7 +202,7 @@ export const routes = [
 
 > ![Note!](assets/OOjs_UI_icon_alert-warning.svg) Matching routes with a function or regular expression introduces the dilemma of [Route Precedence](#route-precedence). Review the explanation of what route precedence is and how @nerdo/routing handles it for a clear understanding of how routing will work.
 
-When matching identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. If `id` is a regular expression, `getParameters(...)` will receive the [NavigationHistory](#navigation-history-interface) object as the first argument, and an array of capture groups from the regular expression as the second argument. If `id` is *not* a regular expression, the second argument will be an empty array.
+When matching identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. If `id` is a regular expression, `getParameters(...)` will receive the [NavigationHistory](#navigation-history-interface) object, the baseId of the router, and an array of capture groups from the regular expression. If `id` is *not* a regular expression, the capture groups argument will be an empty array.
 
 The function is free to parse things in any way, but it must return an object containing a map of the dynamic parameters.
 
@@ -213,12 +214,12 @@ import { HomePage, AboutPage } from './pages'
 export const routes = [
     {
         id: (id) => id === '/' || id === '/home',
-        getParameters: history => ({ actualPath: history.current.id }),
+        getParameters: (history, baseId) => ({ actualPath: history.current.id }),
         action: () => <HomePage />
     },
     {
         id: /^\/(?:info|about)(\/?.*)$/,
-        getParameters: (history, captureGroups) => ({ subPath: captureGroups[0] }),
+        getParameters: (history, baseId, captureGroups) => ({ subPath: captureGroups[0] }),
         action: () => <AboutPage />
     }
 ]

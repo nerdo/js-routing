@@ -1,7 +1,7 @@
 import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 
-export const getUrlParamsFromRoute = (route, history) => {
+export const getUrlParamsFromRoute = (route, history, baseId) => {
   if (!route) {
     return
   }
@@ -12,11 +12,12 @@ export const getUrlParamsFromRoute = (route, history) => {
   const getParameters = typeof route.getParameters === 'function'
     ? history => {
       const matches = !isRegExp ? [] : route.id.exec(history.current.id).splice(1)
-      return route.getParameters(history, matches)
+      return route.getParameters(history, baseId, matches)
     }
     : history => {
+      const prepend = baseId === '/' ? '' : (baseId || '')
       const targetPathParts = getPathParts(history.current.id)
-      const params = getPathParts(route.id)
+      const params = getPathParts(`${prepend}/${route.id}`)
         .map((part, i) => ({ name: part, value: targetPathParts[i] }))
         .filter(current => current.name[0] === ':')
         .reduce(

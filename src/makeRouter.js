@@ -49,8 +49,12 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
         throw new RoutingError('Routes identified by a function or regular expression must define a getParameters function.')
       }
 
-      const params = getParamsFromRoute(selected, history)
-      return selected ? selected.action(params, history.current.params) : null
+      const params = getParamsFromRoute(selected, history, parentIds[0])
+      const result = selected ? selected.action(params, history.current.params) : null
+      if (selected && selected.isNest) {
+        parentIds.pop()
+      }
+      return result
     },
 
     async navigate(input) {
