@@ -1,6 +1,6 @@
 {
-  "name": "@nerdo/routing",
-  "description": "A general purpose routing behavior for applications and components.",
+  "name": "@nerdo/js-routing",
+  "description": "General purpose routing behavior for applications and components.",
   "author": "Dannel Albert <cuebix@gmail.com>",
   "license": "MIT",
   "repository": {

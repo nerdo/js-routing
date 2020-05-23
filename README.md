@@ -1,7 +1,7 @@
-# @nerdo/routing
+# @nerdo/js-routing
 A general purpose routing behavior for applications and components.
 
-Code samples here look like React code, but @nerdo/routing is _not_ limited to being used with React.
+Code samples here look like React code, but @nerdo/js-routing is _not_ limited to being used with React.
 
 Since React is the industry standard JavaScript UI library at the time of this writing, the choice to use samples that look like it is strictly _for the sake of familiarity_.
 
@@ -34,28 +34,28 @@ Since React is the industry standard JavaScript UI library at the time of this w
 
 # Introduction
 
-@nerdo/routing is heavily inspired by [React Hook Router](https://github.com/Paratron/hookrouter), but aspires to abstract routing behavior beyond React and the web browser.
+@nerdo/js-routing is heavily inspired by [React Hook Router](https://github.com/Paratron/hookrouter), but aspires to abstract routing behavior beyond React and the web browser.
 
 In an effort to stay as agnostic as possible, some of the wording in the documentation may seem a little odd. Some of it may be accidental, but for the most part it is deliberate.
 
 The most notable so-called oddity is the choice to use the word **identifier** where others would simply say URL or path (or in the case of [State Routing](#state-routing), the state name).
 
-@nerdo/routing views these all as *identifiers of the thing you wish to route to*.
+@nerdo/js-routing views these all as *identifiers of the thing you wish to route to*.
 
 If it helps to understand the documentation better, simply think "URL" or "path" whenever you see the term identifier or id.
 
-That said, the documentation is written using the [URL Routing](#url-routing) use case to explain @nerdo/routing concepts. For details on how other scenarios differ, please refer to [the full API documentation](#full-api-documentation).
+That said, the documentation is written using the [URL Routing](#url-routing) use case to explain @nerdo/js-routing concepts. For details on how other scenarios differ, please refer to [the full API documentation](#full-api-documentation).
 
 # Routing Scenarios
 
-**URL Routing** is the most common routing use case, but it is not the only kind of routing that can take place with @nerdo/routing.
+**URL Routing** is the most common routing use case, but it is not the only kind of routing that can take place with @nerdo/js-routing.
 
 ## URL Routing
 The `makeUrlRouter(...)` function returns a router pre-configured for this scenario.
 
 ```js
 // router.js
-import { makeUrlRouter } from '@nerdo/routing'
+import { makeUrlRouter } from '@nerdo/js-routing'
 export default makeUrlRouter()
 ```
 
@@ -65,7 +65,7 @@ export default makeUrlRouter()
 
 ```js
 // router.js
-import { makeUrlRouter } from  '@nerdo/routing'
+import { makeUrlRouter } from  '@nerdo/js-routing'
 export default makeUrlRouter({ baseId: '/foo/bar' })
 ```
 
@@ -77,7 +77,7 @@ The `makeStateRouter(...)` function returns a pre-configured router for scenario
 
 ```js
 // router.js
-import { makeStateRouter } from '@nerdo/routing'
+import { makeStateRouter } from '@nerdo/js-routing'
 export default makeStateRouter()
 ```
 
@@ -102,7 +102,7 @@ To set up custom writing, call `makeRouter(...)` and pass it an object with the 
 
 ```js
 // router.js
-import { makeRouter } from '@nerdo/routing'
+import { makeRouter } from '@nerdo/js-routing'
 import { history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId } from './dreamScheme'
 export default makeRouter({ history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId  })
 ```
@@ -158,7 +158,7 @@ In the example, the query string parameter `page` is an optional parameter. _All
 
 Abbreviated object form is convenient and concise, but it is intended for the simplest of use cases.
 
-Defining routes using the expanded array form opens up the full @nerdo/routing feature set to your application.
+Defining routes using the expanded array form opens up the full @nerdo/js-routing feature set to your application.
 
 ## Expanded (Array) Form
 
@@ -200,7 +200,7 @@ export const routes = [
 ]
 ```
 
-> ![Note!](assets/OOjs_UI_icon_alert-warning.svg) Matching routes with a function or regular expression introduces the dilemma of [Route Precedence](#route-precedence). Review the explanation of what route precedence is and how @nerdo/routing handles it for a clear understanding of how routing will work.
+> ![Note!](assets/OOjs_UI_icon_alert-warning.svg) Matching routes with a function or regular expression introduces the dilemma of [Route Precedence](#route-precedence). Review the explanation of what route precedence is and how @nerdo/js-routing handles it for a clear understanding of how routing will work.
 
 When matching identifiers this way, you may also provide a `getParameters(...)` function to parse dynamic parameters. If `id` is a regular expression, `getParameters(...)` will receive the [NavigationHistory](#navigation-history-interface) object, the baseId of the router, and an array of capture groups from the regular expression. If `id` is *not* a regular expression, the capture groups argument will be an empty array.
 
