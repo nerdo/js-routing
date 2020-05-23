@@ -450,16 +450,23 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               parent.musicians
             ]
 
-            await router.navigate('/actors/bernie-mac/tagline')
-            const result = router.applyRouting(parent.routes)
+            await router.navigate('/actors/bernie-mac')
+            const nestResult = router.applyRouting(parent.routes)
 
             expect(parent.actors.action).toHaveBeenCalledTimes(1)
+            expect(parent.musicians.action).not.toHaveBeenCalled()
+            expect(nestResult).toBeNull()
+
+            await router.navigate('/actors/bernie-mac/tagline')
+            const childResult = router.applyRouting(parent.routes)
+
+            expect(parent.actors.action).toHaveBeenCalledTimes(2)
             expect(parent.musicians.action).not.toHaveBeenCalled()
 
             expect(child.tagline.action).toHaveBeenCalledTimes(1)
             expect(child.filmography.action).not.toHaveBeenCalled()
 
-            expect(result).toBe('bernie-mac tagline')
+            expect(childResult).toBe('bernie-mac tagline')
 
             // ensure that routing outside of the nest still works
             await router.navigate('/musicians/childish-gambino')
