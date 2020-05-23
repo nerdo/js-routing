@@ -61,7 +61,7 @@ export default makeUrlRouter()
 
 `makeUrlRouter(...)` takes an object with configuration options. It may contain these properties:
 
-* `baseId` - The base id (path) to use when matching URL paths and navigating; defaults to the path of the URL at the time `makeUrlRouter(...)` is called.
+* `baseId` - The base id (path) to use when matching URL paths and navigating; defaults to /.
 
 ```js
 // router.js

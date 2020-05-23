@@ -13,7 +13,7 @@ const typical = {
   }
 }
 
-export const makeUrlRouter = ({ history = typical.history, baseId } = typical) => {
+export const makeUrlRouter = ({ history = typical.history, baseId = '/' } = typical) => {
   const resolvedHistory = typeof history === 'function' ? history() : history
   return makeRouter({
     history: resolvedHistory,
@@ -21,6 +21,6 @@ export const makeUrlRouter = ({ history = typical.history, baseId } = typical) =
     getSelectedRoute: getSelectedUrlRoute,
     getParamsFromRoute: getUrlParamsFromRoute,
     getParentId: getParentPath,
-    baseId: typeof baseId === 'undefined' ? resolvedHistory.current.id : baseId
+    baseId
   })
 }
