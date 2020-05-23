@@ -79,7 +79,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
   }
 
   router.navigate = async input => {
-    history.push(makeNavigationTarget(input, router.parentIds[router.parentIds.length - 1]))
+    history.push(makeNavigationTarget(input, history.current.id))
   }
 
   router.popParentIds = () => {
