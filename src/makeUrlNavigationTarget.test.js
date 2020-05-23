@@ -39,6 +39,12 @@ describe('makeUrlNavigationTarget()', () => {
 
         const e = makeUrlNavigationTarget('relative/input/with/base/id', '/some/where')
         expect(e.id).toBe('/some/where/relative/input/with/base/id')
+
+        const f = makeUrlNavigationTarget('relative/to', '/')
+        expect(f.id).toBe('/relative/to')
+
+        const g = makeUrlNavigationTarget('relative/to', '')
+        expect(g.id).toBe('relative/to')
       })
     })
 

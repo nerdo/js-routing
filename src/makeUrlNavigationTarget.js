@@ -7,6 +7,6 @@ export const makeUrlNavigationTarget = (input, baseId) => {
   const params = queryIndex < 0 ? void 0 : objectFromQueryString(input.substr(queryIndex + 1))
   const isRelativeId = input[0] !== '/' && (baseId || '').length > 0
   const inputId = input.substr(0, toMaxIndex)
-  const id = isRelativeId ? `${baseId}/${inputId}` : inputId
+  const id = isRelativeId ? `${baseId === '/' ? '' : baseId}/${inputId}` : inputId
   return { input, id, params }
 }
