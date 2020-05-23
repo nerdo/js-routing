@@ -5,7 +5,7 @@ export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, ge
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
   } else if (typeof makeNavigationTarget !== 'function') {
-    throw new Error('makeNavigationTarget(input) property is required')
+    throw new Error('makeNavigationTarget(input, baseId) property is required')
   } else if (typeof getSelectedRoute !== 'function') {
     throw new Error('getSelectedRoute(routes, history, parentId) property is required')
   } else if (typeof getParamsFromRoute !== 'function') {

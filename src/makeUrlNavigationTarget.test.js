@@ -17,11 +17,14 @@ describe('makeUrlNavigationTarget()', () => {
 
         const c = makeUrlNavigationTarget('/a/b/c?query&string')
         expect(c.input).toBe('/a/b/c?query&string')
+
+        const d = makeUrlNavigationTarget('relative/input')
+        expect(d.input).toBe('relative/input')
       })
     })
 
     describe('id', () => {
-      it('should be the path minus the anchor and query string', () => {
+      it('should be the resolved path minus the anchor and query string', () => {
         const a = makeUrlNavigationTarget('/a/b/c')
         expect(a.id).toBe('/a/b/c')
 
@@ -30,6 +33,12 @@ describe('makeUrlNavigationTarget()', () => {
 
         const c = makeUrlNavigationTarget('/a/b/c?query&string')
         expect(c.id).toBe('/a/b/c')
+
+        const d = makeUrlNavigationTarget('relative/input/without/base/id')
+        expect(d.id).toBe('relative/input/without/base/id')
+
+        const e = makeUrlNavigationTarget('relative/input/with/base/id', '/some/where')
+        expect(e.id).toBe('/some/where/relative/input/with/base/id')
       })
     })
 

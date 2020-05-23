@@ -1,4 +1,3 @@
-* Update makeUrlNavigationTarget to accept relative URLs.
 * Fix nesting: test landing directly on a nest
 * ??? Listen to popstate event from NavigationHistory?? Not sure if necessary...
 * Set up addNavigationInterceptor to call history.addNavigationInterceptor
