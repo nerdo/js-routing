@@ -1,6 +1,7 @@
 export { getExpandedRoutes } from './getExpandedRoutes'
 export { getParentPath } from './getParentPath'
 export { getPathRelativeTo } from './getPathRelativeTo'
+export { getJoinedPath } from './getJoinedPath'
 export { getPathParts } from './getPathParts'
 export { getSelectedUrlRoute } from './getSelectedUrlRoute'
 export { getUrlParamsFromRoute } from './getUrlParamsFromRoute'

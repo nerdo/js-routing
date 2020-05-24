@@ -5,6 +5,7 @@ describe('exports', () => {
     expect(exports.getExpandedRoutes).toBeDefined()
     expect(exports.getParentPath).toBeDefined()
     expect(exports.getPathRelativeTo).toBeDefined()
+    expect(exports.getJoinedPath).toBeDefined()
     expect(exports.getPathParts).toBeDefined()
     expect(exports.getSelectedUrlRoute).toBeDefined()
     expect(exports.getUrlParamsFromRoute).toBeDefined()
