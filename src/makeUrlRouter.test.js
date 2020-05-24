@@ -19,7 +19,7 @@ afterEach(() => {
   windowSpy.mockRestore()
 })
 
-const getNewNavigationHistory = () => new NavigationHistory({ id: '/' })
+const getNewNavigationHistory = (initialId = '/') => new NavigationHistory({ id: initialId })
 
 describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
   it('should be defined as a function', () => {
@@ -52,6 +52,18 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
       const router = makeUrlRouter({ history })
       expect(typeof router).toBe('object')
       expect(router.history).toBe(history)
+    })
+
+    it('should parse the window URL into the NavigationHistory by default', () => {
+      windowSpy.mockImplementation(() => ({
+        location: {
+          pathname: '/product',
+            search: '?color=black'
+        }
+      }))
+      const router = makeUrlRouter()
+      expect(router.history.current.id).toBe('/product')
+      expect(router.history.current.params).toEqual(expect.objectExclusivelyContaining({ color: 'black' }))
     })
 
     it('should not store the getSelectedRoute argument (it should always be getSelectedUrlRoute())', () => {
@@ -658,14 +670,14 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
-              getParameters: () => {},
-              action: () => {}
+              getParameters: () => { },
+              action: () => { }
             }
             const fn = {
               id: id => id === '/hello',
               isNest: true,
-              getParameters: () => {},
-              action: () => {}
+              getParameters: () => { },
+              action: () => { }
             }
             const routes = [
               regex,
@@ -684,14 +696,14 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
-              getParameters: () => {},
+              getParameters: () => { },
               getParentId: jest.fn(),
               action: () => 'regex'
             }
             const fn = {
               id: id => id === '/hello',
               isNest: true,
-              getParameters: () => {},
+              getParameters: () => { },
               getParentId: jest.fn(),
               action: () => 'fn'
             }

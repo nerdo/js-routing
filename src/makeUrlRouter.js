@@ -7,9 +7,9 @@ import { getParentPath } from './getParentPath'
 
 const typical = {
   history: () => {
-    const id = window ? window.location.pathname : '/'
+    const target = makeUrlNavigationTarget(window ? `${window.location.pathname}${window.location.search}` : '/')
     const historyApi = window ? window.history : void 0
-    return new NavigationHistory({ id }, historyApi)
+    return new NavigationHistory(target, historyApi)
   }
 }
 
