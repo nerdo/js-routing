@@ -15,7 +15,7 @@ export const makeRouter = (
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
   } else if (typeof makeNavigationFunction !== 'function') {
-    throw new Error('makeNavigationFunction() property is required')
+    throw new Error('makeNavigationFunction(router) property is required')
   } else if (typeof makeNavigationTarget !== 'function') {
     throw new Error('makeNavigationTarget(input, baseId) property is required')
   } else if (typeof getSelectedRoute !== 'function') {
@@ -30,7 +30,7 @@ export const makeRouter = (
     parentIds: [initialBaseId],
     commits: [],
     history,
-    makeNavigationFunction,
+    makeNavigationFunction: () => makeNavigationFunction(router),
     makeNavigationTarget,
     getSelectedRoute,
     getParamsFromRoute,
@@ -91,9 +91,9 @@ export const makeRouter = (
     }
   }
 
-  router.navigate = async input => {
-    history.push(makeNavigationTarget(input, history.current.id))
-  }
+  // router.navigate = async input => {
+  //   history.push(makeNavigationTarget(input, history.current.id))
+  // }
 
   router.popParentIds = () => {
     if (router.parentIds.length > 1) {
@@ -102,6 +102,8 @@ export const makeRouter = (
   }
 
   router.addNavigationInterceptor = () => { }
+
+  router.navigate = router.makeNavigationFunction()
 
   return router
 }

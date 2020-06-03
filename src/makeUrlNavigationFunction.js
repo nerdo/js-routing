@@ -1,1 +1,2 @@
-export const makeUrlNavigationFunction = () => {}
+export const makeUrlNavigationFunction = router => async input => {
+}
