@@ -2,6 +2,7 @@ import { makeRouter } from '.'
 
 const defaultArgs = {
   history: {},
+  makeNavigationFunction: () => {},
   makeNavigationTarget: () => {},
   getSelectedRoute: () => {},
   getParamsFromRoute: () => {},
@@ -17,6 +18,7 @@ describe('makeRouter()', () => {
   it('should throw an error if it does not receive required parameters', () => {
     expect(() => makeRouter()).toThrow()
     expect(() => makeRouter({ ...defaultArgs, history: void 0 })).toThrow()
+    expect(() => makeRouter({ ...defaultArgs, makeNavigationFunction: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, makeNavigationTarget: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, getSelectedRoute: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, getParamsFromRoute: void 0 })).toThrow()

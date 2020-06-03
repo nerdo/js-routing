@@ -1,9 +1,21 @@
 import { getExpandedRoutes } from './getExpandedRoutes'
 import { RoutingError } from './RoutingError'
 
-export const makeRouter = ({ history, makeNavigationTarget, getSelectedRoute, getParamsFromRoute, getParentId, baseId: initialBaseId } = {}) => {
+export const makeRouter = (
+  {
+    history,
+    makeNavigationFunction,
+    makeNavigationTarget,
+    getSelectedRoute,
+    getParamsFromRoute,
+    getParentId,
+    baseId: initialBaseId
+  } = {}
+) => {
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
+  } else if (typeof makeNavigationFunction !== 'function') {
+    throw new Error('makeNavigationFunction() property is required')
   } else if (typeof makeNavigationTarget !== 'function') {
     throw new Error('makeNavigationTarget(input, baseId) property is required')
   } else if (typeof getSelectedRoute !== 'function') {
