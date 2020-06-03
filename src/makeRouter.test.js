@@ -34,6 +34,10 @@ describe('makeRouter()', () => {
         expect(returnValue.history).toBe(defaultArgs.history)
       })
 
+      it('should have the makeNavigationFunction property', () => {
+        expect(returnValue.makeNavigationFunction).toBe(defaultArgs.makeNavigationFunction)
+      })
+
       it('should have the makeNavigationTarget property', () => {
         expect(returnValue.makeNavigationTarget).toBe(defaultArgs.makeNavigationTarget)
       })

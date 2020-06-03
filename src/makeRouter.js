@@ -30,6 +30,7 @@ export const makeRouter = (
     parentIds: [initialBaseId],
     commits: [],
     history,
+    makeNavigationFunction,
     makeNavigationTarget,
     getSelectedRoute,
     getParamsFromRoute,
