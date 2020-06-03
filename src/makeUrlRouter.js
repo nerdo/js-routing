@@ -1,6 +1,7 @@
 import { makeRouter } from './makeRouter'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
 import { NavigationHistory } from './NavigationHistory'
+import { makeUrlNavigationFunction } from './makeUrlNavigationFunction'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 import { getUrlParamsFromRoute } from './getUrlParamsFromRoute'
 import { getParentPath } from './getParentPath'
@@ -17,6 +18,7 @@ export const makeUrlRouter = ({ history = typical.history, baseId = '/' } = typi
   const resolvedHistory = typeof history === 'function' ? history() : history
   return makeRouter({
     history: resolvedHistory,
+    makeNavigationFunction: makeUrlNavigationFunction,
     makeNavigationTarget: makeUrlNavigationTarget,
     getSelectedRoute: getSelectedUrlRoute,
     getParamsFromRoute: getUrlParamsFromRoute,
