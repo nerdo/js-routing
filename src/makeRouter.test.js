@@ -2,7 +2,7 @@ import { makeRouter } from '.'
 
 const defaultArgs = {
   history: {},
-  makeNavigationFunction: () => {},
+  makeNavigationFunction: () => async () => {},
   makeNavigationTarget: () => {},
   getSelectedRoute: () => {},
   getParamsFromRoute: () => {},

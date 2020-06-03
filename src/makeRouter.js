@@ -30,7 +30,7 @@ export const makeRouter = (
     parentIds: [initialBaseId],
     commits: [],
     history,
-    makeNavigationFunction: () => makeNavigationFunction(router),
+    makeNavigationFunction,
     makeNavigationTarget,
     getSelectedRoute,
     getParamsFromRoute,
@@ -91,10 +91,6 @@ export const makeRouter = (
     }
   }
 
-  // router.navigate = async input => {
-  //   history.push(makeNavigationTarget(input, history.current.id))
-  // }
-
   router.popParentIds = () => {
     if (router.parentIds.length > 1) {
       router.parentIds.pop()
@@ -103,7 +99,7 @@ export const makeRouter = (
 
   router.addNavigationInterceptor = () => { }
 
-  router.navigate = router.makeNavigationFunction()
+  router.navigate = router.makeNavigationFunction(router)
 
   return router
 }
