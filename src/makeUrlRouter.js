@@ -18,7 +18,7 @@ export const makeUrlRouter = ({ history = typical.history, baseId = '/' } = typi
   const resolvedHistory = typeof history === 'function' ? history() : history
   return makeRouter({
     history: resolvedHistory,
-    makeNavigationFunction: makeUrlNavigationFunction,
+    makeRouterNavigationFunction: makeUrlNavigationFunction,
     makeNavigationTarget: makeUrlNavigationTarget,
     getSelectedRoute: getSelectedUrlRoute,
     getParamsFromRoute: getUrlParamsFromRoute,

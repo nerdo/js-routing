@@ -2,7 +2,7 @@ import { makeRouter } from '.'
 
 const defaultArgs = {
   history: {},
-  makeNavigationFunction: () => async () => {},
+  makeRouterNavigationFunction: () => async () => {},
   makeNavigationTarget: () => {},
   getSelectedRoute: () => {},
   getParamsFromRoute: () => {},
@@ -18,7 +18,7 @@ describe('makeRouter()', () => {
   it('should throw an error if it does not receive required parameters', () => {
     expect(() => makeRouter()).toThrow()
     expect(() => makeRouter({ ...defaultArgs, history: void 0 })).toThrow()
-    expect(() => makeRouter({ ...defaultArgs, makeNavigationFunction: void 0 })).toThrow()
+    expect(() => makeRouter({ ...defaultArgs, makeRouterNavigationFunction: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, makeNavigationTarget: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, getSelectedRoute: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, getParamsFromRoute: void 0 })).toThrow()
@@ -34,8 +34,8 @@ describe('makeRouter()', () => {
         expect(returnValue.history).toBe(defaultArgs.history)
       })
 
-      it('should have the makeNavigationFunction property', () => {
-        expect(returnValue.makeNavigationFunction).toBe(defaultArgs.makeNavigationFunction)
+      it('should have the makeRouterNavigationFunction property', () => {
+        expect(returnValue.makeRouterNavigationFunction).toBe(defaultArgs.makeRouterNavigationFunction)
       })
 
       it('should have the makeNavigationTarget property', () => {

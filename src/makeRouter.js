@@ -4,7 +4,7 @@ import { RoutingError } from './RoutingError'
 export const makeRouter = (
   {
     history,
-    makeNavigationFunction,
+    makeRouterNavigationFunction,
     makeNavigationTarget,
     getSelectedRoute,
     getParamsFromRoute,
@@ -14,8 +14,8 @@ export const makeRouter = (
 ) => {
   if (typeof history === 'undefined') {
     throw new Error('history property is required')
-  } else if (typeof makeNavigationFunction !== 'function') {
-    throw new Error('makeNavigationFunction(router) property is required')
+  } else if (typeof makeRouterNavigationFunction !== 'function') {
+    throw new Error('makeRouterNavigationFunction(router) property is required')
   } else if (typeof makeNavigationTarget !== 'function') {
     throw new Error('makeNavigationTarget(input, baseId) property is required')
   } else if (typeof getSelectedRoute !== 'function') {
@@ -30,7 +30,7 @@ export const makeRouter = (
     parentIds: [initialBaseId],
     commits: [],
     history,
-    makeNavigationFunction,
+    makeRouterNavigationFunction,
     makeNavigationTarget,
     getSelectedRoute,
     getParamsFromRoute,
@@ -99,7 +99,7 @@ export const makeRouter = (
 
   router.addNavigationInterceptor = () => { }
 
-  router.navigate = router.makeNavigationFunction(router)
+  router.navigate = router.makeRouterNavigationFunction(router)
 
   return router
 }
