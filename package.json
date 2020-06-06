@@ -8,6 +8,7 @@
   },
   "version": "0.0.1-alpha.0",
   "main": "dist/index.js",
+  "module": "dist/index.esm.js",
   "files": [
     "index.esm.js",
     "index.esm.js.map",
