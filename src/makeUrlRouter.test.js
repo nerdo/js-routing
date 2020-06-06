@@ -777,6 +777,43 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(router.applyRouting(routes)).toBe('regularNest')
             expect(regularNest.getParentId).toHaveBeenCalledTimes(1)
           })
+
+          it('should always return the same initial base id nests', async () => {
+            const router = makeUrlRouter({ history: getNewNavigationHistory() })
+            const regex = {
+              id: /\/(info|about)/,
+              isNest: true,
+              getParameters: () => { },
+              getParentId: (selected, history, latestBaseId) => history.current.id,
+              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()}`
+            }
+            const fn = {
+              id: id => id === '/hello',
+              isNest: true,
+              getParameters: () => { },
+              getParentId: (selected, history, latestBaseId) => history.current.id,
+              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()}`
+            }
+            const regularNest = {
+              id: '/ice-cream/:brandSlug',
+              isNest: true,
+              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()}`
+            }
+            const routes = [
+              regex,
+              fn,
+              regularNest
+            ]
+
+            await router.navigate('/info')
+            expect(router.applyRouting(routes)).toBe('initial=/ current=/info')
+
+            await router.navigate('/hello')
+            expect(router.applyRouting(routes)).toBe('initial=/ current=/hello')
+
+            await router.navigate('/ice-cream/ben-and-jerrys')
+            expect(router.applyRouting(routes)).toBe('initial=/ current=/ice-cream/ben-and-jerrys')
+          })
         })
       })
 
@@ -789,6 +826,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             '/foo/bar': () => 'foo bar'
           }
 
+          expect(router.getInitialBaseId()).toBe('/some/base/path')
           expect(router.getCurrentBaseId()).toBe('/some/base/path')
 
           await router.navigate('/some/base/path/about')
