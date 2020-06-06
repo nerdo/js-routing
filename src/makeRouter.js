@@ -61,8 +61,8 @@ export const makeRouter = (
         )
       }
       const parentId = hasGetParentIdFunction
-        ? selected.getParentId(selected, history, baseId)
-        : getParentId(selected, history, baseId)
+        ? selected.getParentId(selected, history, latestBaseId)
+        : getParentId(selected, history, latestBaseId)
       router.parentIds.push(parentId)
       router.commits.push(router.popParentIds)
     } else {

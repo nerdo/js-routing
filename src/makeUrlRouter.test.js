@@ -58,7 +58,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
       windowSpy.mockImplementation(() => ({
         location: {
           pathname: '/product',
-            search: '?color=black'
+          search: '?color=black'
         }
       }))
       const router = makeUrlRouter()
@@ -428,14 +428,42 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
         describe('child routes', () => {
           it('should resolve correctly', async () => {
             const router = makeUrlRouter({ history: getNewNavigationHistory() })
+            const filmographyChild = {
+              byGenre: {
+                id: '/genre/:genre',
+                action: jest.fn(({ genre }) => ({ slug, year }) => `${slug} year ${year} byGenre ${genre}`)
+              },
+              byRating: {
+                id: '/rating/:rating',
+                action: jest.fn(({ rating }) => ({ slug, year }) => `${slug} year ${year} byRating ${rating}`)
+              }
+            }
+            filmographyChild.routes = [
+              filmographyChild.byGenre,
+              filmographyChild.byRating
+            ]
+
             const child = {
               tagline: {
                 id: '/tagline/:id',
-                action: jest.fn(({ id }) => slug => `${slug} tagline ${id}`)
+                action: jest.fn(({ id }) => ({ slug }) => `${slug} tagline ${id}`)
               },
               filmography: {
-                id: '/filmography',
-                action: jest.fn(() => slug => `${slug} filmography`)
+                id: '/filmography/:year',
+                isNest: true,
+                action: jest.fn(({ year }) => ({ slug }) => {
+                  // using a transction instead of handling the commit manually
+                  return router.applyRouting(
+                    filmographyChild.routes,
+                    renderComponent => renderComponent ? renderComponent({ slug, year }) : null
+                  )
+
+                  // // The code below achieves the same result as the transaction above, but is more verbose
+                  // const renderComponent = router.applyRouting(filmographyChild.routes, false) || (() => null)
+                  // const result = renderComponent({ slug, year })
+                  // router.commitRouting()
+                  // return result
+                })
               }
             }
             child.routes = [
@@ -448,8 +476,10 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
                 id: '/actors/:slug',
                 isNest: true,
                 action: jest.fn(({ slug }) => {
-                  const renderComponent = router.applyRouting(child.routes) || (() => null)
-                  return renderComponent(slug)
+                  const renderComponent = router.applyRouting(child.routes, false) || (() => null)
+                  const result = renderComponent({ slug })
+                  router.commitRouting()
+                  return result
                 })
               },
               musicians: {
@@ -469,6 +499,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(parent.musicians.action).not.toHaveBeenCalled()
             expect(nestResult).toBeNull()
 
+            // child route
             await router.navigate('/actors/bernie-mac/tagline/1')
             const childResult = router.applyRouting(parent.routes)
 
@@ -479,6 +510,21 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(child.filmography.action).not.toHaveBeenCalled()
 
             expect(childResult).toBe('bernie-mac tagline 1')
+
+            // child of a child
+            await router.navigate('/actors/bernie-mac/filmography/2005/rating/5')
+            const filmographyChildResult = router.applyRouting(parent.routes)
+
+            expect(parent.actors.action).toHaveBeenCalledTimes(3)
+            expect(parent.musicians.action).not.toHaveBeenCalled()
+
+            expect(child.tagline.action).toHaveBeenCalledTimes(1)
+            expect(child.filmography.action).toHaveBeenCalledTimes(1)
+
+            expect(filmographyChild.byGenre.action).not.toHaveBeenCalled()
+            expect(filmographyChild.byRating.action).toHaveBeenCalledTimes(1)
+
+            expect(filmographyChildResult).toBe('bernie-mac year 2005 byRating 5')
 
             // ensure that routing outside of the nest still works
             await router.navigate('/musicians/childish-gambino')
