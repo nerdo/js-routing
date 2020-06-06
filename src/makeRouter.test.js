@@ -2,11 +2,11 @@ import { makeRouter } from '.'
 
 const defaultArgs = {
   history: {},
-  makeRouterNavigationFunction: () => async () => {},
-  makeNavigationTarget: () => {},
-  getSelectedRoute: () => {},
-  getParamsFromRoute: () => {},
-  getParentId: () => {}
+  makeRouterNavigationFunction: () => async () => { },
+  makeNavigationTarget: () => { },
+  getSelectedRoute: () => { },
+  getParamsFromRoute: () => { },
+  getParentId: () => { }
 }
 
 describe('makeRouter()', () => {
@@ -53,10 +53,13 @@ describe('makeRouter()', () => {
       it('should have the getParentId property', () => {
         expect(returnValue.getParentId).toBe(defaultArgs.getParentId)
       })
+    })
+    it('should have a getInitialBaseId function', () => {
+      expect(typeof returnValue.getInitialBaseId).toBe('function')
+    })
 
-      it('should have a getCurrentBaseId function', () => {
-        expect(typeof returnValue.getCurrentBaseId).toBe('function')
-      })
+    it('should have a getCurrentBaseId function', () => {
+      expect(typeof returnValue.getCurrentBaseId).toBe('function')
     })
 
     it('has an applyRouting function', () => {

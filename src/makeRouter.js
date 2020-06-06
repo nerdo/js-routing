@@ -37,10 +37,13 @@ export const makeRouter = (
     getParentId
   }
 
+  router.getInitialBaseId = () => router.parentIds[0]
+
   router.getCurrentBaseId = () => router.parentIds[router.parentIds.length - 1]
 
   router.applyRouting = (routes, transaction) => {
     const baseId = router.parentIds[0]
+    const latestBaseId = router.getCurrentBaseId()
     const selected = getSelectedRoute(
       getExpandedRoutes(routes || []),
       history,
@@ -72,7 +75,7 @@ export const makeRouter = (
       )
     }
 
-    const params = getParamsFromRoute(selected, history, baseId)
+    const params = getParamsFromRoute(selected, history, latestBaseId)
     const actionResult = selected ? selected.action(params, history.current.params) : null
 
     if (transaction === false) {

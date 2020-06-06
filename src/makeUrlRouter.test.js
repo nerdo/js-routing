@@ -430,8 +430,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const child = {
               tagline: {
-                id: '/tagline',
-                action: jest.fn(() => slug => `${slug} tagline`)
+                id: '/tagline/:id',
+                action: jest.fn(({ id }) => slug => `${slug} tagline ${id}`)
               },
               filmography: {
                 id: '/filmography',
@@ -469,7 +469,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(parent.musicians.action).not.toHaveBeenCalled()
             expect(nestResult).toBeNull()
 
-            await router.navigate('/actors/bernie-mac/tagline')
+            await router.navigate('/actors/bernie-mac/tagline/1')
             const childResult = router.applyRouting(parent.routes)
 
             expect(parent.actors.action).toHaveBeenCalledTimes(2)
@@ -478,7 +478,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(child.tagline.action).toHaveBeenCalledTimes(1)
             expect(child.filmography.action).not.toHaveBeenCalled()
 
-            expect(childResult).toBe('bernie-mac tagline')
+            expect(childResult).toBe('bernie-mac tagline 1')
 
             // ensure that routing outside of the nest still works
             await router.navigate('/musicians/childish-gambino')
