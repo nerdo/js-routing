@@ -45,7 +45,6 @@ export const makeRouter = (
   router.getNestedBaseId = () => router.parentIds[router.parentIds.length - 1]
 
   router.applyRouting = (routes, transaction) => {
-    const baseId = router.parentIds[0]
     router.currentBaseId = router.getNestedBaseId()
     const selected = getSelectedRoute(
       getExpandedRoutes(routes || []),
@@ -57,7 +56,6 @@ export const makeRouter = (
     const isRegExp = selected && typeof selected.id === 'object' && selected.id.constructor === RegExp
 
     if (selected && selected.isNest) {
-      // router.currentBaseId = router.getNestedBaseId()
       const hasGetParentIdFunction = typeof selected.getParentId === 'function'
       if ((isFunction || isRegExp) && !hasGetParentIdFunction) {
         throw new RoutingError(
@@ -101,9 +99,8 @@ export const makeRouter = (
   router.popParentIds = () => {
     if (router.parentIds.length > 1) {
       router.parentIds.pop()
-      // router.currentBaseId = router.getNestedBaseId()
+      router.currentBaseId = router.getNestedBaseId()
     }
-    // router.currentBaseId = router.getNestedBaseId()
   }
 
   router.addNavigationInterceptor = () => { }

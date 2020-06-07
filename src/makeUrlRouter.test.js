@@ -819,11 +819,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               id: '/nested',
               isNest: true,
               action: () => {
-                const selfOutput = `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
-
-                return router.applyRouting(child.routes, childOutput => {
-                  return `${selfOutput}${childOutput ? `, ${childOutput}` : ''}`
-                }) || selfOutput
+                const self = `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+                return router.applyRouting(child.routes, child => `${self}${child? `, ${child}` : ''}`)
               }
             }
             const routes = [
