@@ -28,6 +28,7 @@ export const makeRouter = (
 
   const router = {
     parentIds: [initialBaseId],
+    currentBaseId: initialBaseId,
     commits: [],
     history,
     makeRouterNavigationFunction,
@@ -39,11 +40,13 @@ export const makeRouter = (
 
   router.getInitialBaseId = () => router.parentIds[0]
 
-  router.getCurrentBaseId = () => router.parentIds[router.parentIds.length - 1]
+  router.getCurrentBaseId = () => router.currentBaseId
+
+  router.getNestedBaseId = () => router.parentIds[router.parentIds.length - 1]
 
   router.applyRouting = (routes, transaction) => {
     const baseId = router.parentIds[0]
-    const latestBaseId = router.getCurrentBaseId()
+    router.currentBaseId = router.getNestedBaseId()
     const selected = getSelectedRoute(
       getExpandedRoutes(routes || []),
       history,
@@ -54,6 +57,7 @@ export const makeRouter = (
     const isRegExp = selected && typeof selected.id === 'object' && selected.id.constructor === RegExp
 
     if (selected && selected.isNest) {
+      // router.currentBaseId = router.getNestedBaseId()
       const hasGetParentIdFunction = typeof selected.getParentId === 'function'
       if ((isFunction || isRegExp) && !hasGetParentIdFunction) {
         throw new RoutingError(
@@ -61,8 +65,8 @@ export const makeRouter = (
         )
       }
       const parentId = hasGetParentIdFunction
-        ? selected.getParentId(selected, history, latestBaseId)
-        : getParentId(selected, history, latestBaseId)
+        ? selected.getParentId(selected, history, router.currentBaseId)
+        : getParentId(selected, history, router.currentBaseId)
       router.parentIds.push(parentId)
       router.commits.push(router.popParentIds)
     } else {
@@ -75,7 +79,7 @@ export const makeRouter = (
       )
     }
 
-    const params = getParamsFromRoute(selected, history, latestBaseId)
+    const params = getParamsFromRoute(selected, history, router.currentBaseId)
     const actionResult = selected ? selected.action(params, history.current.params) : null
 
     if (transaction === false) {
@@ -97,7 +101,9 @@ export const makeRouter = (
   router.popParentIds = () => {
     if (router.parentIds.length > 1) {
       router.parentIds.pop()
+      // router.currentBaseId = router.getNestedBaseId()
     }
+    // router.currentBaseId = router.getNestedBaseId()
   }
 
   router.addNavigationInterceptor = () => { }

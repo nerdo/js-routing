@@ -778,41 +778,85 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(regularNest.getParentId).toHaveBeenCalledTimes(1)
           })
 
-          it('should always return the same initial base id nests', async () => {
+          it('should return the correct base ids when nesting', async () => {
             const router = makeUrlRouter({ history: getNewNavigationHistory() })
+            const child = {
+              first: {
+                id: '/child',
+                action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+              },
+              nest: {
+                id: '/nest',
+                isNest: true,
+                action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+              }
+            }
+            child.routes = [
+              child.first,
+              child.nest
+            ]
+
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
               getParameters: () => { },
               getParentId: (selected, history, latestBaseId) => history.current.id,
-              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()}`
+              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
             }
             const fn = {
               id: id => id === '/hello',
               isNest: true,
               getParameters: () => { },
               getParentId: (selected, history, latestBaseId) => history.current.id,
-              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()}`
+              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
             }
             const regularNest = {
               id: '/ice-cream/:brandSlug',
               isNest: true,
-              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()}`
+              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+            }
+            const nested = {
+              id: '/nested',
+              isNest: true,
+              action: () => {
+                const selfOutput = `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+
+                return router.applyRouting(child.routes, childOutput => {
+                  return `${selfOutput}${childOutput ? `, ${childOutput}` : ''}`
+                }) || selfOutput
+              }
             }
             const routes = [
               regex,
               fn,
-              regularNest
+              regularNest,
+              nested
             ]
 
             await router.navigate('/info')
-            expect(router.applyRouting(routes)).toBe('initial=/ current=/info')
+            expect(router.applyRouting(routes)).toBe('initial=/ current=/ nested=/info')
 
             await router.navigate('/hello')
-            expect(router.applyRouting(routes)).toBe('initial=/ current=/hello')
+            expect(router.applyRouting(routes)).toBe('initial=/ current=/ nested=/hello')
 
             await router.navigate('/ice-cream/ben-and-jerrys')
-            expect(router.applyRouting(routes)).toBe('initial=/ current=/ice-cream/ben-and-jerrys')
+            expect(router.applyRouting(routes)).toBe('initial=/ current=/ nested=/ice-cream/ben-and-jerrys')
+
+            await router.navigate('/nested')
+            expect(router.applyRouting(routes)).toBe('initial=/ current=/ nested=/nested')
+
+            await router.navigate('/nested/child')
+            expect(router.applyRouting(routes))
+              .toBe('initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested')
+
+            await router.navigate('/nested/nest')
+            expect(router.applyRouting(routes))
+              .toBe('initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested/nest')
+
+            // not a typo... asserting that navigating to the same nest doesn't change anything
+            await router.navigate('/nested/nest')
+            expect(router.applyRouting(routes))
+              .toBe('initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested/nest')
           })
         })
       })
@@ -828,6 +872,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
 
           expect(router.getInitialBaseId()).toBe('/some/base/path')
           expect(router.getCurrentBaseId()).toBe('/some/base/path')
+          expect(router.getNestedBaseId()).toBe('/some/base/path')
 
           await router.navigate('/some/base/path/about')
           expect(router.applyRouting(routes)).toBe('about')

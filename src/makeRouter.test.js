@@ -62,6 +62,10 @@ describe('makeRouter()', () => {
       expect(typeof returnValue.getCurrentBaseId).toBe('function')
     })
 
+    it('should have a getNestedBaseId function', () => {
+      expect(typeof returnValue.getNestedBaseId).toBe('function')
+    })
+
     it('has an applyRouting function', () => {
       expect(returnValue.applyRouting).toBeDefined()
       expect(typeof returnValue.applyRouting).toBe('function')
