@@ -1,4 +1,4 @@
-export const getPathRelativeTo = (parentPath, path) => {
+export const getPathRelativeTo = (parentPath: string, path: string): string => {
   const pathEqualsParent = path === parentPath
   if (pathEqualsParent) {
     return '/'

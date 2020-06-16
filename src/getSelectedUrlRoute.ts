@@ -1,18 +1,20 @@
 import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 import { getPathRelativeTo } from './getPathRelativeTo'
+import { Route } from './interfaces'
 
-export const getSelectedUrlRoute = (routes, history, parentId) => {
+export const getSelectedUrlRoute = (routes, history, parentId): Route|undefined => {
   const current = {
+    id: '',
     pathParts: getPathParts(getPathRelativeTo(parentId || '', history.current.id)),
     params: history.current.params || {}
   }
   current.id = `/${current.pathParts.join('/')}`
 
-  const toMetaData = original => {
+  const toMetaData = (original: Route) => {
     const isFunction = typeof original.id === 'function'
-    const isRegExp = typeof original.id === 'object' && original.id.constructor === RegExp
-    const target = !isFunction && !isRegExp ? makeUrlNavigationTarget(original.id) : void 0
+    const isRegExp = typeof original.id === 'object' && (original.id as object).constructor === RegExp
+    const target = !isFunction && !isRegExp ? makeUrlNavigationTarget(original.id as string) : void 0
     return {
       target,
       isFunction,

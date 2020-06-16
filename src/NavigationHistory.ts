@@ -1,7 +1,13 @@
-import EventEmitter from 'events'
+import { NavigationTarget, HistoryApi } from './interfaces'
+import { EventEmitter } from 'events'
 
 export class NavigationHistory {
-  constructor(target, historyApi) {
+  public current: NavigationTarget
+  public targets: NavigationTarget[]
+  public historyApi: HistoryApi
+  public events: any
+
+  constructor(target: NavigationTarget, historyApi: HistoryApi = void 0) {
     if (typeof target === 'undefined' || typeof target.id === 'undefined') {
       throw new Error('NavigationHistory requires the target.id as an argument')
     }
@@ -9,14 +15,14 @@ export class NavigationHistory {
     this.initialize(target, historyApi)
   }
 
-  initialize(target, historyApi) {
+  initialize(target: NavigationTarget, historyApi: HistoryApi) {
     this.current = target
     this.targets = [this.current]
     this.historyApi = historyApi
     this.events = new EventEmitter()
   }
 
-  replace(target) {
+  replace(target: NavigationTarget) {
     this.current = target
     this.targets[this.targets.length - 1] = this.current
     if (this.historyApi) {
@@ -26,7 +32,7 @@ export class NavigationHistory {
     this.events.emit('navigation', this.current)
   }
 
-  push(target) {
+  push(target: NavigationTarget) {
     this.current = target
     this.targets.push(this.current)
     if (this.historyApi) {

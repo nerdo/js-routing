@@ -1,6 +1,7 @@
 import { objectFromQueryString } from './objectFromQueryString'
+import { NavigationTarget } from './interfaces'
 
-export const makeUrlNavigationTarget = (input, baseId) => {
+export const makeUrlNavigationTarget = (input: string, baseId: string|undefined = void 0): NavigationTarget => {
   const anchorIndex = input.indexOf('#')
   const queryIndex = input.indexOf('?')
   const toMaxIndex = anchorIndex >= 0 ? anchorIndex : (queryIndex >= 0 ? queryIndex : void 0)

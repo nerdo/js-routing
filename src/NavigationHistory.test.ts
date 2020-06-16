@@ -24,7 +24,10 @@ describe('NavigationHistory class', () => {
     })
 
     it('should accept an object that implments the History API as a second parameter', () => {
-      const historyApi = {}
+      const historyApi = {
+        pushState: () => {},
+        replaceState: () => {}
+      }
       const navigationHistory = new NavigationHistory({ id: '/' }, historyApi)
 
       expect(navigationHistory.historyApi).toBe(historyApi)
@@ -48,7 +51,8 @@ describe('NavigationHistory class', () => {
 
     it('should call pushState() on the historyApi if it exists', () => {
       const historyApi = {
-        pushState: jest.fn()
+        pushState: jest.fn(),
+        replaceState: () => {}
       }
       const navigationHistory = new NavigationHistory({ id: '/' }, historyApi)
       const params = {}
@@ -98,7 +102,8 @@ describe('NavigationHistory class', () => {
 
     it('should call replaceState() on the historyApi if it exists', () => {
       const historyApi = {
-        replaceState: jest.fn()
+        replaceState: jest.fn(),
+        pushState: () => {}
       }
       const navigationHistory = new NavigationHistory({ id: '/' }, historyApi)
       const params = {}

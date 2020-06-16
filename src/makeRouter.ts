@@ -1,9 +1,10 @@
+import { NavigationHistory } from './NavigationHistory';
 import { getExpandedRoutes } from './getExpandedRoutes'
 import { RoutingError } from './RoutingError'
 
 export const makeRouter = (
   {
-    history,
+    history: NavigationHistory,
     makeRouterNavigationFunction,
     makeNavigationTarget,
     getSelectedRoute,
