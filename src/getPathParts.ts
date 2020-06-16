@@ -1,1 +1,1 @@
-export const getPathParts = path => path.split('/').filter(part => part !== '')
+export const getPathParts = (path: string) => path.split('/').filter(part => part !== '')

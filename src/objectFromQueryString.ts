@@ -1,4 +1,4 @@
-export const objectFromQueryString = queryString => {
+export const objectFromQueryString = (queryString: string|undefined) => {
   if (typeof queryString === 'undefined') {
     return void 0
   }

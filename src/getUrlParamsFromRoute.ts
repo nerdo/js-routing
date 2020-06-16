@@ -1,7 +1,9 @@
 import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
+import { Route, RouteId } from './interfaces'
+import { NavigationHistory } from './NavigationHistory'
 
-export const getUrlParamsFromRoute = (route, history, baseId) => {
+export const getUrlParamsFromRoute = (route: Route, history: NavigationHistory, baseId: RouteId) => {
   if (!route) {
     return
   }
@@ -11,7 +13,7 @@ export const getUrlParamsFromRoute = (route, history, baseId) => {
 
   const getParameters = typeof route.getParameters === 'function'
     ? history => {
-      const matches = !isRegExp ? [] : route.id.exec(history.current.id).splice(1)
+      const matches = !isRegExp ? [] : (route.id as RegExp).exec(history.current.id).splice(1)
       return route.getParameters(history, baseId, matches)
     }
     : history => {
@@ -27,7 +29,7 @@ export const getUrlParamsFromRoute = (route, history, baseId) => {
           },
           {}
         )
-      const target = makeUrlNavigationTarget(route.id)
+      const target = makeUrlNavigationTarget(route.id as RouteId)
       const currentParams = history.current.params || {}
       const requiredQueryParams = Object.keys(target.params || {})
         .reduce(

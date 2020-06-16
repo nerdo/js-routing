@@ -1,41 +1,54 @@
 import { NavigationHistory } from './NavigationHistory'
 
 export type RouteId = string
+
 export type RouteActionResult = any
+
+export type GetParameters = (history: NavigationHistory, baseId: RouteId, matches: string[]) => Params
+
+export type GetSelectedRoute = (routes: ExpandedRoutes, history: NavigationHistory, parentId?: RouteId) => (Route|null)
+
+export type GetParentId = (selected: Route, history: NavigationHistory, currentBaseId: RouteId) => RouteId
+
+export type GetParamsFromRoute = (route: Route, history: NavigationHistory, baseId: RouteId) => Params
+
 export interface AnyFunc {
   (): any
 }
 
+export interface RouteAction {
+  (routeParams: Params, stateParams: Params): RouteActionResult
+}
+
 export interface AbbreviatedRoutes {
-  [propName: string]: string
+  [propName: string]: RouteAction
 }
 
 export interface RouteIdFunction {
   (): any
 }
 
-export interface RouteAction {
-  (): RouteActionResult
-}
-
 export interface Route {
-  id: RouteId | RouteIdFunction | RegExp
+  id: RouteId|RouteIdFunction|RegExp
   action: RouteAction
+  isNest?: boolean
+  getParameters?: GetParameters
+  getParentId?: GetParentId
 }
 
-export interface ExpandedRoutes {
+export interface ExpandedRoutes extends Array<Route> {
   [index: number]: Route
 }
 
-export interface RouteParams {
+export interface Params {
   [propName: string]: any
 }
 
 export interface NavigationTarget {
   input?: string
   id: RouteId,
-  params?: RouteParams
-  state?: RouteParams
+  params?: Params
+  state?: Params
 }
 
 export interface HistoryApi {
@@ -44,7 +57,7 @@ export interface HistoryApi {
 }
 
 export interface NavigationFunction {
-  (id: RouteId, replace?: boolean, params?: RouteParams, state?: RouteParams): PromiseLike<void>
+  (id: RouteId, replace?: boolean, params?: Params, state?: Params): PromiseLike<void>
 }
 
 export interface MakeNavigationTarget {
@@ -63,9 +76,9 @@ export interface Router {
   history: NavigationHistory
   makeRouterNavigationFunction: MakeRouterNavigationFunction
   makeNavigationTarget: MakeNavigationTarget
-  getSelectedRoute: any;
-  getParamsFromRoute: any;
-  getParentId: any;
+  getSelectedRoute: GetSelectedRoute
+  getParamsFromRoute: GetParamsFromRoute
+  getParentId: GetParentId
   getInitialBaseId(): RouteId
   getCurrentBaseId(): RouteId
   getNestedBaseId(): RouteId
@@ -82,10 +95,10 @@ export interface Router {
 export interface RouterConfiguration {
   history: NavigationHistory
   makeRouterNavigationFunction: MakeRouterNavigationFunction
-  makeNavigationTarget: any;
-  getSelectedRoute: any;
-  getParamsFromRoute: any;
-  getParentId: any;
+  makeNavigationTarget: MakeNavigationTarget
+  getSelectedRoute: GetSelectedRoute
+  getParamsFromRoute: GetParamsFromRoute
+  getParentId: GetParentId
   baseId: RouteId
 }
 

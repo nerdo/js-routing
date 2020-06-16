@@ -1,9 +1,10 @@
 import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 import { getPathRelativeTo } from './getPathRelativeTo'
-import { Route } from './interfaces'
+import { Route, ExpandedRoutes, RouteId } from './interfaces'
+import { NavigationHistory } from './NavigationHistory'
 
-export const getSelectedUrlRoute = (routes, history, parentId): Route|undefined => {
+export const getSelectedUrlRoute = (routes: ExpandedRoutes, history: NavigationHistory, parentId: RouteId): Route|undefined => {
   const current = {
     id: '',
     pathParts: getPathParts(getPathRelativeTo(parentId || '', history.current.id)),
@@ -23,13 +24,13 @@ export const getSelectedUrlRoute = (routes, history, parentId): Route|undefined 
       original
     }
   }
-  const eliminateIncompatibleNumPathParts = ({ isFunction, isRegExp, pathParts, original: { id, isNest } }) => {
+  const eliminateIncompatibleNumPathParts = ({ isFunction, isRegExp, pathParts, original: { id, isNest = false } }) => {
     if (isFunction || isRegExp) {
       return true
     }
     return isNest ? pathParts.length <= current.pathParts.length : pathParts.length === current.pathParts.length
   }
-  const doesMatch = ({ target, isFunction, isRegExp, pathParts, original: { id: originalId, isNest } }) => {
+  const doesMatch = ({ target, isFunction, isRegExp, pathParts, original: { id: originalId, isNest = false } }) => {
     if (isFunction) {
       return originalId(current.id)
     } else if (isRegExp) {
