@@ -4,7 +4,7 @@ export type RouteId = string
 
 export type RouteActionResult = any
 
-export interface AnyFunc {
+export interface AnyFunction {
   (): any
 }
 
@@ -76,28 +76,41 @@ export interface MakeRouterNavigationFunction {
   (Router): NavigationFunction
 }
 
+export interface RouteTransaction {
+  (actionResult: RouteActionResult): RouteActionResult
+}
+
+export interface ApplyRouting {
+  (routes: ExpandedRoutes, transaction?: RouteTransaction|boolean): RouteActionResult
+}
+
+export interface GetRouteId {
+  (): RouteId
+}
+
+export interface AddNavigationInterceptor {
+  (): any
+}
+
 export interface Router {
   lastSelectedRoute: Route|undefined
   parentIds: RouteId[]
   currentBaseId: RouteId
-  commits: AnyFunc[]
+  commits: AnyFunction[]
   history: NavigationHistory
   makeRouterNavigationFunction: MakeRouterNavigationFunction
   makeNavigationTarget: MakeNavigationTarget
   getSelectedRoute: GetSelectedRoute
   getParamsFromRoute: GetParamsFromRoute
   getParentId: GetParentId
-  getInitialBaseId(): RouteId
-  getCurrentBaseId(): RouteId
-  getNestedBaseId(): RouteId
-  applyRouting(
-    routes: ExpandedRoutes,
-    transaction?: ((actionResult: RouteActionResult) => RouteActionResult)|boolean
-  ): RouteActionResult
-  popParentIds(): void
-  commitRouting(): void
-  addNavigationInterceptor()
+  applyRouting: ApplyRouting
   navigate: NavigationFunction
+  getInitialBaseId: GetRouteId
+  getCurrentBaseId: GetRouteId
+  getNestedBaseId: GetRouteId
+  popParentIds: AnyFunction
+  commitRouting: AnyFunction
+  addNavigationInterceptor: AddNavigationInterceptor
 }
 
 export interface RouterConfiguration {
