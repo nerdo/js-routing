@@ -4,14 +4,6 @@ export type RouteId = string
 
 export type RouteActionResult = any
 
-export type GetParameters = (history: NavigationHistory, baseId: RouteId, matches: string[]) => Params
-
-export type GetSelectedRoute = (routes: ExpandedRoutes, history: NavigationHistory, parentId?: RouteId) => (Route|null)
-
-export type GetParentId = (selected: Route, history: NavigationHistory, currentBaseId: RouteId) => RouteId
-
-export type GetParamsFromRoute = (route: Route, history: NavigationHistory, baseId: RouteId) => Params
-
 export interface AnyFunc {
   (): any
 }
@@ -26,6 +18,22 @@ export interface AbbreviatedRoutes {
 
 export interface RouteIdFunction {
   (): any
+}
+
+export interface GetParameters {
+  (history: NavigationHistory, baseId: RouteId, matches: string[]): Params
+}
+
+export interface GetSelectedRoute {
+  (routes: ExpandedRoutes, history: NavigationHistory, parentId?: RouteId): (Route|null)
+}
+
+export interface GetParentId {
+  (selected: Route, history: NavigationHistory, currentBaseId: RouteId): RouteId
+}
+
+export interface GetParamsFromRoute {
+  (route: Route, history: NavigationHistory, baseId: RouteId): Params
 }
 
 export interface Route {
