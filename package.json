@@ -6,12 +6,12 @@
   "repository": {
     "url": "https://github.com/nerdo/js-routing.git"
   },
-  "version": "0.0.1-alpha.0",
+  "version": "1.0.0-alpha.0",
   "main": "dist/nerdo-js-routing.js",
   "umd:main": "dist/nerdo-js-routing.umd.js",
   "module": "dist/nerdo-js-routing.m.js",
   "esmodule": "dist/nerdo-js-routing.modern.js",
-  "types": "dist/nerdo-js-routing.d.ts",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist/*"
   ],
@@ -19,17 +19,17 @@
     "test": "jest",
     "build": "microbundle",
     "watch": "microbundle -w",
-    "prepublish": "jest && microbundle"
+    "prepublishOnly": "jest && microbundle"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.9.6",
-    "@babel/plugin-transform-runtime": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.1",
+    "@babel/plugin-transform-runtime": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
     "@babel/preset-typescript": "^7.10.1",
     "@types/events": "^3.0.0",
     "@types/jest": "^26.0.0",
     "jest": "^26.0.1",
-    "microbundle": "^0.12.0",
+    "microbundle": "^0.12.1",
     "standard": "^14.3.4"
   },
   "dependencies": {
