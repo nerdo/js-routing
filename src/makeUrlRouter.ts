@@ -11,7 +11,8 @@ const typical = {
     const target = makeUrlNavigationTarget(window ? `${window.location.pathname}${window.location.search}` : '/')
     const historyApi = window ? window.history : void 0
     return new NavigationHistory(target, historyApi)
-  }
+  },
+  baseId: '/'
 }
 
 export const makeUrlRouter = ({ history = typical.history, baseId = '/' } = typical) => {
