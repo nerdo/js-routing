@@ -22,14 +22,14 @@
     "prepublishOnly": "jest && microbundle"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.10.1",
-    "@babel/plugin-transform-runtime": "^7.10.1",
-    "@babel/preset-env": "^7.10.2",
-    "@babel/preset-typescript": "^7.10.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
     "@types/events": "^3.0.0",
-    "@types/jest": "^26.0.0",
-    "jest": "^26.0.1",
-    "microbundle": "^0.12.1",
+    "@types/jest": "^26.0.3",
+    "jest": "^26.1.0",
+    "microbundle": "^0.12.2",
     "standard": "^14.3.4"
   },
   "dependencies": {
