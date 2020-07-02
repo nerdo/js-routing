@@ -17,7 +17,7 @@ export interface AbbreviatedRoutes {
 }
 
 export interface RouteIdFunction {
-  (): any
+  (id): any
 }
 
 export interface GetParameters {
@@ -25,7 +25,7 @@ export interface GetParameters {
 }
 
 export interface GetSelectedRoute {
-  (routes: ExpandedRoutes, history: NavigationHistory, parentId?: RouteId): (Route|null)
+  (routes: ExpandedRoutes, history: NavigationHistory, parentId?: RouteId): (Route | null)
 }
 
 export interface GetParentId {
@@ -37,7 +37,7 @@ export interface GetParamsFromRoute {
 }
 
 export interface Route {
-  id: RouteId|RouteIdFunction|RegExp
+  id: RouteId | RouteIdFunction | RegExp
   action: RouteAction
   isNest?: boolean
   getParameters?: GetParameters
@@ -81,7 +81,7 @@ export interface RouteTransaction {
 }
 
 export interface ApplyRouting {
-  (routes: ExpandedRoutes, transaction?: RouteTransaction|boolean): RouteActionResult
+  (routes: ExpandedRoutes | AbbreviatedRoutes, transaction?: RouteTransaction | boolean): RouteActionResult
 }
 
 export interface GetRouteId {
@@ -93,7 +93,7 @@ export interface AddNavigationInterceptor {
 }
 
 export interface Router {
-  lastSelectedRoute: Route|undefined
+  lastSelectedRoute: Route | undefined
   parentIds: RouteId[]
   currentBaseId: RouteId
   commits: AnyFunction[]
@@ -125,4 +125,19 @@ export interface RouterConfiguration {
 
 export interface MakeRouterFunction {
   (configuration: RouterConfiguration): Router
+}
+
+
+export interface MakeUrlRouterArgs {
+  history?: (() => NavigationHistory) | NavigationHistory
+  makeRouterNavigationFunction?: MakeRouterNavigationFunction
+  makeNavigationTarget?: MakeNavigationTarget
+  getSelectedRoute?: GetSelectedRoute
+  getParamsFromRoute?: GetParamsFromRoute
+  getParentId?: GetParentId
+  baseId?: RouteId
+}
+
+export interface MakeUrlRouterFunction {
+  (configuration?: MakeUrlRouterArgs): Router
 }

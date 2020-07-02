@@ -4,6 +4,7 @@ import { getSelectedUrlRoute } from './getSelectedUrlRoute'
 import * as makeRouterImport from './makeRouter'
 import * as makeUrlNavigationTargetImport from './makeUrlNavigationTarget'
 import { RoutingError } from './RoutingError'
+import { ExpandedRoutes } from './interfaces'
 
 const makeUrlNavigationTarget = jest.spyOn(makeUrlNavigationTargetImport, 'makeUrlNavigationTarget')
 const makeRouter = jest.spyOn(makeRouterImport, 'makeRouter')
@@ -67,14 +68,14 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
     })
 
     it('should not store the getSelectedRoute argument (it should always be getSelectedUrlRoute())', () => {
-      const getSelectedRoute = () => { }
+      const getSelectedRoute = () => null
       const router = makeUrlRouter({ getSelectedRoute })
       expect(router.getSelectedRoute).not.toBe(getSelectedRoute)
       expect(router.getSelectedRoute).toBe(getSelectedUrlRoute)
     })
 
     it('should not store the makeNavigationTarget argument (it should always be makeUrlNavigationTarget())', () => {
-      const makeNavigationTarget = () => { }
+      const makeNavigationTarget = () => ({ id: '' })
       const router = makeUrlRouter({ makeNavigationTarget })
       expect(router.makeNavigationTarget).not.toBe(makeNavigationTarget)
       expect(router.makeNavigationTarget).toBe(makeUrlNavigationTarget)
@@ -97,6 +98,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
     describe('applyRouting()', () => {
       it('should return null when no routes are provided', () => {
         const router = makeUrlRouter({ history: getNewNavigationHistory() })
+        // @ts-ignore
         const returnValue = router.applyRouting()
         expect(returnValue).toBeNull()
       })
@@ -436,7 +438,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               byRating: {
                 id: '/rating/:rating',
                 action: jest.fn(({ rating }) => ({ slug, year }) => `${slug} year ${year} byRating ${rating}`)
-              }
+              },
+              routes: []
             }
             filmographyChild.routes = [
               filmographyChild.byGenre,
@@ -464,7 +467,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
                   // router.commitRouting()
                   // return result
                 })
-              }
+              },
+              routes: []
             }
             child.routes = [
               child.tagline,
@@ -485,7 +489,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               musicians: {
                 id: '/musicians/:slug',
                 action: jest.fn(({ slug }) => slug)
-              }
+              },
+              routes: []
             }
             parent.routes = [
               parent.actors,
@@ -543,7 +548,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               filmography: {
                 id: '/filmography',
                 action: jest.fn(() => slug => `${slug} filmography`)
-              }
+              },
+              routes: []
             }
             child.routes = [
               child.tagline,
@@ -564,7 +570,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               musicians: {
                 id: '/musicians/:slug',
                 action: jest.fn(({ slug }) => slug)
-              }
+              },
+              routes: []
             }
             parent.routes = [
               parent.actors,
@@ -603,7 +610,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               filmography: {
                 id: '/filmography',
                 action: jest.fn(() => slug => `${slug} filmography`)
-              }
+              },
+              routes: []
             }
             child.routes = [
               child.tagline,
@@ -624,7 +632,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               musicians: {
                 id: '/musicians/:slug',
                 action: jest.fn(({ slug }) => slug)
-              }
+              },
+              routes: []
             }
             parent.routes = [
               parent.actors,
@@ -664,7 +673,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               filmography: {
                 id: '/filmography',
                 action: jest.fn(() => slug => `${slug} filmography`)
-              }
+              },
+              routes: []
             }
             child.routes = [
               child.tagline,
@@ -685,7 +695,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               musicians: {
                 id: '/musicians/:slug',
                 action: jest.fn(({ slug }) => slug)
-              }
+              },
+              routes: []
             }
             parent.routes = [
               parent.actors,
@@ -716,16 +727,16 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
-              getParameters: () => { },
+              getParameters: () => ({}),
               action: () => { }
             }
             const fn = {
               id: id => id === '/hello',
               isNest: true,
-              getParameters: () => { },
+              getParameters: () => ({}),
               action: () => { }
             }
-            const routes = [
+            const routes: ExpandedRoutes = [
               regex,
               fn
             ]
@@ -742,14 +753,14 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
-              getParameters: () => { },
+              getParameters: () => ({}),
               getParentId: jest.fn(),
               action: () => 'regex'
             }
             const fn = {
               id: id => id === '/hello',
               isNest: true,
-              getParameters: () => { },
+              getParameters: () => ({}),
               getParentId: jest.fn(),
               action: () => 'fn'
             }
@@ -789,7 +800,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
                 id: '/nest',
                 isNest: true,
                 action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
-              }
+              },
+              routes: []
             }
             child.routes = [
               child.first,
@@ -799,14 +811,14 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
-              getParameters: () => { },
+              getParameters: () => ({}),
               getParentId: (selected, history, latestBaseId) => history.current.id,
               action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
             }
             const fn = {
               id: id => id === '/hello',
               isNest: true,
-              getParameters: () => { },
+              getParameters: () => ({}),
               getParentId: (selected, history, latestBaseId) => history.current.id,
               action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
             }

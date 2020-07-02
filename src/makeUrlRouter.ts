@@ -5,6 +5,7 @@ import { makeUrlNavigationFunction } from './makeUrlNavigationFunction'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 import { getUrlParamsFromRoute } from './getUrlParamsFromRoute'
 import { getParentPath } from './getParentPath'
+import { MakeUrlRouterFunction } from './interfaces'
 
 const typical = {
   history: () => {
@@ -15,7 +16,7 @@ const typical = {
   baseId: '/'
 }
 
-export const makeUrlRouter = ({ history = typical.history, baseId = '/' } = typical) => {
+export const makeUrlRouter: MakeUrlRouterFunction = ({ history = typical.history, baseId = '/' } = typical) => {
   const resolvedHistory = typeof history === 'function' ? history() : history
   return makeRouter({
     history: resolvedHistory,
