@@ -25,6 +25,7 @@ describe('objectExclusivelyContaining()', () => {
         expect(objectExclusivelyContaining({ a: 1, b: 2, c: 3 }, { b: 2, a: 1, c: 3 }).pass).toBe(true)
 
         // Even though we declare the property c twice, it only gets defined once, and should be equivalent.
+        // @ts-ignore
         expect(objectExclusivelyContaining({ a: 1, b: 2, c: 3 }, { a: 1, b: 2, c: 3, c: 3 }).pass).toBe(true)
       })
     })

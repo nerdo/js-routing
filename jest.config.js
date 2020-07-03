@@ -1,6 +1,6 @@
 module.exports = {
   setupFilesAfterEnv: [
-    './jest/extend.arrayExclusivelyContaining.js',
-    './jest/extend.objectExclusivelyContaining.js'
+    './jest/extend.arrayExclusivelyContaining.ts',
+    './jest/extend.objectExclusivelyContaining.ts'
   ]
 }
