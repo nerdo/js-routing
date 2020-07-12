@@ -1,6 +1,5 @@
 module.exports = {
   setupFilesAfterEnv: [
-    './jest/extend.arrayExclusivelyContaining.js',
-    './jest/extend.objectExclusivelyContaining.js'
+    '@nerdo/jest-extended'
   ]
 }
