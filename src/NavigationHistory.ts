@@ -29,7 +29,7 @@ export class NavigationHistory {
       this.historyApi.replaceState(target, '', target.id)
     }
     this.events.emit('replace', this.current)
-    this.events.emit('navigation', this.current)
+    this.navigate(this.current)
   }
 
   push(target: NavigationTarget) {
@@ -39,6 +39,10 @@ export class NavigationHistory {
       this.historyApi.pushState(target, '', target.id)
     }
     this.events.emit('push', this.current)
-    this.events.emit('navigation', this.current)
+    this.navigate(this.current)
+  }
+
+  navigate(target: NavigationTarget) {
+    this.events.emit('navigation', target)
   }
 }
