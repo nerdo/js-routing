@@ -135,4 +135,27 @@ describe('NavigationHistory class', () => {
       expect(navigationListener).toHaveBeenCalledWith(navigationHistory.current)
     })
   })
+
+  describe('navigate()', () => {
+    it('should trigger the correct events', () => {
+      const navigationHistory = new NavigationHistory({ id: '/' })
+      const params = {}
+      const state = {}
+      const target = { id: '/bar', params, state }
+      const navigationListener = jest.fn()
+      const replaceListener = jest.fn()
+      const pushListener = jest.fn()
+
+      navigationHistory.events.on('replace', replaceListener)
+      navigationHistory.events.on('push', pushListener)
+      navigationHistory.events.on('navigation', navigationListener)
+
+      navigationHistory.navigate(target)
+
+      expect(pushListener).not.toHaveBeenCalled()
+      expect(replaceListener).not.toHaveBeenCalled()
+      expect(navigationListener).toHaveBeenCalledTimes(1)
+      expect(navigationListener).toHaveBeenCalledWith(target)
+    })
+  })
 })
