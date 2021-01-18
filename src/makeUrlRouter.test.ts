@@ -1,3 +1,4 @@
+import { makeUrlPopStateHandler } from './makeUrlPopStateHandler'
 import { makeUrlRouter } from '.'
 import { NavigationHistory } from './NavigationHistory'
 import { getSelectedUrlRoute } from './getSelectedUrlRoute'
@@ -19,6 +20,13 @@ beforeEach(() => {
 afterEach(() => {
   windowSpy.mockRestore()
 })
+
+const windowMockDefaults = {
+  location: {
+    pathname: ''
+  },
+  addEventListener: () => {}
+}
 
 const getNewNavigationHistory = (initialId = '/') => new NavigationHistory({ id: initialId })
 
@@ -57,6 +65,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
 
     it('should parse the window URL into the NavigationHistory by default', () => {
       windowSpy.mockImplementation(() => ({
+        ...windowMockDefaults,
         location: {
           pathname: '/product',
           search: '?color=black'
@@ -79,6 +88,40 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
       const router = makeUrlRouter({ makeNavigationTarget })
       expect(router.makeNavigationTarget).not.toBe(makeNavigationTarget)
       expect(router.makeNavigationTarget).toBe(makeUrlNavigationTarget)
+    })
+
+    describe('popstate handler', () => {
+      it('should add the default popstate event handler', () => {
+        const addEventListener = jest.fn()
+        windowSpy.mockImplementation(() => ({
+          ...windowMockDefaults,
+          addEventListener
+        }))
+
+        expect(addEventListener).toHaveBeenCalledTimes(0)
+
+        const router = makeUrlRouter()
+
+        expect(addEventListener).toHaveBeenCalledTimes(1)
+        expect(addEventListener).toHaveBeenCalledWith('popstate', expect.anything())
+      })
+
+      it('should add a custom popstate event handler', () => {
+        const customHandler = () => {}
+        const makePopStateHandler = jest.fn(() => customHandler)
+        const addEventListener = jest.fn()
+        windowSpy.mockImplementation(() => ({
+          ...windowMockDefaults,
+          addEventListener
+        }))
+
+        expect(addEventListener).toHaveBeenCalledTimes(0)
+
+        const router = makeUrlRouter({ makePopStateHandler })
+
+        expect(addEventListener).toHaveBeenCalledTimes(1)
+        expect(addEventListener).toHaveBeenCalledWith('popstate', customHandler)
+      })
     })
   })
 
@@ -175,25 +218,31 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             await router.navigate('/about?a')
             const varWithoutEquals = router.applyRouting(routes)
             expect(Object.keys(varWithoutEquals)).toHaveLength(1)
-            expect(varWithoutEquals).toEqual(expect.objectContaining({
-              a: ''
-            }))
+            expect(varWithoutEquals).toEqual(
+              expect.objectContaining({
+                a: ''
+              })
+            )
 
             await router.navigate('/about?a=')
             const explicitEmptyValue = router.applyRouting(routes)
             expect(Object.keys(explicitEmptyValue)).toHaveLength(1)
-            expect(explicitEmptyValue).toEqual(expect.objectContaining({
-              a: ''
-            }))
+            expect(explicitEmptyValue).toEqual(
+              expect.objectContaining({
+                a: ''
+              })
+            )
 
             await router.navigate('/about?a=123&b&&c=xyz&')
             const mixedValues = router.applyRouting(routes)
             expect(Object.keys(mixedValues)).toHaveLength(3)
-            expect(mixedValues).toEqual(expect.objectContaining({
-              a: '123',
-              b: '',
-              c: 'xyz'
-            }))
+            expect(mixedValues).toEqual(
+              expect.objectContaining({
+                a: '123',
+                b: '',
+                c: 'xyz'
+              })
+            )
           })
 
           it('should provide required URL parameters in both parameters to the action function', async () => {
@@ -218,25 +267,31 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(empty).not.toBeNull()
             expect(Object.keys(empty.required)).toHaveLength(2)
             expect(Object.keys(empty.query)).toHaveLength(2)
-            expect(empty.query).toEqual(expect.objectContaining({
-              who: '',
-              what: ''
-            }))
+            expect(empty.query).toEqual(
+              expect.objectContaining({
+                who: '',
+                what: ''
+              })
+            )
 
             await router.navigate('/about?who=bill&what=pilot&sanford=son')
             const typical = router.applyRouting(routes)
             expect(typical).not.toBeNull()
             expect(Object.keys(typical.required)).toHaveLength(2)
             expect(Object.keys(typical.query)).toHaveLength(3)
-            expect(typical.required).toEqual(expect.objectContaining({
-              who: 'bill',
-              what: 'pilot'
-            }))
-            expect(typical.query).toEqual(expect.objectContaining({
-              who: 'bill',
-              what: 'pilot',
-              sanford: 'son'
-            }))
+            expect(typical.required).toEqual(
+              expect.objectContaining({
+                who: 'bill',
+                what: 'pilot'
+              })
+            )
+            expect(typical.query).toEqual(
+              expect.objectContaining({
+                who: 'bill',
+                what: 'pilot',
+                sanford: 'son'
+              })
+            )
           })
         })
 
@@ -245,31 +300,32 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const router = makeUrlRouter({ history: getNewNavigationHistory() })
             const userProfile = {
               id: '/user/:username',
-              action: p => p
+              action: (p) => p
             }
             const userPhoto = {
               id: '/user/:username/photos/:photoId',
-              action: p => p
+              action: (p) => p
             }
-            const routes = [
-              userProfile,
-              userPhoto
-            ]
+            const routes = [userProfile, userPhoto]
 
             await router.navigate('/user/joey')
             const userProfileParams = router.applyRouting(routes)
             expect(Object.keys(userProfileParams)).toHaveLength(1)
-            expect(userProfileParams).toEqual(expect.objectContaining({
-              username: 'joey'
-            }))
+            expect(userProfileParams).toEqual(
+              expect.objectContaining({
+                username: 'joey'
+              })
+            )
 
             await router.navigate('/user/joey/photos/29386')
             const userPhotoParams = router.applyRouting(routes)
             expect(Object.keys(userPhotoParams)).toHaveLength(2)
-            expect(userPhotoParams).toEqual(expect.objectContaining({
-              username: 'joey',
-              photoId: '29386'
-            }))
+            expect(userPhotoParams).toEqual(
+              expect.objectContaining({
+                username: 'joey',
+                photoId: '29386'
+              })
+            )
           })
         })
 
@@ -278,28 +334,24 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
           beforeEach(() => {
             home = {
               id: (id) => id === '/' || id === '/home',
-              getParameters: jest.fn(history => ({ actualPath: history.current.id })),
-              action: jest.fn(params => params)
+              getParameters: jest.fn((history) => ({ actualPath: history.current.id })),
+              action: jest.fn((params) => params)
             }
             info = {
               id: /^\/(?:info|about)(\/?.*)$/,
               getParameters: jest.fn((history, baseId, captureGroups) => ({ subPath: captureGroups[0] })),
-              action: jest.fn(params => params)
+              action: jest.fn((params) => params)
             }
             overrideGetParameters = {
               id: '/override/get/parameters',
               getParameters: jest.fn(() => ({ contrived: true })),
-              action: jest.fn(params => params)
+              action: jest.fn((params) => params)
             }
-            routes = [
-              home,
-              info,
-              overrideGetParameters
-            ]
+            routes = [home, info, overrideGetParameters]
           })
 
           const clearMocks = () => {
-            routes.forEach(route => {
+            routes.forEach((route) => {
               route.getParameters.mockClear()
               route.action.mockClear()
             })
@@ -324,8 +376,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             await router.navigate('/')
             router.applyRouting(routes)
             routes
-              .filter(route => route !== home)
-              .forEach(otherRoute => {
+              .filter((route) => route !== home)
+              .forEach((otherRoute) => {
                 expect(otherRoute.getParameters).not.toHaveBeenCalled()
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
@@ -345,8 +397,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             await router.navigate('/home')
             router.applyRouting(routes)
             routes
-              .filter(route => route !== home)
-              .forEach(otherRoute => {
+              .filter((route) => route !== home)
+              .forEach((otherRoute) => {
                 expect(otherRoute.getParameters).not.toHaveBeenCalled()
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
@@ -366,8 +418,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             await router.navigate('/about')
             router.applyRouting(routes)
             routes
-              .filter(route => route !== info)
-              .forEach(otherRoute => {
+              .filter((route) => route !== info)
+              .forEach((otherRoute) => {
                 expect(otherRoute.getParameters).not.toHaveBeenCalled()
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
@@ -377,17 +429,14 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               '/',
               expect.arrayExclusivelyContaining([''])
             )
-            expect(info.action).toHaveBeenLastCalledWith(
-              expect.objectExclusivelyContaining({ subPath: '' }),
-              void 0
-            )
+            expect(info.action).toHaveBeenLastCalledWith(expect.objectExclusivelyContaining({ subPath: '' }), void 0)
 
             clearMocks()
             await router.navigate('/info/toosie/slide')
             router.applyRouting(routes)
             routes
-              .filter(route => route !== info)
-              .forEach(otherRoute => {
+              .filter((route) => route !== info)
+              .forEach((otherRoute) => {
                 expect(otherRoute.getParameters).not.toHaveBeenCalled()
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
@@ -406,8 +455,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             await router.navigate('/override/get/parameters')
             router.applyRouting(routes)
             routes
-              .filter(route => route !== overrideGetParameters)
-              .forEach(otherRoute => {
+              .filter((route) => route !== overrideGetParameters)
+              .forEach((otherRoute) => {
                 expect(otherRoute.getParameters).not.toHaveBeenCalled()
                 expect(otherRoute.action).not.toHaveBeenCalled()
               })
@@ -441,10 +490,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               },
               routes: []
             }
-            filmographyChild.routes = [
-              filmographyChild.byGenre,
-              filmographyChild.byRating
-            ]
+            filmographyChild.routes = [filmographyChild.byGenre, filmographyChild.byRating]
 
             const child = {
               tagline: {
@@ -456,9 +502,8 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
                 isNest: true,
                 action: jest.fn(({ year }) => ({ slug }) => {
                   // using a transction instead of handling the commit manually
-                  return router.applyRouting(
-                    filmographyChild.routes,
-                    renderComponent => renderComponent ? renderComponent({ slug, year }) : null
+                  return router.applyRouting(filmographyChild.routes, (renderComponent) =>
+                    renderComponent ? renderComponent({ slug, year }) : null
                   )
 
                   // // The code below achieves the same result as the transaction above, but is more verbose
@@ -470,10 +515,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               },
               routes: []
             }
-            child.routes = [
-              child.tagline,
-              child.filmography
-            ]
+            child.routes = [child.tagline, child.filmography]
 
             const parent = {
               actors: {
@@ -492,10 +534,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               },
               routes: []
             }
-            parent.routes = [
-              parent.actors,
-              parent.musicians
-            ]
+            parent.routes = [parent.actors, parent.musicians]
 
             await router.navigate('/actors/bernie-mac')
             const nestResult = router.applyRouting(parent.routes)
@@ -543,18 +582,15 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const child = {
               tagline: {
                 id: '/tagline',
-                action: jest.fn(() => slug => `${slug} tagline`)
+                action: jest.fn(() => (slug) => `${slug} tagline`)
               },
               filmography: {
                 id: '/filmography',
-                action: jest.fn(() => slug => `${slug} filmography`)
+                action: jest.fn(() => (slug) => `${slug} filmography`)
               },
               routes: []
             }
-            child.routes = [
-              child.tagline,
-              child.filmography
-            ]
+            child.routes = [child.tagline, child.filmography]
 
             const parent = {
               actors: {
@@ -573,10 +609,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               },
               routes: []
             }
-            parent.routes = [
-              parent.actors,
-              parent.musicians
-            ]
+            parent.routes = [parent.actors, parent.musicians]
 
             await router.navigate('/celebrities/actors/bernie-mac/tagline')
             const result = router.applyRouting(parent.routes, false)
@@ -605,18 +638,15 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const child = {
               tagline: {
                 id: '/tagline',
-                action: jest.fn(() => slug => `${slug} tagline`)
+                action: jest.fn(() => (slug) => `${slug} tagline`)
               },
               filmography: {
                 id: '/filmography',
-                action: jest.fn(() => slug => `${slug} filmography`)
+                action: jest.fn(() => (slug) => `${slug} filmography`)
               },
               routes: []
             }
-            child.routes = [
-              child.tagline,
-              child.filmography
-            ]
+            child.routes = [child.tagline, child.filmography]
 
             const parent = {
               actors: {
@@ -635,10 +665,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               },
               routes: []
             }
-            parent.routes = [
-              parent.actors,
-              parent.musicians
-            ]
+            parent.routes = [parent.actors, parent.musicians]
 
             await router.navigate('/celebrities/actors/bernie-mac/tagline')
             const deferred = router.applyRouting(parent.routes, false)
@@ -668,18 +695,15 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const child = {
               tagline: {
                 id: '/tagline',
-                action: jest.fn(() => slug => `${slug} tagline`)
+                action: jest.fn(() => (slug) => `${slug} tagline`)
               },
               filmography: {
                 id: '/filmography',
-                action: jest.fn(() => slug => `${slug} filmography`)
+                action: jest.fn(() => (slug) => `${slug} filmography`)
               },
               routes: []
             }
-            child.routes = [
-              child.tagline,
-              child.filmography
-            ]
+            child.routes = [child.tagline, child.filmography]
 
             const parent = {
               actors: {
@@ -698,13 +722,10 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               },
               routes: []
             }
-            parent.routes = [
-              parent.actors,
-              parent.musicians
-            ]
+            parent.routes = [parent.actors, parent.musicians]
 
             await router.navigate('/celebrities/actors/bernie-mac/tagline')
-            const result = router.applyRouting(parent.routes, deferred => deferred())
+            const result = router.applyRouting(parent.routes, (deferred) => deferred())
 
             expect(parent.actors.action).toHaveBeenCalledTimes(1)
             expect(parent.musicians.action).not.toHaveBeenCalled()
@@ -728,18 +749,15 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               id: /\/(info|about)/,
               isNest: true,
               getParameters: () => ({}),
-              action: () => { }
+              action: () => {}
             }
             const fn = {
-              id: id => id === '/hello',
+              id: (id) => id === '/hello',
               isNest: true,
               getParameters: () => ({}),
-              action: () => { }
+              action: () => {}
             }
-            const routes: ExpandedRoutes = [
-              regex,
-              fn
-            ]
+            const routes: ExpandedRoutes = [regex, fn]
 
             await router.navigate('/info')
             expect(() => router.applyRouting(routes)).toThrowError(RoutingError)
@@ -758,7 +776,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               action: () => 'regex'
             }
             const fn = {
-              id: id => id === '/hello',
+              id: (id) => id === '/hello',
               isNest: true,
               getParameters: () => ({}),
               getParentId: jest.fn(),
@@ -770,11 +788,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
               getParentId: jest.fn(),
               action: () => 'regularNest'
             }
-            const routes = [
-              regex,
-              fn,
-              regularNest
-            ]
+            const routes = [regex, fn, regularNest]
 
             await router.navigate('/info')
             expect(router.applyRouting(routes)).toBe('regex')
@@ -794,53 +808,50 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             const child = {
               first: {
                 id: '/child',
-                action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+                action: () =>
+                  `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
               },
               nest: {
                 id: '/nest',
                 isNest: true,
-                action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+                action: () =>
+                  `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
               },
               routes: []
             }
-            child.routes = [
-              child.first,
-              child.nest
-            ]
+            child.routes = [child.first, child.nest]
 
             const regex = {
               id: /\/(info|about)/,
               isNest: true,
               getParameters: () => ({}),
               getParentId: (selected, history, latestBaseId) => history.current.id,
-              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+              action: () =>
+                `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
             }
             const fn = {
-              id: id => id === '/hello',
+              id: (id) => id === '/hello',
               isNest: true,
               getParameters: () => ({}),
               getParentId: (selected, history, latestBaseId) => history.current.id,
-              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+              action: () =>
+                `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
             }
             const regularNest = {
               id: '/ice-cream/:brandSlug',
               isNest: true,
-              action: () => `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
+              action: () =>
+                `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
             }
             const nested = {
               id: '/nested',
               isNest: true,
               action: () => {
                 const self = `initial=${router.getInitialBaseId()} current=${router.getCurrentBaseId()} nested=${router.getNestedBaseId()}`
-                return router.applyRouting(child.routes, child => `${self}${child? `, ${child}` : ''}`)
+                return router.applyRouting(child.routes, (child) => `${self}${child ? `, ${child}` : ''}`)
               }
             }
-            const routes = [
-              regex,
-              fn,
-              regularNest,
-              nested
-            ]
+            const routes = [regex, fn, regularNest, nested]
 
             await router.navigate('/info')
             expect(router.applyRouting(routes)).toBe('initial=/ current=/ nested=/info')
@@ -855,17 +866,20 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
             expect(router.applyRouting(routes)).toBe('initial=/ current=/ nested=/nested')
 
             await router.navigate('/nested/child')
-            expect(router.applyRouting(routes))
-              .toBe('initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested')
+            expect(router.applyRouting(routes)).toBe(
+              'initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested'
+            )
 
             await router.navigate('/nested/nest')
-            expect(router.applyRouting(routes))
-              .toBe('initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested/nest')
+            expect(router.applyRouting(routes)).toBe(
+              'initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested/nest'
+            )
 
             // not a typo... asserting that navigating to the same nest doesn't change anything
             await router.navigate('/nested/nest')
-            expect(router.applyRouting(routes))
-              .toBe('initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested/nest')
+            expect(router.applyRouting(routes)).toBe(
+              'initial=/ current=/ nested=/nested, initial=/ current=/nested nested=/nested/nest'
+            )
           })
         })
       })
