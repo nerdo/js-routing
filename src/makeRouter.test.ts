@@ -1,12 +1,14 @@
 import { makeRouter } from '.'
+import { NavigationHistory } from './NavigationHistory'
 
 const defaultArgs = {
-  history: {},
-  makeRouterNavigationFunction: () => async () => { },
-  makeNavigationTarget: () => { },
-  getSelectedRoute: () => { },
-  getParamsFromRoute: () => { },
-  getParentId: () => { }
+  baseId: '',
+  history: new NavigationHistory({ id: '' }),
+  makeRouterNavigationFunction: () => async () => {},
+  makeNavigationTarget: () => ({ id: '' }),
+  getSelectedRoute: () => null,
+  getParamsFromRoute: () => null,
+  getParentId: () => ''
 }
 
 describe('makeRouter()', () => {
@@ -16,6 +18,7 @@ describe('makeRouter()', () => {
   })
 
   it('should throw an error if it does not receive required parameters', () => {
+    // @ts-ignore
     expect(() => makeRouter()).toThrow()
     expect(() => makeRouter({ ...defaultArgs, history: void 0 })).toThrow()
     expect(() => makeRouter({ ...defaultArgs, makeRouterNavigationFunction: void 0 })).toThrow()
