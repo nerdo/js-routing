@@ -6,6 +6,7 @@ import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 import { getUrlParamsFromRoute } from './getUrlParamsFromRoute'
 import { getParentPath } from './getParentPath'
 import { MakeUrlRouterFunction } from './interfaces'
+import { makeUrlPopStateHandler } from './makeUrlPopStateHandler'
 
 const typical = {
   history: () => {
@@ -13,12 +14,18 @@ const typical = {
     const historyApi = window ? window.history : void 0
     return new NavigationHistory(target, historyApi)
   },
-  baseId: '/'
+  baseId: '/',
+  makePopStateHandler: makeUrlPopStateHandler
 }
 
-export const makeUrlRouter: MakeUrlRouterFunction = ({ history = typical.history, baseId = '/' } = typical) => {
+export const makeUrlRouter: MakeUrlRouterFunction = ({
+  history = typical.history,
+  baseId = typical.baseId,
+  makePopStateHandler = typical.makePopStateHandler
+} = typical) => {
   const resolvedHistory = typeof history === 'function' ? history() : history
-  return makeRouter({
+
+  const router = makeRouter({
     history: resolvedHistory,
     makeRouterNavigationFunction: makeUrlNavigationFunction,
     makeNavigationTarget: makeUrlNavigationTarget,
@@ -27,4 +34,11 @@ export const makeUrlRouter: MakeUrlRouterFunction = ({ history = typical.history
     getParentId: getParentPath,
     baseId
   })
+
+  router.popStateHandler = makePopStateHandler(router)
+  if (window && router.popStateHandler) {
+    window.addEventListener('popstate', router.popStateHandler)
+  }
+
+  return router
 }

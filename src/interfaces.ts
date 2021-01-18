@@ -92,12 +92,17 @@ export interface AddNavigationInterceptor {
   (): any
 }
 
+export interface PopStateHandler {
+  (event: PopStateEvent): any
+}
+
 export interface Router {
   lastSelectedRoute: Route | undefined
   parentIds: RouteId[]
   currentBaseId: RouteId
   commits: AnyFunction[]
   history: NavigationHistory
+  popStateHandler?: PopStateHandler
   makeRouterNavigationFunction: MakeRouterNavigationFunction
   makeNavigationTarget: MakeNavigationTarget
   getSelectedRoute: GetSelectedRoute
@@ -127,11 +132,15 @@ export interface MakeRouterFunction {
   (configuration: RouterConfiguration): Router
 }
 
+export interface MakePopStateHandlerFunction {
+  (router: Router): PopStateHandler
+}
 
 export interface MakeUrlRouterArgs {
   history?: (() => NavigationHistory) | NavigationHistory
   makeRouterNavigationFunction?: MakeRouterNavigationFunction
   makeNavigationTarget?: MakeNavigationTarget
+  makePopStateHandler?: MakePopStateHandlerFunction
   getSelectedRoute?: GetSelectedRoute
   getParamsFromRoute?: GetParamsFromRoute
   getParentId?: GetParentId
