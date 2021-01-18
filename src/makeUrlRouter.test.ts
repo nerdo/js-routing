@@ -98,7 +98,7 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
           addEventListener
         }))
 
-        expect(addEventListener).toHaveBeenCalledTimes(0)
+        expect(addEventListener).not.toHaveBeenCalled()
 
         const router = makeUrlRouter()
 
@@ -115,12 +115,30 @@ describe('makeUrlRouter({ history: getNewNavigationHistory() })', () => {
           addEventListener
         }))
 
-        expect(addEventListener).toHaveBeenCalledTimes(0)
+        expect(addEventListener).not.toHaveBeenCalled()
 
         const router = makeUrlRouter({ makePopStateHandler })
 
         expect(addEventListener).toHaveBeenCalledTimes(1)
         expect(addEventListener).toHaveBeenCalledWith('popstate', customHandler)
+      })
+
+      it('should get removed when destruct is called', () => {
+        const customHandler = () => {}
+        const makePopStateHandler = jest.fn(() => customHandler)
+        const removeEventListener = jest.fn()
+        windowSpy.mockImplementation(() => ({
+          ...windowMockDefaults,
+          removeEventListener
+        }))
+
+        expect(removeEventListener).not.toHaveBeenCalled()
+
+        const router = makeUrlRouter({ makePopStateHandler })
+        router.destruct()
+
+        expect(removeEventListener).toHaveBeenCalledTimes(1)
+        expect(removeEventListener).toHaveBeenCalledWith('popstate', customHandler)
       })
     })
   })
