@@ -38,6 +38,11 @@ export const makeUrlRouter: MakeUrlRouterFunction = ({
   router.popStateHandler = makePopStateHandler(router)
   if (window && router.popStateHandler) {
     window.addEventListener('popstate', router.popStateHandler)
+    const defaultRouterDestruct = router.destruct
+    router.destruct = () => {
+      window.removeEventListener('popstate', router.popStateHandler)
+      return defaultRouterDestruct()
+    }
   }
 
   return router

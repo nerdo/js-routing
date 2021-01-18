@@ -98,7 +98,8 @@ export const makeRouter: MakeRouterFunction = (
       }
     },
     addNavigationInterceptor: () => { },
-    navigate: async () => {}
+    navigate: async () => {},
+    destruct: () => {}
   }
 
   router.navigate = router.makeRouterNavigationFunction(router)

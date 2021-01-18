@@ -96,6 +96,10 @@ export interface PopStateHandler {
   (event: PopStateEvent): any
 }
 
+export interface RouterDestructFunction {
+  (): any
+}
+
 export interface Router {
   lastSelectedRoute: Route | undefined
   parentIds: RouteId[]
@@ -116,6 +120,7 @@ export interface Router {
   popParentIds: AnyFunction
   commitRouting: AnyFunction
   addNavigationInterceptor: AddNavigationInterceptor
+  destruct: RouterDestructFunction
 }
 
 export interface RouterConfiguration {
