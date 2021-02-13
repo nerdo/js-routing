@@ -29,7 +29,6 @@ describe('makeUrlPopStateHandler', () => {
 
   describe('when triggered', () => {
     it('should call navigate on the router', async () => {
-      // const router = makeUrlRouter({ history: new NavigationHistory({ id: '' }, window.history) })
       const router = makeUrlRouter()
       const foo = { id: '/foo' }
       const bar = { id: '/bar' }
@@ -46,6 +45,8 @@ describe('makeUrlPopStateHandler', () => {
 
       await waitFor(() => expect(navigationSpy).toHaveBeenCalledTimes(1))
       await waitFor(() => expect(navigationSpy).toHaveBeenCalledWith(expect.objectContaining(bar)))
+      expect(router.history.current).not.toBe(about)
+      expect(router.history.current).toBe(bar)
     })
   })
 })
