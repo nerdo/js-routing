@@ -87,7 +87,7 @@ To set up custom writing, call `makeRouter(...)` and pass it an object with the 
 
 * `history` - An object that implements the [NavigationHistory](#navigation-history-interface), which **optionally** *interacts* with the [History API interface](https://developer.mozilla.org/en-US/docs/Web/API/History).
 * `makeNavigationTarget(input, baseId)` - A function that converts the `input` into a [NavigationTarget](#navigationtarget) using baseId as context.
-* `getSelectedRoute(routes, history, [parentId])` - A function that returns the definition that matches the current navigation state or null if no match was found.
+* `getSelectedRoute(routes, relativeToId, currentParams, [parentId])` - A function that returns the definition that matches the current navigation state or null if no match was found.
   * `routes` - Route definitions in expanded array form.
   * `history` - A [NavigationHistory](#navigation-history-interface) instance.
   * `[parentId]` - The parent identifier the routes are relative to.

@@ -1,16 +1,22 @@
 import { getPathParts } from './getPathParts'
 import { makeUrlNavigationTarget } from './makeUrlNavigationTarget'
 import { getPathRelativeTo } from './getPathRelativeTo'
-import { Route, ExpandedRoutes, RouteId } from './interfaces'
+import { Route, ExpandedRoutes, RouteId, Params } from './interfaces'
 import { NavigationHistory } from './NavigationHistory'
 
-export const getSelectedUrlRoute = (routes: ExpandedRoutes, history: NavigationHistory, parentId: RouteId): Route|undefined => {
+export const getSelectedUrlRoute = (
+  routes: ExpandedRoutes,
+  relativeToId: RouteId,
+  currentParams: Params,
+  parentId: RouteId = void 0
+): Route | undefined => {
   const current = {
     id: '',
-    pathParts: getPathParts(getPathRelativeTo(parentId || '', history.current.id)),
-    params: history.current.params || {}
+    pathParts: getPathParts(getPathRelativeTo(parentId || '', relativeToId)),
+    params: currentParams || {}
   }
   current.id = `/${current.pathParts.join('/')}`
+  // console.log('parentId' , parentId, 'history.current.id', history.current.id, 'current', current)
 
   const toMetaData = (original: Route) => {
     const isFunction = typeof original.id === 'function'
@@ -37,15 +43,14 @@ export const getSelectedUrlRoute = (routes: ExpandedRoutes, history: NavigationH
       return originalId.test(current.id)
     }
 
-    const id = `/${pathParts.map((p, i) => p[0] === ':' ? current.pathParts[i] : p).join('/')}`
+    const id = `/${pathParts.map((p, i) => (p[0] === ':' ? current.pathParts[i] : p)).join('/')}`
     const currentId = isNest ? `/${current.pathParts.slice(0, pathParts.length).join('/')}` : current.id
     if (id === currentId) {
       const requiredParams = Object.keys(target.params || {})
-      const hasRequiredParams = requiredParams
-        .reduce(
-          (paramsArePresent, paramName) => paramsArePresent && typeof current.params[paramName] !== 'undefined',
-          true
-        )
+      const hasRequiredParams = requiredParams.reduce(
+        (paramsArePresent, paramName) => paramsArePresent && typeof current.params[paramName] !== 'undefined',
+        true
+      )
       return hasRequiredParams
     }
 

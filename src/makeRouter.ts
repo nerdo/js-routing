@@ -20,7 +20,7 @@ export const makeRouter: MakeRouterFunction = (
   } else if (typeof makeNavigationTarget !== 'function') {
     throw new Error('makeNavigationTarget(input, baseId) property is required')
   } else if (typeof getSelectedRoute !== 'function') {
-    throw new Error('getSelectedRoute(routes, history, parentId) property is required')
+    throw new Error('getSelectedRoute(routes, relativeToId, currentParams, parentId) property is required')
   } else if (typeof getParamsFromRoute !== 'function') {
     throw new Error('getParamsFromRoute(route, history) property is required')
   } else if (typeof getParentId !== 'function') {
@@ -45,7 +45,8 @@ export const makeRouter: MakeRouterFunction = (
       router.currentBaseId = router.getNestedBaseId()
       const selected = getSelectedRoute(
         getExpandedRoutes(routes || []),
-        history,
+        history.current.id,
+        history.current.params,
         router.parentIds[router.parentIds.length - 1]
       )
       router.lastSelectedRoute = selected

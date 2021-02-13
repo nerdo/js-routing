@@ -25,7 +25,7 @@ export interface GetParameters {
 }
 
 export interface GetSelectedRoute {
-  (routes: ExpandedRoutes, history: NavigationHistory, parentId?: RouteId): (Route | null)
+  (routes: ExpandedRoutes, relativeToId: RouteId, currentParams: Params, parentId?: RouteId): (Route | null)
 }
 
 export interface GetParentId {
