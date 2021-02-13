@@ -36,7 +36,7 @@ describe('getSelectedUrlRoute()', () => {
     action: () => 'special product'
   }
   const functionMatcher = {
-    id: id => id === '/function/matcher' || id === '/method/man/wu/tang',
+    id: (id) => id === '/function/matcher' || id === '/method/man/wu/tang',
     action: () => 'function matcher'
   }
   const regExRoute = {
@@ -68,7 +68,7 @@ describe('getSelectedUrlRoute()', () => {
 
       const history = new NavigationHistory({ id: '/about' })
 
-      const selected = getSelectedUrlRoute(routes, history)
+      const selected = getSelectedUrlRoute(routes, history.current.id, history.current.params)
 
       expect(selected).toBe(about)
     })
@@ -80,13 +80,13 @@ describe('getSelectedUrlRoute()', () => {
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/about///' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(about)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(about)
 
       history.push({ id: '//about///' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(about)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(about)
 
       history.push({ id: '//about' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(about)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(about)
     })
   })
 
@@ -96,13 +96,13 @@ describe('getSelectedUrlRoute()', () => {
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/user/foo' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(userProfile)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(userProfile)
 
       history.push({ id: '/user//bar///' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(userProfile)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(userProfile)
 
       history.push({ id: '/user/bar/photos' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(userPhotos)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(userPhotos)
     })
   })
 
@@ -112,13 +112,13 @@ describe('getSelectedUrlRoute()', () => {
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/documents' })
-      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).not.toBeDefined()
 
       history.push({ id: '/documents?page=1' })
-      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).not.toBeDefined()
 
       history.push({ id: '/documents?numPerPage=10' })
-      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).not.toBeDefined()
 
       history.push({
         id: '/documents',
@@ -127,7 +127,7 @@ describe('getSelectedUrlRoute()', () => {
           numPerPage: '10'
         }
       })
-      expect(getSelectedUrlRoute(routes, history)).toBe(documents)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(documents)
     })
   })
 
@@ -137,41 +137,31 @@ describe('getSelectedUrlRoute()', () => {
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/product/foo-bars/details' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(productNest)
 
       history.push({ id: '/product/foo-bars//details' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(productNest)
 
       history.push({ id: '/product/foo-bars/details/edit' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(productNest)
     })
 
     describe('precedence', () => {
       describe('array form', () => {
         it('should return the nest if it is defined first', () => {
-          const routes = [
-            home,
-            productNest,
-            specialProduct,
-            about
-          ]
+          const routes = [home, productNest, specialProduct, about]
 
           const history = new NavigationHistory({ id: '/' })
           history.push({ id: '/product/special-product' })
-          expect(getSelectedUrlRoute(routes, history)).toBe(productNest)
+          expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(productNest)
         })
 
         it('should return the regular route if it is defined first', () => {
-          const routes = [
-            home,
-            specialProduct,
-            productNest,
-            about
-          ]
+          const routes = [home, specialProduct, productNest, about]
 
           const history = new NavigationHistory({ id: '/' })
           history.push({ id: '/product/special-product' })
-          expect(getSelectedUrlRoute(routes, history)).toBe(specialProduct)
+          expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(specialProduct)
         })
       })
     })
@@ -187,14 +177,13 @@ describe('getSelectedUrlRoute()', () => {
           action: () => 'filmography'
         }
 
-        const routes = [
-          tagline,
-          filmography
-        ]
+        const routes = [tagline, filmography]
 
         const history = new NavigationHistory({ id: '/' })
         history.push({ id: '/actors/bernie-mac/tagline' })
-        expect(getSelectedUrlRoute(routes, history, '/actors/bernie-mac')).toBe(tagline)
+        expect(getSelectedUrlRoute(routes, history.current.id, history.current.params, '/actors/bernie-mac')).toBe(
+          tagline
+        )
       })
     })
   })
@@ -205,10 +194,10 @@ describe('getSelectedUrlRoute()', () => {
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/function/matcher' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(functionMatcher)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(functionMatcher)
 
       history.push({ id: '/method/man/wu/tang' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(functionMatcher)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(functionMatcher)
     })
   })
 
@@ -218,10 +207,10 @@ describe('getSelectedUrlRoute()', () => {
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/employee/T90210' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(regExRoute)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(regExRoute)
 
       history.push({ id: '/employee/T90210/' })
-      expect(getSelectedUrlRoute(routes, history)).toBe(regExRoute)
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).toBe(regExRoute)
     })
   })
 
@@ -231,13 +220,13 @@ describe('getSelectedUrlRoute()', () => {
       const history = new NavigationHistory({ id: '/' })
 
       history.push({ id: '/a' })
-      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).not.toBeDefined()
 
       history.push({ id: '/lamb/chops' })
-      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).not.toBeDefined()
 
       history.push({ id: '/employee/TXX210' })
-      expect(getSelectedUrlRoute(routes, history)).not.toBeDefined()
+      expect(getSelectedUrlRoute(routes, history.current.id, history.current.params)).not.toBeDefined()
     })
   })
 })
