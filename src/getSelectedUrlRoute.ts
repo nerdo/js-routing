@@ -16,7 +16,6 @@ export const getSelectedUrlRoute = (
     params: currentParams || {}
   }
   current.id = `/${current.pathParts.join('/')}`
-  // console.log('parentId' , parentId, 'history.current.id', history.current.id, 'current', current)
 
   const toMetaData = (original: Route) => {
     const isFunction = typeof original.id === 'function'
