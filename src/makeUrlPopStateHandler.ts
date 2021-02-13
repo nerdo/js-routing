@@ -1,10 +1,10 @@
-import { NavigationTarget, PopStateHandler, Router } from './interfaces';
+import { NavigationTarget, PopStateHandler, Router } from './interfaces'
 
 export const makeUrlPopStateHandler = (router: Router): PopStateHandler => {
   return (event: PopStateEvent) => {
-    if (typeof event.state?.id !== 'undefined') {
+    if (event.state && typeof event.state.id !== 'undefined') {
       const target = event.state as NavigationTarget
-      router.navigate(target.id, false, target.params, target.state)
+      router.history.replace(target)
     }
   }
 }
